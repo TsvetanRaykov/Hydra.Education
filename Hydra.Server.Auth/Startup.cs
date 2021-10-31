@@ -16,9 +16,8 @@ namespace Hydra.Server.Auth
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -38,6 +37,9 @@ namespace Hydra.Server.Auth
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,7 +79,9 @@ namespace Hydra.Server.Auth
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
+                //endpoints.MapRazorPages();
+                endpoints.MapBlazorHub("Auth/_blazor");
+                endpoints.MapFallbackToPage("~/Auth/{*clientroutes:nonfile}", "/Auth/_Host");
             });
         }
     }

@@ -7,7 +7,7 @@ namespace Hydra.Server.Auth.Controllers
    
     public class ModuleController : Controller
     {
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult Video()
         {
             return View();

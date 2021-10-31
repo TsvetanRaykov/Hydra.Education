@@ -9,11 +9,12 @@
 
 <script type="text/javascript">
 
-
-    const base = document.createElement("base");
+    let base = document.getElementsByTagName("base")[0];
+    if (!!!base) {
+        base = document.createElement("base");
+        document.getElementsByTagName('head')[0].appendChild(base);
+    }
     base.href = "/@Model/";
-    document.getElementsByTagName('head')[0].appendChild(base);
-
 
 </script>
 
