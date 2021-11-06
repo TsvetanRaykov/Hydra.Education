@@ -1,4 +1,3 @@
-using Hydra.Server.Auth.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace Hydra.Server.Auth
 {
+    using Data;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -42,7 +43,6 @@ namespace Hydra.Server.Auth
             services.AddServerSideBlazor();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -53,7 +53,6 @@ namespace Hydra.Server.Auth
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
@@ -65,9 +64,9 @@ namespace Hydra.Server.Auth
             app.UseAuthorization();
 
 
-            app.MapWhen(c => c.Request.Path.StartsWithSegments("/video"), app1 =>
+            app.MapWhen(c => c.Request.Path.StartsWithSegments("/Video"), app1 =>
             {
-                app1.UseBlazorFrameworkFiles("/video");
+                app1.UseBlazorFrameworkFiles("/Video");
                 app1.UseRouting();
                 app1.UseAuthorization();
                 app1.UseEndpoints(ep => ep.MapFallbackToController("Video", "Module"));
@@ -79,7 +78,11 @@ namespace Hydra.Server.Auth
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                //endpoints.MapRazorPages();
+            });
+
+            // Server Side Blazor endpoints
+            app.UseEndpoints(endpoints =>
+            {
                 endpoints.MapBlazorHub("Auth/_blazor");
                 endpoints.MapFallbackToPage("~/Auth/{*clientroutes:nonfile}", "/Auth/_Host");
             });

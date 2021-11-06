@@ -4,10 +4,9 @@ namespace Hydra.Server.Auth.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
 
-   
+    [Authorize]
     public class ModuleController : Controller
     {
-        //[Authorize(Roles = "Admin")]
         public IActionResult Video()
         {
             return View();
