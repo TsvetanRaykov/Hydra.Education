@@ -1,8 +1,46 @@
 ﻿@page "/"
-<h3>Auth Index</h3>
+@using Microsoft.AspNetCore.Http
+@inject HttpContextAccessor _httpContext
+@inject IHttpClientFactory _clientFactory
+
+<Div Flex="Flex.JustifyContent.Between">
+    <h3>Users</h3>
+    <Switch TValue="bool" Checked="@_filterable" CheckedChanged="@OnFilterSwitched">Filter</Switch>
+</Div>
 
 <AuthorizeView Roles="Admin">
-    <Authorized>@context.User.Identity?.Name</Authorized>
+    <Authorized>
+
+        <DataGrid TItem="ApplicationUser"
+                  @ref="_dataGrid"
+                  Data="@_users"
+                  Sortable="true"
+                  SortMode="DataGridSortMode.Single"
+                  ShowPager="_showPager"
+                  Filterable="_filterable"
+                  PageSize="_pageSize"
+                  TotalItems="_totalUsers"
+                  @bind-SelectedRow="_selectedUser">
+            <FirstPageButtonTemplate>
+                <i class="fas fa-angle-double-left"></i>
+            </FirstPageButtonTemplate>
+            <PreviousPageButtonTemplate>
+                <i class="fas fa-angle-left"></i>
+            </PreviousPageButtonTemplate>
+            <NextPageButtonTemplate>
+                <i class="fas fa-angle-right"></i>
+            </NextPageButtonTemplate>
+            <LastPageButtonTemplate>
+                <i class="fas fa-angle-double-right"></i>
+            </LastPageButtonTemplate>
+            <ChildContent>
+                <DataGridCommandColumn TItem="ApplicationUser" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true" Editable="false" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Editable="false" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Faculty #" Editable="false" Sortable="true" />
+            </ChildContent>
+        </DataGrid>
+    </Authorized>
     <NotAuthorized>
         You are not authorized to see this content.
     </NotAuthorized>
@@ -10,4 +48,45 @@
 
 @code {
 
+    HttpClient _httpClient;
+
+    DataGrid<ApplicationUser> _dataGrid;
+    ApplicationUser _selectedUser;
+    ApplicationUser[] _users;
+    int _totalUsers;
+    bool _showPager;
+    bool _filterable;
+    int _pageSize = 10;
+
+    protected override Task OnInitializedAsync()
+    {
+        _httpClient = _clientFactory.CreateClient("default");
+        if (_httpContext.HttpContext != null)
+        {
+            var uri = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host.Value}";
+            _httpClient.BaseAddress = new Uri(uri);
+        }
+
+        _users = Enumerable.Range(1, 8).Select(x => new ApplicationUser()
+        {
+            Email = (new string[] { "user1", "user2", "user3", "user4", "user5" })[new Random().Next(5)] + "abv.bg",
+            FirstName = (new string[] { "Иван", "Пешо", "Стоян", "Нешо", "Тодор" })[new Random().Next(5)],
+            LastName = (new string[] { "Иванов", "Петров", "Стоянов", "Нешев", "Тодоров" })[new Random().Next(5)],
+            IdentityNumber = (1000 + x).ToString()
+        }).ToArray();
+
+        _totalUsers = _users.Length;
+        _showPager = _totalUsers > _pageSize;
+
+        return base.OnInitializedAsync();
+    }
+
+    private void OnFilterSwitched(bool value)
+    {
+        _filterable = value;
+        if (!value)
+        {
+            _dataGrid.ClearFilter();
+        }
+    }
 }

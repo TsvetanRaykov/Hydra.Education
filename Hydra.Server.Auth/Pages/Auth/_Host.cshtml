@@ -1,5 +1,6 @@
 ﻿@page "/Auth"
 @namespace Hydra.Server.Auth.Pages.Auth
+@using Blazorise
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
@@ -9,15 +10,32 @@
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 </app>
 
-<script type="text/javascript">
+@section Scripts
+{
+    <script type="text/javascript">
 
-    let base = document.getElementsByTagName("base")[0];
-    if (!!!base) {
-        base = document.createElement("base");
-        document.getElementsByTagName('head')[0].appendChild(base);
-    }
-    base.href = "/Auth/";
+        let base = document.getElementsByTagName("base")[0];
+        if (!!!base) {
+            base = document.createElement("base");
+            document.getElementsByTagName('head')[0].appendChild(base);
+        }
+        base.href = "/Auth/";
 
-</script>
+        [
+            "/_content/Blazorise/blazorise.css",
+            "/_content/Blazorise.Bootstrap/blazorise.bootstrap.css"
+        ]
+            .forEach(uri => {
+                const link = document.createElement('link');
+                link.rel = "stylesheet";
+                link.type = "text/css";
+                link.href = uri;
+                document.head.appendChild(link);
+            });
 
-<script src="~/_framework/blazor.server.js"></script>
+    </script>
+    <script src="~/_content/Blazorise/blazorise.js"></script>
+    <script src="~/_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
+    <script src="~/_content/Blazorise.DataGrid/blazorise.datagrid.js"></script>
+    <script src="~/_framework/blazor.server.js"></script>
+}
