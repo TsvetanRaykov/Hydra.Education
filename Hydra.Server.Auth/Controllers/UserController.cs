@@ -1,4 +1,9 @@
-﻿namespace Hydra.Server.Auth.Controllers
+﻿using System;
+using System.Threading.Tasks;
+using Hydra.Server.Auth.Models;
+using Hydra.Server.Auth.Services.Contracts;
+
+namespace Hydra.Server.Auth.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -13,13 +18,25 @@
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUserService _userService;
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
         [HttpGet]
         [Authorize]
         [AllowAnonymous]
         public IActionResult GetCurrentUser() =>
             Ok(User.Identity is { IsAuthenticated: true } ? CreateUserInfo(User) : UserInfo.Anonymous);
 
-        private UserInfo CreateUserInfo(ClaimsPrincipal claimsPrincipal)
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _userService.GetUserByRolesAsync(Array.Empty<string>());
+            return Ok(users);
+        }
+
+        private static UserInfo CreateUserInfo(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal.Identity is { IsAuthenticated: false })
             {

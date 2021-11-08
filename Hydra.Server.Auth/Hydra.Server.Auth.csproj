@@ -31,4 +31,8 @@
     <ProjectReference Include="..\Hydra.Module.Video\Hydra.Module.Video.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Contracts\" />
+  </ItemGroup>
+
 </Project>
