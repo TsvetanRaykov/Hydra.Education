@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Hydra.Server.Auth.Models;
 
-namespace Hydra.Server.Auth.Services.Contracts
+namespace Hydra.Server.Auth.Contracts
 {
     public interface IUserService
     {

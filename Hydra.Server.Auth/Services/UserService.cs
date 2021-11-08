@@ -1,12 +1,14 @@
-﻿using Hydra.Server.Auth.Models;
-using Hydra.Server.Auth.Services.Contracts;
-using Microsoft.AspNetCore.Identity;
-using System;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Hydra.Server.Auth.Services
 {
+    using Contracts;
+    using Models;
+
     public class UserService : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -16,22 +18,21 @@ namespace Hydra.Server.Auth.Services
             _userManager = userManager;
         }
 
-        public Task<ApplicationUser[]> GetUserByRolesAsync(string[] roleIds)
+        public async Task<ApplicationUser[]> GetUserByRolesAsync(string[] roleIds)
         {
-            //var users = await _userManager.Users
-            //    .Include(u => u.Claims)
-            //    .Include(u => u.Roles)
-            //    .ToArrayAsync();
+            var users = await _userManager.Users
+                .Include(u => u.Claims)
+                .Include(u => u.Roles)
+                .ToArrayAsync();
 
-            //if (!roleIds.Any())
-            //{
-            //    return users;
-            //}
+            if (!roleIds.Any())
+            {
+                return users;
+            }
 
-            //var query = users.Where(u => u.Roles.Select(r => r.RoleId).Intersect(roleIds).Any());
+            var query = users.Where(u => u.Roles.Select(r => r.RoleId).Intersect(roleIds).Any());
 
-            //return query.ToArray();
-            return Task.FromResult(Array.Empty<ApplicationUser>());
+            return query.ToArray();
         }
 
         public Task<ApplicationUser> GetUserByIdAsync(string userId)

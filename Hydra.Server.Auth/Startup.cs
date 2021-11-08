@@ -1,12 +1,10 @@
-using System;
-using System.Net.Http;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using Hydra.Server.Auth.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 namespace Hydra.Server.Auth
 {
     using Data;
+    using Hydra.Server.Auth.Contracts;
+    using Models;
 
     public class Startup
     {
@@ -25,7 +25,6 @@ namespace Hydra.Server.Auth
             Configuration = configuration;
         }
 
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -33,7 +32,7 @@ namespace Hydra.Server.Auth
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options =>
+            services.AddDefaultIdentity<ApplicationUser>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.Password.RequireDigit = false;
@@ -42,7 +41,7 @@ namespace Hydra.Server.Auth
                     options.Password.RequiredLength = 6;
                     options.Password.RequireUppercase = false;
                 })
-                .AddRoles<IdentityRole>()
+                .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddControllersWithViews();
@@ -61,6 +60,8 @@ namespace Hydra.Server.Auth
                 })
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
+
+            services.AddScoped<IUserService, UserService>();
 
             services.AddHttpContextAccessor();
             services.AddScoped<HttpContextAccessor>();

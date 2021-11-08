@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Hydra.Server.Auth.Contracts;
 using Hydra.Server.Auth.Models;
-using Hydra.Server.Auth.Services.Contracts;
 
 namespace Hydra.Server.Auth.Controllers
 {

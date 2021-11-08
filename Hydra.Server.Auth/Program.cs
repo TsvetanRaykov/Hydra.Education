@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
+using Hydra.Server.Auth.Models;
 
 namespace Hydra.Server.Auth
 {
@@ -20,8 +21,8 @@ namespace Hydra.Server.Auth
                 var serviceProvider = scope.ServiceProvider;
                 try
                 {
-                    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-                    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
                     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
                     ApplicationDataInitialization.SeedAsync(userManager, roleManager, configuration).GetAwaiter().GetResult();
                 }

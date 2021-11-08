@@ -11,7 +11,7 @@
 <AuthorizeView Roles="Admin">
     <Authorized>
 
-        <DataGrid TItem="ApplicationUser"
+        <DataGrid TItem="HydraUser"
                   @ref="_dataGrid"
                   Data="@_users"
                   Sortable="true"
@@ -34,10 +34,10 @@
                 <i class="fas fa-angle-double-right"></i>
             </LastPageButtonTemplate>
             <ChildContent>
-                <DataGridCommandColumn TItem="ApplicationUser" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true" Editable="false" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Editable="false" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Faculty #" Editable="false" Sortable="true" />
+                <DataGridCommandColumn TItem="HydraUser" />
+                <DataGridColumn TItem="HydraUser" Field="@nameof(HydraUser.UserName)" Caption="Name" Sortable="true" Editable="false" />
+                <DataGridColumn TItem="HydraUser" Field="@nameof(HydraUser.Email)" Caption="Email" Editable="false" />
+                <DataGridColumn TItem="HydraUser" Field="@nameof(HydraUser.IdentityNumber)" Caption="Faculty #" Editable="false" Sortable="true" />
             </ChildContent>
         </DataGrid>
     </Authorized>
@@ -50,9 +50,9 @@
 
     HttpClient _httpClient;
 
-    DataGrid<ApplicationUser> _dataGrid;
-    ApplicationUser _selectedUser;
-    ApplicationUser[] _users;
+    DataGrid<HydraUser> _dataGrid;
+    HydraUser _selectedUser;
+    HydraUser[] _users;
     int _totalUsers;
     bool _showPager;
     bool _filterable;
@@ -67,11 +67,10 @@
             _httpClient.BaseAddress = new Uri(uri);
         }
 
-        _users = Enumerable.Range(1, 8).Select(x => new ApplicationUser()
+        _users = Enumerable.Range(1, 8).Select(x => new HydraUser()
         {
             Email = (new string[] { "user1", "user2", "user3", "user4", "user5" })[new Random().Next(5)] + "abv.bg",
-            FirstName = (new string[] { "Иван", "Пешо", "Стоян", "Нешо", "Тодор" })[new Random().Next(5)],
-            LastName = (new string[] { "Иванов", "Петров", "Стоянов", "Нешев", "Тодоров" })[new Random().Next(5)],
+            UserName = (new string[] { "Иван", "Пешо", "Стоян", "Нешо", "Тодор" })[new Random().Next(5)],
             IdentityNumber = (1000 + x).ToString()
         }).ToArray();
 

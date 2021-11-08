@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Hydra.Server.Auth.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -11,7 +12,7 @@ namespace Hydra.Server.Auth.Data
 
     public static class ApplicationDataInitialization
     {
-        public static async Task SeedAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public static async Task SeedAsync(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IConfiguration configuration)
         {
             var constants = typeof(GlobalConstants.Role)
                 .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
@@ -27,10 +28,10 @@ namespace Hydra.Server.Auth.Data
                     continue;
                 }
 
-                await roleManager.CreateAsync(new IdentityRole(role));
+                await roleManager.CreateAsync(new ApplicationRole(role));
             }
 
-            var adminUser = new IdentityUser()
+            var adminUser = new ApplicationUser()
             {
                 Email = configuration["AdminUser"],
                 UserName = configuration["AdminUser"],
