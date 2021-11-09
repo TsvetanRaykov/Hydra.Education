@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hydra.Server.Auth.Contracts;
 using Microsoft.AspNetCore.Identity;
 
 namespace Hydra.Server.Auth.Models
 {
+    using Contracts;
+
     public class ApplicationUser : IdentityUser, IAuditInfo, IDeletableEntity
     {
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
@@ -13,5 +14,9 @@ namespace Hydra.Server.Auth.Models
         public DateTime? ModifiedOn { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DeletedOn { get; set; }
+
+        // Hydra specific
+        public string IdentityNumber { get; set; }
+        public string FullName { get; set; }
     }
 }

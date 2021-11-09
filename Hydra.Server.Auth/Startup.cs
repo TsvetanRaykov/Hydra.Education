@@ -62,10 +62,7 @@ namespace Hydra.Server.Auth
                 .AddFontAwesomeIcons();
 
             services.AddScoped<IUserService, UserService>();
-
-            services.AddHttpContextAccessor();
-            services.AddScoped<HttpContextAccessor>();
-            services.AddHttpClient();
+           
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

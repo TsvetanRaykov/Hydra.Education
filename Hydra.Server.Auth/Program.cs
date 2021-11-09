@@ -5,11 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
-using Hydra.Server.Auth.Models;
 
 namespace Hydra.Server.Auth
 {
     using Data;
+    using Models;
+
     public static class Program
     {
         public static void Main(string[] args)

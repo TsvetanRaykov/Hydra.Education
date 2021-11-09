@@ -1,40 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
-using Hydra.Server.Auth.Contracts;
-using Hydra.Server.Auth.Models;
-
-namespace Hydra.Server.Auth.Controllers
+﻿namespace Hydra.Server.Auth.Controllers
 {
+    using Authorization;
+    using IdentityModel;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Authorization;
-    using IdentityModel;
 
     //[tr]: 2021-10-26
     [Route("[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
-        public UserController(IUserService userService)
-        {
-            _userService = userService;
-        }
         [HttpGet]
         [Authorize]
         [AllowAnonymous]
         public IActionResult GetCurrentUser() =>
             Ok(User.Identity is { IsAuthenticated: true } ? CreateUserInfo(User) : UserInfo.Anonymous);
-
-        [HttpGet("users")]
-        public async Task<IActionResult> GetUsers()
-        {
-            var users = await _userService.GetUserByRolesAsync(Array.Empty<string>());
-            return Ok(users);
-        }
 
         private static UserInfo CreateUserInfo(ClaimsPrincipal claimsPrincipal)
         {

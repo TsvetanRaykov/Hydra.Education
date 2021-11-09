@@ -1,7 +1,8 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Http
-@inject HttpContextAccessor _httpContext
-@inject IHttpClientFactory _clientFactory
+@using System.Security.Claims
+@using Hydra.Server.Auth.Authorization
+
+@inject IUserService _userService
 
 <Div Flex="Flex.JustifyContent.Between">
     <h3>Users</h3>
@@ -9,18 +10,50 @@
 </Div>
 
 <AuthorizeView Roles="Admin">
-    <Authorized>
+    <Authorized Context="auth">
 
-        <DataGrid TItem="HydraUser"
+        <DataGrid TItem="ApplicationUser"
                   @ref="_dataGrid"
                   Data="@_users"
+                  Editable="true"
+                  UseInternalEditing="true"
+                  EditMode="DataGridEditMode.Inline"
                   Sortable="true"
                   SortMode="DataGridSortMode.Single"
                   ShowPager="_showPager"
                   Filterable="_filterable"
-                  PageSize="_pageSize"
+                  PageSize="PageSize"
                   TotalItems="_totalUsers"
-                  @bind-SelectedRow="_selectedUser">
+                  @bind-SelectedRow="_selectedUser"
+                  RowUpdated="@OnRowUpdated"
+                  RowInserted="@OnRowInserted"
+                  RowRemoved="@OnRowRemoved"
+                  NewItemDefaultSetter="@OnNewItemDefaultSetter">
+            <ChildContent>
+                <DataGridCommandColumn TItem="ApplicationUser">
+                    <NewCommandTemplate>
+                        <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                    </NewCommandTemplate>
+                    <EditCommandTemplate>
+                        <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                    </EditCommandTemplate>
+                    <DeleteCommandTemplate>
+                        <Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>
+                    </DeleteCommandTemplate>
+                    <CancelCommandTemplate>
+                        <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+                    </CancelCommandTemplate>
+                    <SaveCommandTemplate>
+                        <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+                    </SaveCommandTemplate>
+                    <ClearFilterCommandTemplate>
+                        <Button Color="Color.Info" Clicked="@context.Clicked">Clear</Button>
+                    </ClearFilterCommandTemplate>
+                </DataGridCommandColumn>
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true" Editable="true" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Editable="true" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Faculty #" Editable="true" Sortable="true" />
+            </ChildContent>
             <FirstPageButtonTemplate>
                 <i class="fas fa-angle-double-left"></i>
             </FirstPageButtonTemplate>
@@ -33,12 +66,6 @@
             <LastPageButtonTemplate>
                 <i class="fas fa-angle-double-right"></i>
             </LastPageButtonTemplate>
-            <ChildContent>
-                <DataGridCommandColumn TItem="HydraUser" />
-                <DataGridColumn TItem="HydraUser" Field="@nameof(HydraUser.UserName)" Caption="Name" Sortable="true" Editable="false" />
-                <DataGridColumn TItem="HydraUser" Field="@nameof(HydraUser.Email)" Caption="Email" Editable="false" />
-                <DataGridColumn TItem="HydraUser" Field="@nameof(HydraUser.IdentityNumber)" Caption="Faculty #" Editable="false" Sortable="true" />
-            </ChildContent>
         </DataGrid>
     </Authorized>
     <NotAuthorized>
@@ -48,36 +75,22 @@
 
 @code {
 
-    HttpClient _httpClient;
-
-    DataGrid<HydraUser> _dataGrid;
-    HydraUser _selectedUser;
-    HydraUser[] _users;
+    DataGrid<ApplicationUser> _dataGrid;
+    ApplicationUser _selectedUser;
+    List<ApplicationUser> _users;
     int _totalUsers;
     bool _showPager;
     bool _filterable;
-    int _pageSize = 10;
+    private const int PageSize = 10;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        _httpClient = _clientFactory.CreateClient("default");
-        if (_httpContext.HttpContext != null)
-        {
-            var uri = $"{_httpContext.HttpContext.Request.Scheme}://{_httpContext.HttpContext.Request.Host.Value}";
-            _httpClient.BaseAddress = new Uri(uri);
-        }
 
-        _users = Enumerable.Range(1, 8).Select(x => new HydraUser()
-        {
-            Email = (new string[] { "user1", "user2", "user3", "user4", "user5" })[new Random().Next(5)] + "abv.bg",
-            UserName = (new string[] { "Иван", "Пешо", "Стоян", "Нешо", "Тодор" })[new Random().Next(5)],
-            IdentityNumber = (1000 + x).ToString()
-        }).ToArray();
+        _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
 
-        _totalUsers = _users.Length;
-        _showPager = _totalUsers > _pageSize;
+        _totalUsers = _users.Count;
+        _showPager = _totalUsers > PageSize;
 
-        return base.OnInitializedAsync();
     }
 
     private void OnFilterSwitched(bool value)
@@ -88,4 +101,48 @@
             _dataGrid.ClearFilter();
         }
     }
+
+    private Task OnRowUpdated(SavedRowItem<ApplicationUser, Dictionary<string, object>> arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task OnRowInserted(SavedRowItem<ApplicationUser, Dictionary<string, object>> arg)
+    {
+        var user = arg.Item;
+
+        user.UserName = user.Email;
+
+        var error = await _userService.CreateUserAsync(user, "test123");
+
+
+        if (string.IsNullOrWhiteSpace(error))
+        {
+            error = await _userService.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.FullName));
+        }
+
+        error = await _userService.AddToRoleAsync(user, GlobalConstants.Role.StudentRoleName);
+
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            Console.WriteLine(error);
+            return;
+        }
+
+        _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnRowRemoved(ApplicationUser user)
+    {
+        await _userService.DeleteUserAsync(user.Id);
+        _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnNewItemDefaultSetter(ApplicationUser user)
+    {
+
+    }
+
 }
