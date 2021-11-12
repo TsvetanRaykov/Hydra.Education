@@ -1,0 +1,162 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Hydra.Server.Auth.Authorization
+@inject RoleManager<ApplicationRole> _roleManager
+@inject IUserService _userService
+
+<Modal @ref="_modalRef">
+    <ModalContent Centered="true" Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>@(_modeInsert ? "Register user": "Edit user")</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Fields>
+                <Validation UsePattern="true">
+                    <Field>
+                        <FieldLabel>Full Name</FieldLabel>
+                        <TextEdit Pattern="[A-Za-z]{3}" Placeholder="Enter name..." @bind-Text="@_user.FullName" Role="TextRole.Text">
+                            <Feedback>
+                                <ValidationError>Name is not valid.</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </Field>
+                </Validation>
+                <Validation Validator="ValidationRule.IsEmail">
+                    <Field>
+                        <FieldLabel>Email</FieldLabel>
+                        <TextEdit Placeholder="Enter email..." @bind-Text="@_user.Email" Role="TextRole.Email">
+                            <Feedback>
+                                <ValidationError>Email is not valid.</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </Field>
+                </Validation>
+            </Fields>
+            <Fields>
+                <Validations Mode="ValidationMode.Auto" Model="_passwords">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Password</FieldLabel>
+                            <TextEdit Role="TextRole.Password" @bind-Text="@_passwords.Password">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Confirm Password</FieldLabel>
+                            <TextEdit Role="TextRole.Password" @bind-Text="@_passwords.ConfirmPassword">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </Fields>
+            <Fields>
+                <Validation UsePattern="true">
+                    <Field>
+                        <FieldLabel>Identity</FieldLabel>
+                        <TextEdit Pattern="^[\d]{8}$" Role="TextRole.Text" @bind-Text="@_user.IdentityNumber">
+                            <Feedback>
+                                <ValidationError>Identity must be 8 digits.</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateRoles" @ref="_validatorRolesRef">
+                    <Field>
+                        <FieldLabel>Roles</FieldLabel>
+                        <Select TValue="string" Multiple="true" MaxVisibleItems="3" SelectedValues="_selectedRoles" SelectedValuesChanged="@OnSelectedValueChanged">
+                            @foreach (var (id, name) in _allRoles)
+                            {
+                                <SelectItem Value="@id">@name</SelectItem>
+                            }
+                        </Select>
+                        <ValidationError>User must have at least one role.</ValidationError>
+                    </Field>
+                </Validation>
+            </Fields>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+            <Button Color="Color.Primary" Clicked="@HideModal">@(_modeInsert ? "Create user": "Save changes")</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code{
+
+    private ApplicationUser _user = new();
+    private Passwords _passwords = new();
+
+    private Modal _modalRef;
+    private Validation _validatorRolesRef;
+    private Dictionary<string, string> _allRoles;
+
+    private bool _modeInsert;
+    private string[] _selectedRoles = Array.Empty<string>();
+
+    protected override void OnInitialized()
+    {
+        _allRoles = _roleManager.Roles.ToDictionary(r => r.Id, r => r.Name);
+    }
+
+    public void ShowModal(ApplicationUser user)
+    {
+        _user = user;
+        if (_user is null)
+        {
+            _modeInsert = true;
+            _user = new ApplicationUser();
+        }
+        else
+        {
+            _selectedRoles = _user.Roles.Select(r => r.RoleId).ToArray();
+        }
+
+        StateHasChanged();
+
+        _validatorRolesRef.Validate();
+        _modalRef.Show();
+    }
+
+    private void HideModal()
+    {
+        _modalRef.Hide();
+    }
+
+    private void OnSelectedValueChanged(object val)
+    {
+        _selectedRoles = (string[])val ?? Array.Empty<string>();
+    }
+
+    private void ValidateRoles(ValidatorEventArgs obj)
+    {
+        obj.Status = !_selectedRoles.Any() ? ValidationStatus.Error : ValidationStatus.Success;
+    }
+
+    private async void UpdateUser()
+    {
+        await _userService.UpdateUserAsync(_user);
+    }
+
+
+    private class Passwords
+    {
+        [Required(ErrorMessage = "Password is required.")]
+        [StringLength(100, ErrorMessage = "Must be at least 6 characters.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required(ErrorMessage = "Confirm Password is required.")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; }
+    }
+}

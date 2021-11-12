@@ -1,59 +1,56 @@
 ﻿@page "/"
-@using System.Security.Claims
-@using Hydra.Server.Auth.Authorization
 
 @inject IUserService _userService
 
-<Div Flex="Flex.JustifyContent.Between">
-    <h3>Users</h3>
-    <Switch TValue="bool" Checked="@_filterable" CheckedChanged="@OnFilterSwitched">Filter</Switch>
-</Div>
-
 <AuthorizeView Roles="Admin">
     <Authorized Context="auth">
+        <Div Flex="Flex.JustifyContent.Between">
+            <h5>Users</h5>
+            <Field Horizontal="true" Width="Width.Is25">
+                <TextEdit @bind-Text="@_customFilterValue" Placeholder="search..." Role="TextRole.Search" />
+            </Field>
+        </Div>
 
         <DataGrid TItem="ApplicationUser"
-                  @ref="_dataGrid"
                   Data="@_users"
                   Editable="true"
-                  UseInternalEditing="true"
-                  EditMode="DataGridEditMode.Inline"
                   Sortable="true"
+                  Striped="true"
+                  @bind-SelectedRow="_selectedUser"
+                  CommandMode="DataGridCommandMode.ButtonRow"
                   SortMode="DataGridSortMode.Single"
-                  ShowPager="_showPager"
-                  Filterable="_filterable"
+                  ShowPager="true"
+                  PagerPosition="DataGridPagerPosition.Top"
                   PageSize="PageSize"
                   TotalItems="_totalUsers"
-                  @bind-SelectedRow="_selectedUser"
-                  RowUpdated="@OnRowUpdated"
-                  RowInserted="@OnRowInserted"
-                  RowRemoved="@OnRowRemoved"
-                  NewItemDefaultSetter="@OnNewItemDefaultSetter">
-            <ChildContent>
-                <DataGridCommandColumn TItem="ApplicationUser">
-                    <NewCommandTemplate>
-                        <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
-                    </NewCommandTemplate>
-                    <EditCommandTemplate>
-                        <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
-                    </EditCommandTemplate>
-                    <DeleteCommandTemplate>
-                        <Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>
-                    </DeleteCommandTemplate>
-                    <CancelCommandTemplate>
-                        <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
-                    </CancelCommandTemplate>
-                    <SaveCommandTemplate>
-                        <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
-                    </SaveCommandTemplate>
-                    <ClearFilterCommandTemplate>
-                        <Button Color="Color.Info" Clicked="@context.Clicked">Clear</Button>
-                    </ClearFilterCommandTemplate>
-                </DataGridCommandColumn>
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true" Editable="true" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Editable="true" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Faculty #" Editable="true" Sortable="true" />
-            </ChildContent>
+                  CustomFilter="@OnCustomFilter">
+            <ButtonRowTemplate>
+                <Button Color="Color.Success" Clicked="() => _editUserComponent.ShowModal(null)">New</Button>
+                <Div Display="Display.InlineBlock">
+                    <Dropdown Disabled="@(_selectedUser is null)">
+                        <DropdownToggle>
+                            Action
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <DropdownItem Clicked="() => _editUserComponent.ShowModal(_selectedUser)">
+                                Edit
+                            </DropdownItem>
+                            <DropdownDivider />
+                            <DropdownItem>
+                                Delete
+                            </DropdownItem>
+                            <DropdownItem>
+                                Reset password
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                </Div>
+            </ButtonRowTemplate>
+            <DataGridColumns>
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Sortable="true" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Faculty #" Sortable="true" />
+            </DataGridColumns>
             <FirstPageButtonTemplate>
                 <i class="fas fa-angle-double-left"></i>
             </FirstPageButtonTemplate>
@@ -66,7 +63,9 @@
             <LastPageButtonTemplate>
                 <i class="fas fa-angle-double-right"></i>
             </LastPageButtonTemplate>
+
         </DataGrid>
+        <EditUserComponent @ref="_editUserComponent" />
     </Authorized>
     <NotAuthorized>
         You are not authorized to see this content.
@@ -75,13 +74,14 @@
 
 @code {
 
-    DataGrid<ApplicationUser> _dataGrid;
-    ApplicationUser _selectedUser;
-    List<ApplicationUser> _users;
-    int _totalUsers;
-    bool _showPager;
-    bool _filterable;
     private const int PageSize = 10;
+    int _totalUsers;
+
+    private string _customFilterValue;
+
+    private ApplicationUser _selectedUser;
+    private List<ApplicationUser> _users;
+    private EditUserComponent _editUserComponent;
 
     protected override async Task OnInitializedAsync()
     {
@@ -89,60 +89,19 @@
         _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
 
         _totalUsers = _users.Count;
-        _showPager = _totalUsers > PageSize;
 
     }
 
-    private void OnFilterSwitched(bool value)
+    bool OnCustomFilter(ApplicationUser model)
     {
-        _filterable = value;
-        if (!value)
+        if (string.IsNullOrEmpty(_customFilterValue))
         {
-            _dataGrid.ClearFilter();
-        }
-    }
-
-    private Task OnRowUpdated(SavedRowItem<ApplicationUser, Dictionary<string, object>> arg)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async Task OnRowInserted(SavedRowItem<ApplicationUser, Dictionary<string, object>> arg)
-    {
-        var user = arg.Item;
-
-        user.UserName = user.Email;
-
-        var error = await _userService.CreateUserAsync(user, "test123");
-
-
-        if (string.IsNullOrWhiteSpace(error))
-        {
-            error = await _userService.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.FullName));
+            return true;
         }
 
-        error = await _userService.AddToRoleAsync(user, GlobalConstants.Role.StudentRoleName);
-
-        if (!string.IsNullOrWhiteSpace(error))
-        {
-            Console.WriteLine(error);
-            return;
-        }
-
-        _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
-        await InvokeAsync(StateHasChanged);
+        return
+            model.FullName?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
+            || model.Email?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
+            || model.IdentityNumber?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
     }
-
-    private async Task OnRowRemoved(ApplicationUser user)
-    {
-        await _userService.DeleteUserAsync(user.Id);
-        _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void OnNewItemDefaultSetter(ApplicationUser user)
-    {
-
-    }
-
 }

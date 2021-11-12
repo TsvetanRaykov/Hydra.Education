@@ -7841,7 +7841,6 @@ button.bg-dark:focus {
 
 .align-self-auto {
     -ms-flex-item-align: auto !important;
-    -ms-grid-row-align: auto !important;
     align-self: auto !important;
 }
 
@@ -8035,7 +8034,6 @@ button.bg-dark:focus {
 
     .align-self-sm-auto {
         -ms-flex-item-align: auto !important;
-        -ms-grid-row-align: auto !important;
         align-self: auto !important;
     }
 
@@ -8230,7 +8228,6 @@ button.bg-dark:focus {
 
     .align-self-md-auto {
         -ms-flex-item-align: auto !important;
-        -ms-grid-row-align: auto !important;
         align-self: auto !important;
     }
 
@@ -8425,7 +8422,6 @@ button.bg-dark:focus {
 
     .align-self-lg-auto {
         -ms-flex-item-align: auto !important;
-        -ms-grid-row-align: auto !important;
         align-self: auto !important;
     }
 
@@ -8620,7 +8616,6 @@ button.bg-dark:focus {
 
     .align-self-xl-auto {
         -ms-flex-item-align: auto !important;
-        -ms-grid-row-align: auto !important;
         align-self: auto !important;
     }
 

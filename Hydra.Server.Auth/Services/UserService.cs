@@ -56,7 +56,7 @@ namespace Hydra.Server.Auth.Services
             if (oldUser == null) return "User not found.";
 
             oldUser.Email = user.Email;
-            // oldUser.LockoutEnd = user.LockedOut ? DateTimeOffset.MaxValue : default(DateTimeOffset?);
+            //oldUser.LockoutEnd = user.LockedOut ? DateTimeOffset.MaxValue : default(DateTimeOffset?);
 
             var result = await _userManager.UpdateAsync(oldUser);
 
