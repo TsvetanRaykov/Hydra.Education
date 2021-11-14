@@ -1,20 +1,19 @@
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
-using Hydra.Server.Auth.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 namespace Hydra.Server.Auth
 {
+    using Blazorise;
+    using Blazorise.Bootstrap;
+    using Blazorise.Icons.FontAwesome;
+    using Contracts;
     using Data;
-    using Hydra.Server.Auth.Contracts;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity.UI.Services;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Models;
+    using Services;
 
     public class Startup
     {
@@ -34,7 +33,7 @@ namespace Hydra.Server.Auth
 
             services.AddDefaultIdentity<ApplicationUser>(options =>
                 {
-                    options.SignIn.RequireConfirmedAccount = false;
+                    options.SignIn.RequireConfirmedAccount = true;
                     options.Password.RequireDigit = false;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireNonAlphanumeric = false;
@@ -45,7 +44,7 @@ namespace Hydra.Server.Auth
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddControllersWithViews();
-
+            services.AddHttpClient();
             services.AddRazorPages();
 
             services.AddServerSideBlazor()
@@ -62,7 +61,7 @@ namespace Hydra.Server.Auth
                 .AddFontAwesomeIcons();
 
             services.AddScoped<IUserService, UserService>();
-           
+            services.AddTransient<IEmailSender, SendInBlueEmailSender>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
