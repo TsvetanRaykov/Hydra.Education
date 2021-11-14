@@ -9,7 +9,7 @@ namespace Hydra.Server.Auth.Contracts
         Task<ApplicationUser[]> GetUserByRolesAsync(string[] roleIds);
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<string> CreateUserAsync(ApplicationUser user, string password);
-        Task<string> UpdateUserAsync(ApplicationUser user);
+        Task<string> UpdateUserAsync(ApplicationUser user, bool lockedOut);
         Task<string> SetPasswordAsync(ApplicationUser user, string password);
         Task<string> AddClaimAsync(ApplicationUser user, Claim claim);
         Task<string> DeleteUserAsync(string userId);

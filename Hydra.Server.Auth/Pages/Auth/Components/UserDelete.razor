@@ -1,0 +1,75 @@
+﻿@inject IUserService _userService
+
+<Modal @ref="_modalRef">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>Are you sure you want to remove @_user.FullName from the system?</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Table Narrow="true" Striped="true">
+                <TableBody>
+                    <TableRow>
+                        <TableRowCell>Name</TableRowCell>
+                        <TableRowHeader>@_user.FullName</TableRowHeader>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Email</TableRowCell>
+                        <TableRowHeader>@_user.Email</TableRowHeader>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Identity</TableRowCell>
+                        <TableRowHeader>@_user.IdentityNumber</TableRowHeader>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Roles</TableRowCell>
+                        @if (_user?.Roles != null)
+                        {
+                            <TableRowHeader>@string.Join(", ", _user.Roles.Select(r => Roles[r.RoleId]))</TableRowHeader>
+                        }
+                        else
+                        {
+                            <TableRowCell></TableRowCell>
+                        }
+                    </TableRow>
+
+                </TableBody>
+            </Table>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+            <Button Color="Color.Danger" Clicked="@OnSubmit">Delete</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public Dictionary<string, string> Roles { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnUserDeleted { get; set; }
+
+    private Modal _modalRef;
+    private ApplicationUser _user = new();
+
+    public void ShowModal(ApplicationUser user)
+    {
+        _user = user;
+        _modalRef.Show();
+    }
+
+    private void HideModal()
+    {
+        _user = new ApplicationUser();
+        _modalRef.Hide();
+    }
+
+    private async Task OnSubmit()
+    {
+        var result = await _userService.DeleteUserAsync(_user.Id);
+        HideModal();
+        await OnUserDeleted.InvokeAsync(result);
+    }
+}

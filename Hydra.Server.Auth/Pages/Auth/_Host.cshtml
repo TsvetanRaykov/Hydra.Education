@@ -1,6 +1,5 @@
 ﻿@page "/Auth"
 @namespace Hydra.Server.Auth.Pages.Auth
-@using Blazorise
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
@@ -23,7 +22,8 @@
 
         [
             "/_content/Blazorise/blazorise.css",
-            "/_content/Blazorise.Bootstrap/blazorise.bootstrap.css"
+            "/_content/Blazorise.Bootstrap/blazorise.bootstrap.css",
+            "/_content/Blazorise.Snackbar/blazorise.snackbar.css"
         ]
             .forEach(uri => {
                 const link = document.createElement('link');

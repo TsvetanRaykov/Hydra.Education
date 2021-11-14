@@ -13,6 +13,7 @@
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.7" />
     <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.7" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.7" />
+    <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.8" />
     <PackageReference Include="IdentityModel" Version="5.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.11" />
@@ -29,6 +30,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hydra.Module.Video\Hydra.Module.Video.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Auth\Components\UserCreate.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Auth\Components\UserCreate.razor" />
   </ItemGroup>
 
 </Project>

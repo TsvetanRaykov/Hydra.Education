@@ -1,6 +1,8 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Identity
 
 @inject IUserService _userService
+@inject RoleManager<ApplicationRole> _roleManager
 
 <AuthorizeView Roles="Admin">
     <Authorized Context="auth">
@@ -22,24 +24,24 @@
                   ShowPager="true"
                   PagerPosition="DataGridPagerPosition.Top"
                   PageSize="PageSize"
-                  TotalItems="_totalUsers"
+                  TotalItems="TotalUsers"
                   CustomFilter="@OnCustomFilter">
             <ButtonRowTemplate>
-                <Button Color="Color.Success" Clicked="() => _editUserComponent.ShowModal(null)">New</Button>
+                <Button Color="Color.Success" Clicked="() => _userCreateComponent.ShowModal()">New</Button>
                 <Div Display="Display.InlineBlock">
                     <Dropdown Disabled="@(_selectedUser is null)">
                         <DropdownToggle>
                             Action
                         </DropdownToggle>
                         <DropdownMenu>
-                            <DropdownItem Clicked="() => _editUserComponent.ShowModal(_selectedUser)">
+                            <DropdownItem Clicked="() => _userUpdateComponent.ShowModal(_selectedUser)">
                                 Edit
                             </DropdownItem>
                             <DropdownDivider />
-                            <DropdownItem>
+                            <DropdownItem Clicked="() => _userDeleteComponent.ShowModal(_selectedUser)">
                                 Delete
                             </DropdownItem>
-                            <DropdownItem>
+                            <DropdownItem Clicked="() => _userPasswordResetComponent.ShowModal(_selectedUser)">
                                 Reset password
                             </DropdownItem>
                         </DropdownMenu>
@@ -63,9 +65,13 @@
             <LastPageButtonTemplate>
                 <i class="fas fa-angle-double-right"></i>
             </LastPageButtonTemplate>
-
         </DataGrid>
-        <EditUserComponent @ref="_editUserComponent" />
+
+        <UserUpdate Roles="_roles" @ref="_userUpdateComponent" OnUserUpdated="@UpdateGrid" />
+        <UserCreate Roles="_roles" @ref="_userCreateComponent" OnUserCreated="@UpdateGrid" />
+        <UserDelete Roles="_roles" @ref="_userDeleteComponent" OnUserDeleted="@UpdateGrid" />
+        <UserPasswordReset @ref="_userPasswordResetComponent" OnPasswordUpdated="@OnPasswordUpdated"></UserPasswordReset>
+        <SnackbarStack @ref="_snackBarStack" Location="SnackbarStackLocation.Right" />
     </Authorized>
     <NotAuthorized>
         You are not authorized to see this content.
@@ -75,21 +81,24 @@
 @code {
 
     private const int PageSize = 10;
-    int _totalUsers;
+    private int TotalUsers => _users.Count;
+    private Dictionary<string, string> _roles;
 
     private string _customFilterValue;
 
     private ApplicationUser _selectedUser;
     private List<ApplicationUser> _users;
-    private EditUserComponent _editUserComponent;
+    private UserUpdate _userUpdateComponent;
+    private UserCreate _userCreateComponent;
+    private UserDelete _userDeleteComponent;
+    private UserPasswordReset _userPasswordResetComponent;
+
+    private SnackbarStack _snackBarStack;
 
     protected override async Task OnInitializedAsync()
     {
-
-        _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
-
-        _totalUsers = _users.Count;
-
+        await UpdateGrid(null);
+        _roles = _roleManager.Roles.ToDictionary(r => r.Id, r => r.Name);
     }
 
     bool OnCustomFilter(ApplicationUser model)
@@ -104,4 +113,22 @@
             || model.Email?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
             || model.IdentityNumber?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
     }
+
+    private async Task UpdateGrid(string error)
+    {
+        if (string.IsNullOrWhiteSpace(error))
+        {
+            _users = (await _userService.GetUserByRolesAsync(Array.Empty<string>())).ToList();
+        }
+    }
+
+    private void OnPasswordUpdated()
+    {
+        _snackBarStack.PushAsync("Password updated", SnackbarColor.Success, options =>
+        {
+            options.IntervalBeforeClose = 5000;
+            options.ShowCloseButton = true;
+        });
+    }
+
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
@@ -12,10 +14,11 @@ namespace Hydra.Server.Auth.Services
     public class UserService : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public UserService(UserManager<ApplicationUser> userManager)
+        private readonly Dictionary<string, string> _roles;
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
+            _roles = roleManager.Roles.ToDictionary(r => r.Id, r => r.Name);
         }
 
         public async Task<ApplicationUser[]> GetUserByRolesAsync(string[] roleIds)
@@ -46,35 +49,29 @@ namespace Hydra.Server.Auth.Services
         public async Task<string> CreateUserAsync(ApplicationUser user, string password)
         {
             var result = await _userManager.CreateAsync(user, password);
-            return ProcessIdentityResult(result);
+            var error = ProcessIdentityResult(result);
+
+            if (string.IsNullOrWhiteSpace(error) && !string.IsNullOrWhiteSpace(user.FullName))
+            {
+                result = await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.FullName));
+                return ProcessIdentityResult(result);
+            }
+
+            return null;
         }
 
-        public async Task<string> UpdateUserAsync(ApplicationUser user)
+        public async Task<string> UpdateUserAsync(ApplicationUser user, bool lockedOut)
         {
             var oldUser = await _userManager.FindByIdAsync(user.Id);
 
             if (oldUser == null) return "User not found.";
 
             oldUser.Email = user.Email;
-            //oldUser.LockoutEnd = user.LockedOut ? DateTimeOffset.MaxValue : default(DateTimeOffset?);
+            oldUser.LockoutEnd = lockedOut ? DateTimeOffset.MaxValue : default(DateTimeOffset?);
 
             var result = await _userManager.UpdateAsync(oldUser);
 
             if (!result.Succeeded) return ProcessIdentityResult(result);
-
-
-            var userRoles = await _userManager.GetRolesAsync(oldUser);
-
-            // update roles
-            foreach (var role in user.Roles.Select(r => r.RoleId).Except(userRoles))
-            {
-                await _userManager.AddToRoleAsync(oldUser, role);
-            }
-
-            foreach (var role in userRoles.Except(user.Roles.Select(r => r.RoleId)))
-            {
-                await _userManager.RemoveFromRoleAsync(oldUser, role);
-            }
 
             // update name
             var userClaims = await _userManager.GetClaimsAsync(oldUser);

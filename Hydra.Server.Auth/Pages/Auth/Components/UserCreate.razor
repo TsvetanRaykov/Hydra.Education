@@ -1,0 +1,131 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject RoleManager<ApplicationRole> _roleManager
+@inject IUserService _userService
+
+<Modal @ref="_modalRef">
+    <ModalContent Centered="true" Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>Create user</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="@_validators">
+                <Fields>
+                    <Validation UsePattern="true">
+                        <Field>
+                            <FieldLabel>Full Name</FieldLabel>
+                            <TextEdit Pattern="[A-Za-z]{3}" Placeholder="Enter name..." @bind-Text="@_user.FullName" Role="@TextRole.Text">
+                                <Feedback>
+                                    <ValidationError>Name is not valid.</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidatorEmail">
+                        <Field>
+                            <FieldLabel>Email</FieldLabel>
+                            <TextEdit Placeholder="Enter email..." @bind-Text="@_user.Email" Role="@TextRole.Email">
+                                <Feedback>
+                                    <ValidationError>Email is not valid.</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Fields>
+                <UserPassword @ref="@_userPassword" />
+                <Fields>
+                    <Validation UsePattern="true">
+                        <Field>
+                            <FieldLabel>Identity</FieldLabel>
+                            <TextEdit Pattern="^[\d]{8}$" Role="@TextRole.Text" Placeholder="Enter number..." @bind-Text="@_user.IdentityNumber">
+                                <Feedback>
+                                    <ValidationError>Must be 8 digits.</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidateRoles">
+                        <Field>
+                            <FieldLabel>Roles</FieldLabel>
+                            <Select TValue="string" Multiple="@true" MaxVisibleItems="3" SelectedValues="_selectedRoles" SelectedValuesChanged="@OnSelectedValueChanged">
+                                @foreach (var (id, name) in Roles)
+                                {
+                                    <SelectItem Value="@id">@name</SelectItem>
+                                }
+                            </Select>
+                            <ValidationError>User must have at least one role.</ValidationError>
+                        </Field>
+                    </Validation>
+                </Fields>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+            <Button Color="Color.Primary" Clicked="@OnSubmit">Create user</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code{
+
+    [Parameter]
+    public Dictionary<string, string> Roles { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnUserCreated { get; set; }
+
+    private ApplicationUser _user = new();
+
+    private Modal _modalRef;
+    private Validations _validators;
+    private UserPassword _userPassword;
+
+    private string[] _selectedRoles = Array.Empty<string>();
+
+    public void ShowModal()
+    {
+        _user = new ApplicationUser();
+        _validators.ClearAll();
+        _userPassword.Clear();
+        _modalRef.Show();
+    }
+
+    private void HideModal()
+    {
+        _modalRef.Hide();
+    }
+
+    private void OnSelectedValueChanged(object val)
+    {
+        _selectedRoles = (string[])val ?? Array.Empty<string>();
+    }
+
+    private void ValidateRoles(ValidatorEventArgs obj)
+    {
+        obj.Status = !_selectedRoles.Any() ? ValidationStatus.Error : ValidationStatus.Success;
+    }
+
+    private void ValidatorEmail(ValidatorEventArgs obj)
+    {
+        obj.Status = ValidationRule.IsEmail(_user?.Email) ? ValidationStatus.Success : ValidationStatus.Error;
+    }
+
+    private async Task OnSubmit()
+    {
+        if (_validators.ValidateAll() && _userPassword.Validate())
+        {
+            _user.UserName = _user.Email;
+            _user.Roles = new List<IdentityUserRole<string>>();
+            foreach (var selectedRole in _selectedRoles)
+            {
+                _user.Roles.Add(new IdentityUserRole<string> { RoleId = selectedRole, UserId = _user.Id });
+            }
+            var result = await _userService.CreateUserAsync(_user, _userPassword.Password);
+            _modalRef.Hide();
+            await OnUserCreated.InvokeAsync(result);
+        }
+
+    }
+
+}
