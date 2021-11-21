@@ -58,20 +58,22 @@
                 </Fields>
                 <Fields>
                     <Field>
-                        <Switch Style="margin-top: -2.5rem" TValue="bool" @bind-Checked="@_lockedOut">Lock</Switch>
+                        <Switch TValue="bool" Color="Color.Danger" @bind-Checked="@_lockedOut">Lock</Switch>
                     </Field>
-
+                    <Field>
+                        <Switch TValue="bool" @bind-Checked="@_user.EmailConfirmed">email confirmed</Switch>
+                    </Field>
                 </Fields>
             </Validations>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
             <Button Color="Color.Primary" Clicked="@OnSubmit">Save changes</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
 
-@code{
+@code {
 
     [Parameter]
     public Dictionary<string, string> Roles { get; set; }
@@ -84,7 +86,6 @@
     private Modal _modalRef;
     private Validations _validators;
     private bool _lockedOut;
-
     private string[] _selectedRoles = Array.Empty<string>();
 
     public void ShowModal(ApplicationUser user)
@@ -124,10 +125,10 @@
             foreach (var selectedRole in _selectedRoles)
             {
                 _user.Roles.Add(new IdentityUserRole<string>
-                {
-                    RoleId = selectedRole,
-                    UserId = _user.Id
-                });
+                    {
+                        RoleId = selectedRole,
+                        UserId = _user.Id
+                    });
             }
 
             var result = await _userService.UpdateUserAsync(_user, _lockedOut);

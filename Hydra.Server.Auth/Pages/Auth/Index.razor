@@ -5,11 +5,11 @@
 @inject RoleManager<ApplicationRole> _roleManager
 
 <AuthorizeView Roles="Admin">
-    <Authorized Context="auth">
+    <Authorized Context="_">
         <Div Flex="Flex.JustifyContent.Between">
             <h5>Users</h5>
             <Field Horizontal="true" Width="Width.Is25">
-                <TextEdit @bind-Text="@_customFilterValue" Placeholder="search..." Role="TextRole.Search" />
+                <TextEdit @bind-Text="@_customFilterValue" Placeholder="search..." Role="@TextRole.Search" />
             </Field>
         </Div>
 
@@ -22,6 +22,7 @@
                   CommandMode="DataGridCommandMode.ButtonRow"
                   SortMode="DataGridSortMode.Single"
                   ShowPager="true"
+                  RowDoubleClicked="@RowDoubleClicked"
                   PagerPosition="DataGridPagerPosition.Top"
                   PageSize="PageSize"
                   TotalItems="TotalUsers"
@@ -49,14 +50,31 @@
                 </Div>
             </ButtonRowTemplate>
             <DataGridColumns>
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Sortable="true" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true">
+                    <DisplayTemplate>
+                        @context.FullName @if (context.LockoutEnd != null)
+                        {
+                            <Badge Class="ml-1" Color="Color.Danger">locked</Badge>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Sortable="true">
+                    <DisplayTemplate>
+                        @context.Email @if (!context.EmailConfirmed)
+                        {
+                            <Tooltip Text="Is not confirmed" Inline="true" Class="ml-1">
+                                <i class="fa fa-exclamation-triangle text-danger"></i>
+                            </Tooltip>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
                 <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Identity" Sortable="true" />
                 <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Roles)" Caption="Roles" Sortable="true">
                     <DisplayTemplate>
                         @string.Join(", ", @context.Roles.Select(r => _roles[r.RoleId]))
                     </DisplayTemplate>
                 </DataGridColumn>
+
             </DataGridColumns>
             <FirstPageButtonTemplate>
                 <i class="fas fa-angle-double-left"></i>
@@ -134,6 +152,11 @@
             options.IntervalBeforeClose = 5000;
             options.ShowCloseButton = true;
         });
+    }
+
+    private void RowDoubleClicked(DataGridRowMouseEventArgs<ApplicationUser> obj)
+    {
+        _userUpdateComponent.ShowModal(obj.Item);
     }
 
 }
