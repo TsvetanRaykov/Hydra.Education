@@ -15,7 +15,7 @@
                     <Validation UsePattern="true">
                         <Field>
                             <FieldLabel>Full Name</FieldLabel>
-                            <TextEdit Pattern="[A-Za-z]{3}" Placeholder="Enter name..." @bind-Text="@_user.FullName" Role="@TextRole.Text">
+                            <TextEdit Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_user.FullName" Role="@TextRole.Text">
                                 <Feedback>
                                     <ValidationError>Name is not valid.</ValidationError>
                                 </Feedback>

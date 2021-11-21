@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Hydra.Server.Auth.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace Hydra.Server.Auth.Areas.Identity.Pages.Account.Manage
+﻿namespace Hydra.Server.Auth.Areas.Identity.Pages.Account.Manage
 {
-    public partial class IndexModel : PageModel
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+    using Models;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+
+    public class IndexModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -36,6 +35,16 @@ namespace Hydra.Server.Auth.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Required]
+            [StringLength(maximumLength: 8, ErrorMessage = "The identity number has 8 digits.", MinimumLength = 8)]
+            [Display(Name = "Faculty number")]
+            public string IdentityNumber { get; set; }
+
+            [Required]
+            [StringLength(maximumLength: 256, ErrorMessage = "The Full name is required.", MinimumLength = 3)]
+            [Display(Name = "Full name")]
+            public string FullName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -47,7 +56,9 @@ namespace Hydra.Server.Auth.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FullName = user.FullName,
+                IdentityNumber = user.IdentityNumber
             };
         }
 
@@ -84,6 +95,38 @@ namespace Hydra.Server.Auth.Areas.Identity.Pages.Account.Manage
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
+
+            var toUpdate = false;
+
+            if (Input.FullName != user.FullName)
+            {
+                user.FullName = Input.FullName;
+
+                var userClaims = await _userManager.GetClaimsAsync(user);
+                var nameClaim = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+                if (nameClaim != null)
+                {
+                    await _userManager.RemoveClaimAsync(user, nameClaim);
+                }
+                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.FullName));
+                toUpdate = true;
+            }
+
+            if (Input.IdentityNumber != user.IdentityNumber)
+            {
+                user.IdentityNumber = Input.IdentityNumber;
+                toUpdate = true;
+            }
+
+            if (toUpdate)
+            {
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to update profile.";
                     return RedirectToPage();
                 }
             }

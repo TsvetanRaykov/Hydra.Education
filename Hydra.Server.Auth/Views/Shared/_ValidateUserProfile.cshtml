@@ -1,0 +1,15 @@
+﻿@using Hydra.Server.Auth.Utilities
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> _signInManager
+@inject UserManager<ApplicationUser> _userManager
+@{
+    const string profileView = "/Identity/Account/Manage";
+    if (Context.Request.Path != profileView && _signInManager.IsSignedIn(User))
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (!UserValidation.ValidateAccountCompletion(user))
+        {
+            Context.Response.Redirect(profileView);
+        }
+    }
+}
