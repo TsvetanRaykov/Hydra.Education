@@ -7,37 +7,34 @@
 
         @if (_signInManager.IsSignedIn(User))
         {
-        <button type="button" id="sidebarCollapse" class="btn btn-primary">
-            <i class="fa fa-bars"></i>
-            <span class="sr-only">Toggle Menu</span>
-        </button>
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                <i class="fa fa-bars"></i>
+                <span class="sr-only">Toggle Menu</span>
+            </button>
+        }
+
         <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fa fa-bars"></i>
         </button>
-        }
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
             <ul class="nav navbar-nav ml-auto">
-                <!--
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="#">Home</a>
-                                </li>
-                -->
                 <li class="nav-item">
                     <ul class="navbar-nav">
                         @if (_signInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark"
-                                   asp-area="Identity"
-                                   asp-page="/Account/Manage/Index"
-                                   title="Manage">@_userManager.GetUserName(User)</a>
+                               asp-area="Identity"
+                               asp-page="/Account/Manage/Index"
+                               title="Manage">@_userManager.GetUserName(User)</a>
                             </li>
                             <li class="nav-item">
                                 <form class="form-inline"
-                                      asp-area="Identity"
-                                      asp-page="/Account/Logout"
-                                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                  asp-area="Identity"
+                                  asp-page="/Account/Logout"
+                                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                                     <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
                                 </form>
                             </li>
@@ -46,13 +43,13 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark"
-                                   asp-area="Identity"
-                                   asp-page="/Account/Register">Register</a>
+                               asp-area="Identity"
+                               asp-page="/Account/Register">Register</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark"
-                                   asp-area="Identity"
-                                   asp-page="/Account/Login">Login</a>
+                               asp-area="Identity"
+                               asp-page="/Account/Login">Login</a>
                             </li>
                         }
                     </ul>

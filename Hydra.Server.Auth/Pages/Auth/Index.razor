@@ -51,7 +51,12 @@
             <DataGridColumns>
                 <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.FullName)" Caption="Name" Sortable="true" />
                 <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Email)" Caption="Email" Sortable="true" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Faculty #" Sortable="true" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Identity" Sortable="true" />
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Roles)" Caption="Roles" Sortable="true">
+                    <DisplayTemplate>
+                        @string.Join(", ", @context.Roles.Select(r => _roles[r.RoleId]))
+                    </DisplayTemplate>
+                </DataGridColumn>
             </DataGridColumns>
             <FirstPageButtonTemplate>
                 <i class="fas fa-angle-double-left"></i>
