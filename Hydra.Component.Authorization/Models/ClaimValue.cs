@@ -1,4 +1,4 @@
-﻿namespace Hydra.Component.Authorization.Authorization
+﻿namespace Hydra.Component.Authorization.Models
 {
     public class ClaimValue
     {

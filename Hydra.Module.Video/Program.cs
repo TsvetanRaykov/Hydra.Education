@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
-using Hydra.Component.Authorization.Authorization;
 
 namespace Hydra.Module.Video
 {
@@ -22,11 +21,12 @@ namespace Hydra.Module.Video
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.AddHydraAuthorization()
-                .AddHydraAuthorizationDeveloper(new TempUser
-                {
-                    Name = "Demo User",
-                    Roles = new List<string> { "Student" }
-                });
+                //.AddHydraAuthorizationDeveloper(new TempUser
+                //{
+                //    Name = "Demo User",
+                //    Roles = new List<string> { "Student" }
+                //})
+                ;
 
             builder.Services
                 .AddBlazorise(options =>

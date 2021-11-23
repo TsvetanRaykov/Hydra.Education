@@ -4,13 +4,13 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Hydra.Component.Authorization.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Hydra.Component.Authorization.Services
 {
-    using Authorization;
     using IdentityModel;
 
     //[tr]: 2021-10-26

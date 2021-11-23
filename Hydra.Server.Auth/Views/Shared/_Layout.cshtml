@@ -18,12 +18,16 @@
     <div class="wrapper d-flex align-items-stretch">
         <partial name="_SidebarPartial" />
 
-        <!-- Page Content  -->
-        <div id="content" class="p-4 p-md-5">
-
-            <partial name="_TopNavPartial" />
-            @RenderBody()
-            <partial name="_ValidateUserProfile"/>
+       
+        <div id="content" class="p-4 p-md-5 d-flex flex-column">
+            <header class="flex-grow-0">
+                <partial name="_TopNavPartial" />
+            </header>
+            <!-- Module Content  -->
+            <main class="flex-grow-1">
+                @RenderBody()
+            </main>
+            <partial name="_ValidateUserProfile" />
         </div>
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

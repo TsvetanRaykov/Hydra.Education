@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hydra.Component.Authorization.Authorization
+namespace Hydra.Component.Authorization.Models
 {
     public class TempUser
     {
