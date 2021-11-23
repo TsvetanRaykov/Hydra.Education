@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Logging;
 namespace Hydra.Component.Authorization.Services
 {
     using Authorization;
+    using IdentityModel;
+
     //[tr]: 2021-10-26
     public class HostAuthenticationStateProvider : AuthenticationStateProvider
     {
@@ -22,11 +25,14 @@ namespace Hydra.Component.Authorization.Services
         private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
         private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
-        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger)
+        private readonly TempUser _tempUser;
+
+        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger, TempUser tempUser)
         {
             _navigation = navigation;
             _client = client;
             _logger = logger;
+            _tempUser = tempUser;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new AuthenticationState(await GetUser(useCache: true));
@@ -53,6 +59,26 @@ namespace Hydra.Component.Authorization.Services
                 return _cachedUser;
             }
 
+            if (_tempUser != null)
+            {
+                _logger.LogDebug("Taking TempUser for development");
+                var userInfo = new UserInfo
+                {
+                    IsAuthenticated = true,
+                    NameClaimType = JwtClaimTypes.Name,
+                    RoleClaimType = JwtClaimTypes.Role,
+                    Claims = new List<ClaimValue>()
+                };
+                userInfo.Claims.Add(new ClaimValue(userInfo.NameClaimType, _tempUser.Name));
+                foreach (var role in _tempUser.Roles)
+                {
+                    userInfo.Claims.Add(new ClaimValue(userInfo.RoleClaimType, role));
+                }
+
+                _cachedUser = BuildClaimsPrincipal(userInfo);
+                return _cachedUser;
+            }
+
             _logger.LogDebug("Fetching user");
             _cachedUser = await FetchUser();
             _userLastCheck = now;
@@ -73,19 +99,24 @@ namespace Hydra.Component.Authorization.Services
                 _logger.LogWarning(exc, "Fetching user failed.");
             }
 
-            if (user is not { IsAuthenticated: true })
+            return BuildClaimsPrincipal(user);
+        }
+
+        private static ClaimsPrincipal BuildClaimsPrincipal(UserInfo userInfo)
+        {
+            if (userInfo is not { IsAuthenticated: true })
             {
                 return new ClaimsPrincipal(new ClaimsIdentity());
             }
 
             var identity = new ClaimsIdentity(
                 nameof(HostAuthenticationStateProvider),
-                user.NameClaimType,
-                user.RoleClaimType);
+                userInfo.NameClaimType,
+                userInfo.RoleClaimType);
 
-            if (user.Claims == null) return new ClaimsPrincipal(identity);
+            if (userInfo.Claims == null) return new ClaimsPrincipal(identity);
 
-            foreach (var claim in user.Claims)
+            foreach (var claim in userInfo.Claims)
             {
                 identity.AddClaim(new Claim(claim.Type, claim.Value));
             }

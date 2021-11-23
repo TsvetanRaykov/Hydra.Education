@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Net.Http;
+using Hydra.Component.Authorization.Authorization;
 
 namespace Hydra.Component.Authorization
 {
@@ -20,6 +21,9 @@ namespace Hydra.Component.Authorization
         public static WebAssemblyHostBuilder AddHydraAuthorization(this WebAssemblyHostBuilder hostBuilder,
             Action<AuthOptions> options = null)
         {
+
+            hostBuilder.Services.AddSingleton<TempUser>(provider => null);
+
             hostBuilder.Services.AddOptions();
             hostBuilder.Services.AddAuthorizationCore();
             hostBuilder.Services.TryAddSingleton<AuthenticationStateProvider, HostAuthenticationStateProvider>();
@@ -52,5 +56,10 @@ namespace Hydra.Component.Authorization
             return hostBuilder;
         }
 
+        public static WebAssemblyHostBuilder AddHydraAuthorizationDeveloper(this WebAssemblyHostBuilder hostBuilder, TempUser user)
+        {
+            hostBuilder.Services.AddSingleton(user);
+            return hostBuilder;
+        }
     }
 }

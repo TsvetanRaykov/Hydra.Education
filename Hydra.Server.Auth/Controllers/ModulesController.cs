@@ -5,7 +5,7 @@ namespace Hydra.Server.Auth.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     [Authorize]
-    public class ModuleController : Controller
+    public class ModulesController : Controller
     {
         public IActionResult Video()
         {

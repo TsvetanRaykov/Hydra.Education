@@ -90,7 +90,7 @@ namespace Hydra.Server.Auth
                 app1.UseBlazorFrameworkFiles("/Video");
                 app1.UseRouting();
                 app1.UseAuthorization();
-                app1.UseEndpoints(ep => ep.MapFallbackToController("Video", "Module"));
+                app1.UseEndpoints(ep => ep.MapFallbackToController("Video", "Modules"));
             });
 
 
