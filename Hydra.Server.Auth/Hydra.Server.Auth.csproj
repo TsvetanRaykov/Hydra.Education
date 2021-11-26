@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Hydra.Module.Video.Backend\Hydra.Module.Video.Backend.csproj" />
     <ProjectReference Include="..\Hydra.Module.Video\Hydra.Module.Video.csproj" />
   </ItemGroup>
 

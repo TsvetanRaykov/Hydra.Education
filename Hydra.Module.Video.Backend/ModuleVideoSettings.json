@@ -1,0 +1,10 @@
+{
+  "ConnectionString": "Data Source = VideoDb.sqlite",
+  "ApiSettings": {
+    "BaseUrl": "https://localhost:44351"
+  },
+  "JwtConfig": {
+    "Key": "1a432ddd-c2ae-4dad-b3ae-af75efdf641c"
+  },
+  "CryptoKey": "befc07ad-00c4-4507-b450-01601eb417ba"
+}

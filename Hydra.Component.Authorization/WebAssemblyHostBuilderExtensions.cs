@@ -50,7 +50,8 @@ namespace Hydra.Component.Authorization
             }
 
             hostBuilder.Services.AddHttpClient(authOptions.HttpClientName,
-                    client => client.BaseAddress = new Uri(authOptions.HttpClientBaseAddress ?? hostBuilder.HostEnvironment.BaseAddress))
+                client => client.BaseAddress =
+                    new Uri(authOptions.HttpClientBaseAddress ?? hostBuilder.HostEnvironment.BaseAddress))
                 .AddHttpMessageHandler<AuthorizedHandler>();
 
             return hostBuilder;

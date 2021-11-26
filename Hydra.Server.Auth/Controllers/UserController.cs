@@ -14,7 +14,7 @@
     public class UserController : ControllerBase
     {
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Identity.Application")]
         [AllowAnonymous]
         public IActionResult GetCurrentUser() =>
             Ok(User.Identity is { IsAuthenticated: true } ? CreateUserInfo(User) : UserInfo.Anonymous);

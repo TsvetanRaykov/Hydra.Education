@@ -1,5 +1,55 @@
-﻿@{
-    var module = "Video";
-}
+﻿<div id="app" class="h-100">
+    <div class="text-center">
+        <div class="spinner-border"></div>
+        <div class="text-muted">Loading module ...</div>
+    </div>
+</div>
 
-<partial name="_ModulePartial" model="module" />
+<script type="text/javascript">
+
+    const module = "Video";
+
+    const styles = [
+        `/${module}/lib/bootstrap/css/bootstrap.min.css`,
+        `/${module}/lib/font-awesome/css/all.min.css`,
+        "/_content/Blazorise/blazorise.css",
+        "/_content/Blazorise.Bootstrap/blazorise.bootstrap.css",
+        `/${module}/css/app.css`
+    ];
+
+    for (const style of styles) {
+        loadStyle(style, () => console.log(`loaded: ${style}`));
+    }
+
+    let base = document.getElementsByTagName("base")[0];
+    if (!!!base) {
+        base = document.createElement("base");
+        document.getElementsByTagName('head')[0].appendChild(base);
+    }
+    base.href = `/${module}/`;
+
+    function loadStyle(href, callback) {
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            if (document.styleSheets[i].href === href) {
+                return;
+            }
+        }
+        const head = document.getElementsByTagName('head')[0];
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = href;
+        if (callback) { link.onload = function () { callback() } }
+        //head.appendChild(link);
+        Array.from(head).splice(0, 0, link);
+    }
+
+</script>
+<script src="/Video/lib/jquery/dist/jquery.min.js"></script>
+<script src="/Video/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/Video/lib/popper.js/umd/popper.min.js"></script>
+<script src="/_content/Blazorise/blazorise.js"></script>
+<script src="/_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
+
+<script src="/Video/_framework/blazor.webassembly.js"></script>
+

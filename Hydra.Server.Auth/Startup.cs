@@ -1,5 +1,6 @@
 namespace Hydra.Server.Auth
 {
+    using Module.Video.Backend;
     using Blazorise;
     using Blazorise.Bootstrap;
     using Blazorise.Icons.FontAwesome;
@@ -39,6 +40,7 @@ namespace Hydra.Server.Auth
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequiredLength = 6;
                     options.Password.RequireUppercase = false;
+
                 })
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -62,6 +64,9 @@ namespace Hydra.Server.Auth
 
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<IEmailSender, SendInBlueEmailSender>();
+
+            // *** ADD MODULES
+            services.AddHydraModuleVideo();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -84,6 +89,8 @@ namespace Hydra.Server.Auth
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // *** USE MODULES
+            app.UseHydraModuleVideo();
 
             app.MapWhen(c => c.Request.Path.StartsWithSegments("/Video"), app1 =>
             {
@@ -92,7 +99,6 @@ namespace Hydra.Server.Auth
                 app1.UseAuthorization();
                 app1.UseEndpoints(ep => ep.MapFallbackToController("Video", "Modules"));
             });
-
 
             app.UseEndpoints(endpoints =>
             {

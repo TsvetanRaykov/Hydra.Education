@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hydra.Component.Authorizati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hydra.Module.Video", "Hydra.Module.Video\Hydra.Module.Video.csproj", "{4976763B-DF74-4F2A-AA9E-19C9D19B50F3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hydra.Module.Video.Backend", "Hydra.Module.Video.Backend\Hydra.Module.Video.Backend.csproj", "{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{4976763B-DF74-4F2A-AA9E-19C9D19B50F3}.Release|x64.Build.0 = Release|Any CPU
 		{4976763B-DF74-4F2A-AA9E-19C9D19B50F3}.Release|x86.ActiveCfg = Release|Any CPU
 		{4976763B-DF74-4F2A-AA9E-19C9D19B50F3}.Release|x86.Build.0 = Release|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Debug|x64.Build.0 = Debug|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Debug|x86.Build.0 = Debug|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Release|x64.ActiveCfg = Release|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Release|x64.Build.0 = Release|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Release|x86.ActiveCfg = Release|Any CPU
+		{D357DBD6-CC4C-4D3A-888E-12A9DCC4E72A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
