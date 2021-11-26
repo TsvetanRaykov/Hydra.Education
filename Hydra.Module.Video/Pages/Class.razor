@@ -1,0 +1,43 @@
+﻿@page "/Class"
+@using Hydra.Module.Video.Services.Models
+
+<Div Class="container-fluid" ElementId="ClassCreateForm" video-001-scope>
+    <Validations @ref="@_validators">
+
+        <Validation UsePattern="true">
+            <Field>
+                <FieldLabel>Class Name</FieldLabel>
+                <TextEdit Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_class.Name" Role="@TextRole.Text">
+                    <Feedback>
+                        <ValidationError>Class Name is not valid.</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </Field>
+        </Validation>
+        <Validation UsePattern="true">
+            <Field>
+                <FieldLabel>Class Description</FieldLabel>
+                <TextEdit Pattern="\p{L}{3,}" Placeholder="Describe it in short ..." @bind-Text="@_class.Description" Role="@TextRole.Text">
+                    <Feedback>
+                        <ValidationError>Class Description is not valid.</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </Field>
+
+        </Validation>
+
+
+    </Validations>
+</Div>
+
+@code
+{
+    private Validations _validators;
+    private readonly VideoClass _class = new();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        _validators.ClearAll();
+    }
+}

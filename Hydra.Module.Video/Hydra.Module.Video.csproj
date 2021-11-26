@@ -30,4 +30,16 @@
     <ProjectReference Include="..\Hydra.Component.Authorization\Hydra.Component.Authorization.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Class.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Class.razor" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<None Update="Pages/Class.razor.css" CssScope="video-001-scope" />
+	</ItemGroup>
+
 </Project>

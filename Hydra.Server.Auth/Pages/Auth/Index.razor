@@ -4,7 +4,9 @@
 @inject IUserService _userService
 @inject RoleManager<ApplicationRole> _roleManager
 
-<AuthorizeView Roles="Admin">
+@attribute [Authorize(AuthenticationSchemes = "Identity.Application")]
+
+<AuthorizeView Roles="Admin" >
     <Authorized Context="_">
         <Div Flex="Flex.JustifyContent.Between">
             <h5>Users</h5>

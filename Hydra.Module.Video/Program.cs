@@ -33,11 +33,11 @@ namespace Hydra.Module.Video
                 .AddFontAwesomeIcons();
 
             builder.AddHydraAuthorization()
-                .AddHydraAuthorizationDeveloper(new TempUser
-                {
-                    Name = "Demo User",
-                    Roles = new List<string> { "Student", "Trainer" }
-                })
+                //.AddHydraAuthorizationDeveloper(new TempUser
+                //{
+                //    Name = "Demo User",
+                //    Roles = new List<string> { "Student", "Trainer" }
+                //})
                 ;
 
             builder.Services.AddSingleton<BearerTokenHandler>();
