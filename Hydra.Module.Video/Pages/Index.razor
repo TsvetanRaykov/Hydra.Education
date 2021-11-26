@@ -16,19 +16,13 @@
         var response = await _httpClient.GetAsync("api/video/Class");
     }
 
-    private async Task DoNoCall()
-    {
-    }
 }
 
-
-<h1>Hello, video!</h1>
 
 <AuthorizeView>
     <Authorized>
         @context.User.Identity?.Name
         <Button Color="Color.Primary" Clicked="@DoTestCall">TEST API</Button>
-        <Button Color="Color.Warning" Clicked="@DoNoCall">TEST API</Button>
     </Authorized>
     <NotAuthorized>
         Anonymous
