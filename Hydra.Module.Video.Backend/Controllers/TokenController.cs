@@ -1,10 +1,9 @@
-﻿using Hydra.Module.Video.Backend.Authentication.Contracts;
-using Hydra.Module.Video.Backend.Authentication.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Hydra.Module.Video.Backend.Controllers
+﻿namespace Hydra.Module.Video.Backend.Controllers
 {
+    using Hydra.Module.Video.Backend.Authentication.Contracts;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+
     [ApiController]
     [Route("api/video/[controller]")]
     public class TokenController : ControllerBase
@@ -17,12 +16,18 @@ namespace Hydra.Module.Video.Backend.Controllers
 
         [AllowAnonymous]
         [HttpPost("Authenticate")]
-        public IActionResult Authenticate(ClientCredential credential)
+        public IActionResult Authenticate()
         {
-            var token = _jwtTokenManager.Authenticate(credential.ClientId, credential.ClientSecret);
+            if (!HttpContext.Request.Headers.TryGetValue("ApiKey", out var extractedApiKey))
+            {
+                return Unauthorized("Api Key was not provided");
+            }
+
+            var token = _jwtTokenManager.Authenticate(extractedApiKey);
+            
             if (string.IsNullOrWhiteSpace(token))
             {
-                return Unauthorized();
+                return Unauthorized("Api Key is not valid");
             }
 
             return Ok(token);

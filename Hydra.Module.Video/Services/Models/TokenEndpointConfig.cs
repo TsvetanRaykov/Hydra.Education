@@ -1,13 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace Hydra.Module.Video.Services.Models
+﻿namespace Hydra.Module.Video.Services.Models
 {
+    using Microsoft.Extensions.Configuration;
     public class TokenEndpointConfig
     {
         public string Url { get; set; }
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set; }
-        public string CryptoKey { get; set; }
+        public string ApiKey { get; set; }
 
         public static TokenEndpointConfig ReadJsonFromFile(string path)
         {

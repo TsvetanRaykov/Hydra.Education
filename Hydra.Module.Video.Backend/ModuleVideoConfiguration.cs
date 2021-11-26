@@ -7,7 +7,10 @@
         public ApiSettings ApiSettings { get; set; }
 
         public JwtConfig JwtConfig { get; set; }
+
+        public string ApiKey { get; set; }
     }
+
     public class ApiSettings
     {
         public string BaseUrl { get; set; }

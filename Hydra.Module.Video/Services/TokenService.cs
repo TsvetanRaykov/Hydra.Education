@@ -8,7 +8,6 @@
     using System;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Json;
     using System.Threading.Tasks;
 
     public class TokenService : ITokenService
@@ -51,12 +50,8 @@
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                Content = JsonContent.Create(new
-                {
-                    clientId = _config.ClientId,
-                    clientSecret = _config.ClientSecret
-                }),
-                RequestUri = new Uri(_config.Url),
+                Headers = { { "ApiKey", _config.ApiKey } },
+                RequestUri = new Uri(_config.Url)
             };
 
             var response = await _httpClient.SendAsync(request);

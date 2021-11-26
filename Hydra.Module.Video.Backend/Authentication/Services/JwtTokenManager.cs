@@ -1,13 +1,12 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using Hydra.Module.Video.Backend.Authentication.Contracts;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Hydra.Module.Video.Backend.Authentication.Services
+﻿namespace Hydra.Module.Video.Backend.Authentication.Services
 {
+    using Contracts;
+    using Microsoft.IdentityModel.Tokens;
+    using System;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Text;
+
     public class JwtTokenManager : IJwtTokenManager
     {
         private readonly ModuleVideoConfiguration _configuration;
@@ -24,16 +23,27 @@ namespace Hydra.Module.Video.Backend.Authentication.Services
                 return null;
             }
 
+            return CreateToken();
+        }
+
+        public string Authenticate(string apiKey)
+        {
+            if (string.IsNullOrWhiteSpace(apiKey) || apiKey != _configuration.ApiKey)
+            {
+                return null;
+            }
+
+            return CreateToken();
+        }
+
+        private string CreateToken()
+        {
             var key = Encoding.ASCII.GetBytes(_configuration.JwtConfig.Key);
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, clientName)
-                }),
                 Expires = DateTime.UtcNow.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
