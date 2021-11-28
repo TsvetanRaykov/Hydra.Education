@@ -9,33 +9,33 @@ namespace Hydra.Module.Video.Backend.Services
 
     public class ClassService : IClassService
     {
-        private readonly ModuleVideoConfiguration _configuration;
         private readonly ILogger<ClassService> _logger;
 
-        public ClassService(ModuleVideoConfiguration configuration, ILogger<ClassService> logger)
+        private readonly VideoDbContext _dbContext;
+
+        public ClassService(ILogger<ClassService> logger, VideoDbContext dbContext)
         {
-            _configuration = configuration;
             _logger = logger;
+            _dbContext = dbContext;
         }
 
-        public async Task<string> CreateClass(string name, string description)
+        public async Task<string> CreateClass(string name, string description, string imageUrl, string trainerId)
         {
             var newClass = new VideoClass
             {
                 Name = name,
-                Description = description
+                Description = description,
+                ImageUrl = imageUrl,
+                TrainerId = trainerId
             };
 
-            await using var db = new VideoDbContext(null);
+            await _dbContext.VideoClasses.AddAsync(newClass);
 
-            await db.VideoClasses.AddAsync(newClass);
-
-            return await Update(db);
+            return await Update(_dbContext);
         }
 
         private async Task<string> Update(DbContext db)
         {
-
             try
             {
                 await db.SaveChangesAsync();
@@ -44,6 +44,7 @@ namespace Hydra.Module.Video.Backend.Services
             catch (DbUpdateException ex)
             {
                 _logger.LogError(nameof(Update), ex);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return "Database operation failed.";
             }
         }

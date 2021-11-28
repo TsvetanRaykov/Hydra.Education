@@ -1,6 +1,7 @@
-﻿namespace Hydra.Module.Video.Services.Models
+﻿using Microsoft.Extensions.Configuration;
+
+namespace Hydra.Module.Video.Models
 {
-    using Microsoft.Extensions.Configuration;
     public class TokenEndpointConfig
     {
         public string Url { get; set; }

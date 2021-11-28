@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hydra.Module.Video.Backend.Controllers
@@ -7,7 +6,7 @@ namespace Hydra.Module.Video.Backend.Controllers
     [ApiController]
     [Authorize]
     [Route("api/video/[controller]")]
-    public class ModuleControllerBase : ControllerBase
+    public class ApiControllerBase : ControllerBase
     {
 
     }

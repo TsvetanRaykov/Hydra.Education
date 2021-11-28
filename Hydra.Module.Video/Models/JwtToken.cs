@@ -1,4 +1,4 @@
-﻿namespace Hydra.Module.Video.Services.Models
+﻿namespace Hydra.Module.Video.Models
 {
     public class JwtToken
     {

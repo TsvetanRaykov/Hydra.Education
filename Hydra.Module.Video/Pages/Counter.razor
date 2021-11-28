@@ -1,16 +1,109 @@
 @page "/counter"
+@using System.IO
+@using Hydra.Module.Video.Models
+@using Hydra.Module.Video.Services.Contracts
 
-<h1>Counter</h1>
+@inject IFileService _fileService
 
-<p>Current count: @currentCount</p>
+<InputFile disabled="@_uploadingLargeFile"
+           OnChange="OnLargeFileInputFileChange" />
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div>@LargeUploadMessage</div>
+@if (_uploadingLargeFile)
+{
+    <progress style="height:50px;width:100%;" value="@_uploadedBytes" max="@_totalBytes"></progress>
+}
 
 @code {
-    private int currentCount = 0;
 
-    private void IncrementCount()
+    string _imageUrl = string.Empty;
+    string LargeUploadMessage = string.Empty;
+    bool _uploading = false;
+    bool _uploadingLargeFile = false;
+    long _uploadedBytes;
+    long _totalBytes;
+
+    async Task OnLargeFileInputFileChange(InputFileChangeEventArgs args)
     {
-        currentCount++;
+        _uploadedBytes = 0;
+
+        // Disable the file input field
+        _uploadingLargeFile = true;
+        await InvokeAsync(StateHasChanged);
+
+        // calculate the chunks we have to send
+        _totalBytes = args.File.Size;
+        long percent = 0;
+        long chunkSize = 400000; // fairly arbitrary
+        var numChunks = _totalBytes / chunkSize;
+        var remainder = _totalBytes % chunkSize;
+
+        // get new filename with a bit of entropy
+        var justFileName = Path.GetFileNameWithoutExtension(args.File.Name);
+        var extension = Path.GetExtension(args.File.Name);
+        var newFileNameWithoutPath = $"{justFileName}-{DateTime.Now.Ticks.ToString()}{extension}";
+
+        var firstChunk = true;
+
+        // Open the input and output file streams
+        using (var inStream = args.File.OpenReadStream(long.MaxValue))
+        {
+            for (var i = 0; i < numChunks; i++)
+            {
+                // Read the next chunk
+                var buffer = new byte[chunkSize];
+                await inStream.ReadAsync(buffer, 0, buffer.Length);
+
+                // create the FileChunk object
+                var chunk = new FileChunk
+                    {
+                        Data = buffer,
+                        FileNameNoPath = newFileNameWithoutPath,
+                        Offset = _uploadedBytes,
+                        FirstChunk = firstChunk
+                    };
+
+                // upload this chunk
+                await _fileService.UploadFileChunk(chunk);
+
+                firstChunk = false; // no longer the first chunk
+
+                // Update our progress data and UI
+                _uploadedBytes += chunkSize;
+                percent = _uploadedBytes * 100 / _totalBytes;
+                // Report progress with a string
+                LargeUploadMessage = $"Uploading {args.File.Name} {percent}%";
+                await InvokeAsync(StateHasChanged);
+            }
+
+            if (remainder > 0)
+            {
+                // Same stuff as above, just with the leftover chunk data
+                var buffer = new byte[remainder];
+                await inStream.ReadAsync(buffer, 0, buffer.Length);
+
+                // create the FileChunk object
+                var chunk = new FileChunk
+                    {
+                        Data = buffer,
+                        FileNameNoPath = newFileNameWithoutPath,
+                        Offset = _uploadedBytes,
+                        FirstChunk = firstChunk
+                    };
+
+                // upload this chunk
+                await _fileService.UploadFileChunk(chunk);
+
+                _uploadedBytes += remainder;
+                percent = _uploadedBytes * 100 / _totalBytes;
+                LargeUploadMessage = $"Uploading {args.File.Name} {percent}%";
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
+        LargeUploadMessage = "Upload Complete.";
+
+
+        _uploadingLargeFile = false;
     }
 }

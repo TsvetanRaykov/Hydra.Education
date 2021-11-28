@@ -52,13 +52,15 @@ namespace Hydra.Module.Video
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<ICacheService, CacheService>();
             builder.Services.AddSingleton<ITokenService, TokenService>();
+            builder.Services.AddSingleton<IFileService, FileService>();
+            builder.Services.AddSingleton<IClassService, ClassService>();
 
             builder.Services.AddSingleton<IJsonSerializer, JsonNetSerializer>();
             builder.Services.AddSingleton<IDateTimeProvider, UtcDateTimeProvider>();
             builder.Services.AddSingleton<IBase64UrlEncoder, JwtBase64UrlEncoder>();
             builder.Services.AddSingleton<IJwtAlgorithm, HMACSHA256Algorithm>();
 
-            
+
             await builder.Build().RunAsync();
         }
     }

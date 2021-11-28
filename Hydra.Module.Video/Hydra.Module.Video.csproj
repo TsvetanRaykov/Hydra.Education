@@ -6,14 +6,7 @@
 
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="wwwroot\NewFolder\**" />
-    <Content Remove="wwwroot\NewFolder\**" />
-    <EmbeddedResource Remove="wwwroot\NewFolder\**" />
-    <None Remove="wwwroot\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
+	<ItemGroup>
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.9" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.9" />
     <PackageReference Include="JWT" Version="8.6.0" />
@@ -40,6 +33,10 @@
 
 	<ItemGroup>
 		<None Update="Pages/Class.razor.css" CssScope="video-001-scope" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="wwwroot\js\video-module.js" />
 	</ItemGroup>
 
 </Project>

@@ -15,7 +15,7 @@
         }
 
         [AllowAnonymous]
-        [HttpPost("Authenticate")]
+        [HttpPost]
         public IActionResult Authenticate()
         {
             if (!HttpContext.Request.Headers.TryGetValue("ApiKey", out var extractedApiKey))

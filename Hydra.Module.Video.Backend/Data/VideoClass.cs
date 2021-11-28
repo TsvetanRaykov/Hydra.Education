@@ -13,8 +13,11 @@ namespace Hydra.Module.Video.Backend.Data
 
         [Required]
         public string TrainerId { get; set; }
-
+        
         public string Description { get; set; }
+
+        public string ImageUrl { get; set; }
+
         public List<VideoGroup> VideoGroups { get; set; }
 
     }

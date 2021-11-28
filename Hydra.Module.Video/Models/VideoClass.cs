@@ -10,5 +10,7 @@ namespace Hydra.Module.Video.Models
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Class description is required.")]
         public string Description { get; set; }
+
+        public byte[] Image { get; set; }
     }
 }

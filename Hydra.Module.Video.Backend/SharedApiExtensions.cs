@@ -9,6 +9,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.FileProviders;
     using Microsoft.IdentityModel.Tokens;
     using Services;
     using System;
@@ -36,6 +37,7 @@
             services.AddScoped<IClassService, ClassService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddSingleton(settings);
             services.AddSingleton<IJwtTokenManager, JwtTokenManager>();
 
@@ -50,6 +52,20 @@
             using var ctx = scope.ServiceProvider.GetRequiredService<VideoDbContext>();
 
             ctx.Database.EnsureCreated();
+
+            var filesPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
+
+            if (!Directory.Exists(filesPath))
+            {
+                Directory.CreateDirectory(filesPath);
+            }
+
+            builder.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(filesPath),
+                RequestPath = "/Files"
+            });
+
             builder.UseAuthentication();
         }
 

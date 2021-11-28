@@ -1,43 +1,96 @@
 ﻿@page "/Class"
-@using Hydra.Module.Video.Services.Models
+@using System.IO
+@using System.Net
+@using Hydra.Module.Video.Models
+@using Hydra.Module.Video.Services.Contracts
 
-<Div Class="container-fluid" ElementId="ClassCreateForm" video-001-scope>
-    <Validations @ref="@_validators">
+@inject IClassService _classService
+@inject NavigationManager _navigationManager
 
-        <Validation UsePattern="true">
-            <Field>
-                <FieldLabel>Class Name</FieldLabel>
-                <TextEdit Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_class.Name" Role="@TextRole.Text">
-                    <Feedback>
-                        <ValidationError>Class Name is not valid.</ValidationError>
-                    </Feedback>
-                </TextEdit>
-            </Field>
-        </Validation>
-        <Validation UsePattern="true">
+<Div Class="row col-12">
+
+    <Div Class="col-xl-4 offset-xl-4 col-lg-8 offset-lg-2 col-12">
+        <Validations @ref="@_validators">
+            <Validation UsePattern="true">
+                <Field>
+                    <FieldLabel>Class Name</FieldLabel>
+                    <TextEdit Class="form-control" Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_videoClass.Name" Role="@TextRole.Text">
+                        <Feedback>
+                            <ValidationError>Class Name is not valid.</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
             <Field>
                 <FieldLabel>Class Description</FieldLabel>
-                <TextEdit Pattern="\p{L}{3,}" Placeholder="Describe it in short ..." @bind-Text="@_class.Description" Role="@TextRole.Text">
-                    <Feedback>
-                        <ValidationError>Class Description is not valid.</ValidationError>
-                    </Feedback>
-                </TextEdit>
+                <MemoEdit Class="form-control" @bind-Text="_videoClass.Description" Placeholder="Write a short description..." />
             </Field>
-
-        </Validation>
-
-
-    </Validations>
+            <Fields>
+                <Field>
+                    <FieldLabel Display="Display.Block">Image</FieldLabel>
+                    <label class="hydra-card">
+                        <InputFile OnChange="@OnInputFileChange" class="d-none"></InputFile>
+                        <Image Source="@_imageUrl" />
+                    </label>
+                </Field>
+                <Field Class="align-self-center">
+                    <Button Class="btn btn-primary" Clicked="@CreateClass">Create Class</Button>
+                </Field>
+            </Fields>
+        </Validations>
+    </Div>
 </Div>
 
 @code
 {
     private Validations _validators;
-    private readonly VideoClass _class = new();
+    private readonly VideoClass _videoClass = new();
+
+    private string _imageUrl = "img/anonymous2.png";
+
+    private FileChunk _classImage;
 
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        _validators.ClearAll();
+        if (firstRender)
+        {
+            _validators.ClearAll();
+        }
     }
+
+    async Task OnInputFileChange(InputFileChangeEventArgs args)
+    {
+        const string format = "image/png";
+        var resizedImageFile = await args.File.RequestImageFileAsync(format, 150, 150);
+
+        var buffer = new byte[resizedImageFile.Size];
+        await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+
+        var justFileName = Path.GetFileNameWithoutExtension(args.File.Name);
+        var newFileNameWithoutPath = $"{justFileName}-{DateTime.Now.Ticks.ToString()}.png";
+
+        _classImage = new FileChunk
+            {
+                Data = buffer,
+                FileNameNoPath = newFileNameWithoutPath,
+                Offset = 0,
+                FirstChunk = true
+            };
+
+        _imageUrl = $"data:image/png;base64,{Convert.ToBase64String(_classImage.Data)}";
+    }
+
+    private async Task CreateClass()
+    {
+        if (_validators.ValidateAll())
+        {
+            _videoClass.Image = _classImage.Data;
+            if (await _classService.CreateClassAsync(_videoClass))
+            {
+                _navigationManager.NavigateTo("/Video");
+            }
+        }
+    }
+
 }
