@@ -1,6 +1,5 @@
 ﻿@page "/Class"
 @using System.IO
-@using System.Net
 @using Hydra.Module.Video.Models
 @using Hydra.Module.Video.Services.Contracts
 
@@ -30,7 +29,7 @@
                     <FieldLabel Display="Display.Block">Image</FieldLabel>
                     <label class="hydra-card">
                         <InputFile OnChange="@OnInputFileChange" class="d-none"></InputFile>
-                        <Image Source="@_imageUrl" />
+                        <Image Source="@_videoClass.ImageUrl" />
                     </label>
                 </Field>
                 <Field Class="align-self-center">
@@ -44,9 +43,7 @@
 @code
 {
     private Validations _validators;
-    private readonly VideoClass _videoClass = new();
-
-    private string _imageUrl = "img/anonymous2.png";
+    private readonly VideoClass _videoClass = new() { ImageUrl = "img/anonymous2.png" };
 
     private FileChunk _classImage;
 
@@ -78,7 +75,7 @@
                 FirstChunk = true
             };
 
-        _imageUrl = $"data:image/png;base64,{Convert.ToBase64String(_classImage.Data)}";
+        _videoClass.ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(_classImage.Data)}";
     }
 
     private async Task CreateClass()
@@ -86,6 +83,8 @@
         if (_validators.ValidateAll())
         {
             _videoClass.Image = _classImage.Data;
+            _videoClass.ImageUrl = null; // to not send over the network
+            
             if (await _classService.CreateClassAsync(_videoClass))
             {
                 _navigationManager.NavigateTo("/Video");

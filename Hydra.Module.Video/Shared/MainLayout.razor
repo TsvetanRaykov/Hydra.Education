@@ -2,7 +2,12 @@
 
 <Layout Class="d-flex flex-column">
     <LayoutHeader>
-        <Button Color="Color.Warning" Type="@ButtonType.Link" To="Class">Create Class</Button>
+        <AuthorizeView Roles="Admin, Trainer">
+            <Authorized>
+                @*@context.User.Identity?.Name*@
+                <Button Color="Color.Warning" Type="@ButtonType.Link" To="Class">Create Class</Button>
+            </Authorized>
+        </AuthorizeView>
     </LayoutHeader>
     <LayoutContent Class="flex-grow-1">
         @Body

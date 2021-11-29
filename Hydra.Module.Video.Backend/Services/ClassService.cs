@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Hydra.Module.Video.Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -6,6 +8,7 @@ namespace Hydra.Module.Video.Backend.Services
 {
     using Contracts;
     using Data;
+    using System.Collections.Generic;
 
     public class ClassService : IClassService
     {
@@ -33,6 +36,24 @@ namespace Hydra.Module.Video.Backend.Services
 
             return await Update(_dbContext);
         }
+
+        public async Task<IEnumerable<ClassResponseDto>> GetClassesAsync(string user)
+        {
+            var classes = await _dbContext
+                .VideoClasses
+                .Where(c => c.TrainerId.Equals(user))
+                .Include(c => c.VideoGroups).ToListAsync();
+
+            return classes.Select(c => new ClassResponseDto
+            {
+                Name = c.Name,
+                ImageUrl = c.ImageUrl,
+                Description = c.Description,
+                Id = c.Id
+            }).ToList();
+        }
+
+
 
         private async Task<string> Update(DbContext db)
         {

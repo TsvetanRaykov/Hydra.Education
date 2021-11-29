@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace Hydra.Module.Video.Backend.Controllers
@@ -12,42 +14,45 @@ namespace Hydra.Module.Video.Backend.Controllers
     using System.IO;
     using System.Threading.Tasks;
 
-    public class ClassController : ApiControllerBase
+    public class ClassesController : ApiControllerBase
     {
-        private readonly ILogger<ClassController> _logger;
+        private readonly ILogger<ClassesController> _logger;
         private readonly IClassService _classService;
         private readonly IFileService _fileService;
 
-        public ClassController(ILogger<ClassController> logger, IClassService classService, IFileService fileService)
+        public ClassesController(ILogger<ClassesController> logger, IClassService classService, IFileService fileService)
         {
             _logger = logger;
             _classService = classService;
             _fileService = fileService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<string>> Get()
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<List<ClassResponseDto>>> GetUserClasses(string userId)
         {
-            var token = await HttpContext.GetTokenAsync("access_token");
-            return Ok($"WORKS: {token}");
+            //var token = await HttpContext.GetTokenAsync("access_token");
+
+            var classes = await _classService.GetClassesAsync(userId);
+
+            return Ok(classes);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin, Trainer")]
-        public async Task<ActionResult> Post(ClassDto newClass)
+        public async Task<ActionResult> Post(ClassRequestDto newClassRequest)
         {
             if (User.Identity == null)
             {
                 return BadRequest("Authentication error");
             }
 
-            var imagePath = $"Files/{newClass.Name}-{DateTime.Now.Ticks}.png";
+            var imagePath = $"Files/{newClassRequest.Name}-{DateTime.Now.Ticks}.png";
 
             var filePath = Path.Combine(Environment.CurrentDirectory, imagePath);
 
             var file = new FileChunk
             {
-                Data = newClass.Image,
+                Data = newClassRequest.Image,
                 Offset = 0,
                 FirstChunk = true
             };
@@ -57,7 +62,7 @@ namespace Hydra.Module.Video.Backend.Controllers
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
 
-            var resultError = await _classService.CreateClass(newClass.Name, newClass.Description, imagePath, User.Identity.Name);
+            var resultError = await _classService.CreateClass(newClassRequest.Name, newClassRequest.Description, imagePath, User.Identity.Name);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

@@ -1,30 +1,57 @@
 ﻿@page "/"
+@using System.Security.Claims
+@using Hydra.Module.Video.Models
+@using Hydra.Module.Video.Services.Contracts
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.Design
 
 @inject IHttpClientFactory _clientFactory
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IClassService _classService;
+
+@attribute [Authorize]
+
+<Div Class="row col-12">
+
+    @if (_videoClasses != null)
+    {
+        @if (_videoClasses.Any())
+        {
+            foreach (var videoClass in _videoClasses)
+            {
+                var url = $"/{videoClass.ImageUrl}";
+                <Div Class="hydra-card">
+                    <Image Source="@url"></Image>
+                </Div>
+            }
+
+        }
+        else
+        {
+            <Label>There are no classes defined yet.</Label>
+        }
+    }
+    else
+    {
+        <h3>Loading ...</h3>
+    }
+
+</Div>
 
 @code {
 
     private HttpClient _httpClient;
+    private ClaimsPrincipal _user;
+    private List<VideoClass> _videoClasses;
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
+        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _user = authenticationState.User;
         _httpClient = _clientFactory.CreateClient("authorized");
-    }
+        _videoClasses = await _classService.GetClasses(_user.Identity?.Name);
 
-    private async Task DoTestCall()
-    {
-        var response = await _httpClient.GetAsync("api/video/Class");
+        StateHasChanged();
     }
 
 }
-
-
-<AuthorizeView>
-    <Authorized>
-        @context.User.Identity?.Name
-        <Button Color="Color.Primary" Clicked="@DoTestCall">TEST API</Button>
-    </Authorized>
-    <NotAuthorized>
-        Anonymous
-    </NotAuthorized>
-</AuthorizeView>

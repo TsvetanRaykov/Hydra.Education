@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Hydra.Module.Video.Models;
 
 namespace Hydra.Module.Video.Services.Contracts
@@ -6,5 +7,8 @@ namespace Hydra.Module.Video.Services.Contracts
     public interface IClassService
     {
         Task<bool> CreateClassAsync(VideoClass videoClass);
+        Task<bool> UpdateClassAsync(VideoClass videoClass);
+        Task<List<VideoClass>> GetClasses(string user);
+
     }
 }
