@@ -8,7 +8,8 @@ namespace Hydra.Module.Video.Services.Contracts
     {
         Task<bool> CreateClassAsync(VideoClass videoClass);
         Task<bool> UpdateClassAsync(VideoClass videoClass);
-        Task<List<VideoClass>> GetClasses(string user);
+        Task<List<VideoClass>> GetClassesAsync(string user);
+        Task<VideoClass> GetClassAsync(string id);
 
     }
 }

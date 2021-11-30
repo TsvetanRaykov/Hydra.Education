@@ -37,6 +37,22 @@ namespace Hydra.Module.Video.Backend.Services
             return await Update(_dbContext);
         }
 
+        public async Task<ClassResponseDto> GetClassAsync(int id)
+        {
+            var cls = await _dbContext
+                .VideoClasses
+                .Include(c => c.VideoGroups)
+                .FirstAsync(c => c.Id.Equals(id));
+
+            return new ClassResponseDto
+            {
+                Name = cls.Name,
+                ImageUrl = cls.ImageUrl,
+                Description = cls.Description,
+                Id = cls.Id
+            };
+        }
+
         public async Task<IEnumerable<ClassResponseDto>> GetClassesAsync(string user)
         {
             var classes = await _dbContext

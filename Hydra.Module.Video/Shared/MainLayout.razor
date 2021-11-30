@@ -5,7 +5,7 @@
         <AuthorizeView Roles="Admin, Trainer">
             <Authorized>
                 @*@context.User.Identity?.Name*@
-                <Button Color="Color.Warning" Type="@ButtonType.Link" To="Class">Create Class</Button>
+                <Button Color="Color.Warning" Type="@ButtonType.Link" To="ClassCreate">Create Class</Button>
             </Authorized>
         </AuthorizeView>
     </LayoutHeader>
@@ -13,6 +13,6 @@
         @Body
     </LayoutContent>
     <LayoutFooter>
-        Footer
+        Hydra Education Project (HEP) - Video Module (VM) Ver.1.0.1.12 &copy;TU Gabrovo 2022 EE21805006
     </LayoutFooter>
 </Layout>

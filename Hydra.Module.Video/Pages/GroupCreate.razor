@@ -1,0 +1,98 @@
+﻿@page "/GroupCreate/{classId}"
+
+@inherits BaseCreate
+
+@inject NavigationManager _navigationManager
+@inject IClassService _classService
+@inject IGroupService _groupService
+
+<hr />
+<Div Class="row col-12 p-4">
+    <Div Class="col-xl-4 col-lg-2 d-flex align-items-baseline">
+        @if (_videoClass != null)
+        {
+            <ClassCard VideoClass="_videoClass"></ClassCard>
+        }
+        else
+        {
+            <Div Class="spinner-grow" role="status">
+                <span class="sr-only">Loading...</span>
+            </Div>
+        }
+        <Div Class="flex-grow-1 text-center">
+            <br />
+            <h4>Create a group</h4>
+            <h4>in this Class</h4>
+        </Div>
+    </Div>
+    <Div Class="col-xl-4 col-lg-8 col-12">
+        <Validations @ref="@_validators">
+            <Validation UsePattern="true">
+                <Field>
+                    <FieldLabel>Group Name</FieldLabel>
+                    <TextEdit Class="form-control" Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_videoGroup.Name" Role="@TextRole.Text">
+                        <Feedback>
+                            <ValidationError>Group Name is not valid.</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+            <Field>
+                <FieldLabel>Group Description</FieldLabel>
+                <MemoEdit Rows="3" Class="form-control" @bind-Text="_videoGroup.Description" Placeholder="Write a short description..." />
+            </Field>
+            <Fields>
+                <Field Class="flex-grow-0">
+                    <FieldLabel Display="Display.Block">Image</FieldLabel>
+
+                    <label class="hydra-card hydra-card-circle rounded-circle">
+                        <InputFile OnChange="@OnInputFileChange" class="d-none"></InputFile>
+                        <Image Source="@ImageUrl" Class="rounded-circle" />
+                    </label>
+                </Field>
+                <Field Class="align-self-center">
+                    <Button Class="btn btn-primary mt-4 ml-4" Clicked="@CreateGroup">Create</Button>
+                </Field>
+            </Fields>
+        </Validations>
+    </Div>
+</Div>
+
+@code {
+
+    [Parameter]
+    public string ClassId { get; set; }
+
+    private readonly VideoGroup _videoGroup = new();
+
+    private Validations _validators;
+    private VideoClass _videoClass;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _videoClass = await _classService.GetClassAsync(ClassId);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+            _validators.ClearAll();
+        }
+    }
+
+    private async Task CreateGroup()
+    {
+        if (_validators.ValidateAll())
+        {
+            _videoGroup.Image = FileChunk.Data;
+
+            if (await _groupService.CreateGroupAsync(_videoGroup))
+            {
+                _navigationManager.NavigateTo($"/Video/Class/{_videoClass.Id}");
+            }
+        }
+    }
+
+}

@@ -2,18 +2,16 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Hydra.Component.Authorization;
-using Hydra.Component.Authorization.Models;
 using Hydra.Module.Video.Services;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Hydra.Module.Video.Services.Contracts;
 using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace Hydra.Module.Video
 {
@@ -54,6 +52,7 @@ namespace Hydra.Module.Video
             builder.Services.AddSingleton<ITokenService, TokenService>();
             builder.Services.AddSingleton<IFileService, FileService>();
             builder.Services.AddSingleton<IClassService, ClassService>();
+            builder.Services.AddSingleton<IGroupService, GroupService>();
 
             builder.Services.AddSingleton<IJsonSerializer, JsonNetSerializer>();
             builder.Services.AddSingleton<IDateTimeProvider, UtcDateTimeProvider>();

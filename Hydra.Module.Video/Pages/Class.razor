@@ -1,95 +1,34 @@
-﻿@page "/Class"
-@using System.IO
-@using Hydra.Module.Video.Models
-@using Hydra.Module.Video.Services.Contracts
+﻿@page "/Class/{id}"
 
-@inject IClassService _classService
-@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IClassService _classService;
 
-<Div Class="row col-12">
-
-    <Div Class="col-xl-4 offset-xl-4 col-lg-8 offset-lg-2 col-12">
-        <Validations @ref="@_validators">
-            <Validation UsePattern="true">
-                <Field>
-                    <FieldLabel>Class Name</FieldLabel>
-                    <TextEdit Class="form-control" Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_videoClass.Name" Role="@TextRole.Text">
-                        <Feedback>
-                            <ValidationError>Class Name is not valid.</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </Field>
-            </Validation>
-            <Field>
-                <FieldLabel>Class Description</FieldLabel>
-                <MemoEdit Class="form-control" @bind-Text="_videoClass.Description" Placeholder="Write a short description..." />
-            </Field>
-            <Fields>
-                <Field>
-                    <FieldLabel Display="Display.Block">Image</FieldLabel>
-                    <label class="hydra-card">
-                        <InputFile OnChange="@OnInputFileChange" class="d-none"></InputFile>
-                        <Image Source="@_videoClass.ImageUrl" />
-                    </label>
-                </Field>
-                <Field Class="align-self-center">
-                    <Button Class="btn btn-primary" Clicked="@CreateClass">Create Class</Button>
-                </Field>
-            </Fields>
-        </Validations>
-    </Div>
-</Div>
+<div class="jumbotron my-5 d-flex flex-wrap">
+    <div class="d-flex flex-grow-1 mr-5">
+        <div class="hydra-card">
+            <img src="@_videoClass.ImageUrl" alt="" />
+        </div>
+        <div class="ml-5 w-75 d-flex flex-column justify-content-between">
+            <TextEdit @bind-Text="@_videoClass.Name" Placeholder="Class Name" Class="mb-3"></TextEdit>
+            <MemoEdit Rows="3" @bind-Text="@_videoClass.Description" Placeholder="Class Description"></MemoEdit>
+        </div>
+    </div>
+    <div class="flex-grow-1 pt-3 d-flex align-items-end">
+        <Button Color="Color.Primary">Save</Button>
+        <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning" Class="ml-2">Create Group</Button>
+    </div>
+</div>
 
 @code
 {
-    private Validations _validators;
-    private readonly VideoClass _videoClass = new() { ImageUrl = "img/anonymous2.png" };
+    [Parameter]
+    public string Id { get; set; }
 
-    private FileChunk _classImage;
+    private VideoClass _videoClass = new();
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        base.OnAfterRender(firstRender);
-        if (firstRender)
-        {
-            _validators.ClearAll();
-        }
-    }
-
-    async Task OnInputFileChange(InputFileChangeEventArgs args)
-    {
-        const string format = "image/png";
-        var resizedImageFile = await args.File.RequestImageFileAsync(format, 150, 150);
-
-        var buffer = new byte[resizedImageFile.Size];
-        await resizedImageFile.OpenReadStream().ReadAsync(buffer);
-
-        var justFileName = Path.GetFileNameWithoutExtension(args.File.Name);
-        var newFileNameWithoutPath = $"{justFileName}-{DateTime.Now.Ticks.ToString()}.png";
-
-        _classImage = new FileChunk
-            {
-                Data = buffer,
-                FileNameNoPath = newFileNameWithoutPath,
-                Offset = 0,
-                FirstChunk = true
-            };
-
-        _videoClass.ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(_classImage.Data)}";
-    }
-
-    private async Task CreateClass()
-    {
-        if (_validators.ValidateAll())
-        {
-            _videoClass.Image = _classImage.Data;
-            _videoClass.ImageUrl = null; // to not send over the network
-            
-            if (await _classService.CreateClassAsync(_videoClass))
-            {
-                _navigationManager.NavigateTo("/Video");
-            }
-        }
+        _videoClass = await _classService.GetClassAsync(Id);
     }
 
 }

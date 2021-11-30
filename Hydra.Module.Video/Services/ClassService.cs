@@ -11,7 +11,6 @@ namespace Hydra.Module.Video.Services
     public class ClassService : IClassService
     {
         private readonly HttpClient _httpClient;
-
         public ClassService(IHttpClientFactory clientFactory)
         {
             _httpClient = clientFactory.CreateClient("authorized");
@@ -25,7 +24,15 @@ namespace Hydra.Module.Video.Services
             return Convert.ToBoolean(responseBody);
         }
 
-        public async Task<List<VideoClass>> GetClasses(string user)
+        public async Task<VideoClass> GetClassAsync(string id)
+        {
+            var result = await _httpClient.GetAsync($"api/video/classes/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadFromJsonAsync<VideoClass>();
+            return responseBody;
+        }
+
+        public async Task<List<VideoClass>> GetClassesAsync(string user)
         {
             var result = await _httpClient.GetAsync($"api/video/classes/user/{user}");
             result.EnsureSuccessStatusCode();

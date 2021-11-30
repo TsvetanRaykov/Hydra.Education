@@ -46,7 +46,7 @@ namespace Hydra.Module.Video.Backend.Controllers
                 return BadRequest("Authentication error");
             }
 
-            var imagePath = $"Files/{newClassRequest.Name}-{DateTime.Now.Ticks}.png";
+            var imagePath = $"/Files/{newClassRequest.Name}-{DateTime.Now.Ticks}.png";
 
             var filePath = Path.Combine(Environment.CurrentDirectory, imagePath);
 
@@ -68,6 +68,15 @@ namespace Hydra.Module.Video.Backend.Controllers
                 return Ok(true);
 
             return BadRequest(false);
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<ClassResponseDto>> Get(int id)
+        {
+            var videoClass = await _classService.GetClassAsync(id);
+
+            return Ok(videoClass);
         }
     }
 }

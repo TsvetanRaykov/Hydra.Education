@@ -1,0 +1,14 @@
+﻿@using Hydra.Module.Video.Models
+
+
+<Div Class="hydra-card">
+    <header>@VideoClass.Name</header>
+    <Image Source="@VideoClass.ImageUrl"></Image>
+    <footer>@VideoClass.Description</footer>
+</Div>
+
+@code {
+
+    [Parameter]
+    public VideoClass VideoClass { get; set; }
+}

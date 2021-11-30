@@ -17,7 +17,7 @@
     using System.Reflection;
     using System.Text;
 
-    public static partial class SharedApiExtensions
+    public static class SharedApiExtensions
     {
         public static IServiceCollection AddHydraModuleVideo(
             this IServiceCollection services, Action<IAddHydraModuleAuthentication> auth = null)

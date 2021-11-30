@@ -1,0 +1,12 @@
+﻿<Div Class="hydra-card">
+    <header>@VideoGroup.Name</header>
+    <Image Source="@VideoGroup.ImageUrl" Class="hydra-card-circle"></Image>
+    <footer>@VideoGroup.Description</footer>
+</Div>
+
+@code {
+
+    [Parameter]
+    public VideoGroup VideoGroup { get; set; }
+
+}
