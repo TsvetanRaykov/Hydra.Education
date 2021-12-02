@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace Hydra.Module.Video.Backend.Controllers
 {
     using Contracts;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Models;
@@ -46,7 +43,7 @@ namespace Hydra.Module.Video.Backend.Controllers
                 return BadRequest("Authentication error");
             }
 
-            var imagePath = $"/Files/{newClassRequest.Name}-{DateTime.Now.Ticks}.png";
+            var imagePath = $"Files/{newClassRequest.Name}-{DateTime.Now.Ticks}.png";
 
             var filePath = Path.Combine(Environment.CurrentDirectory, imagePath);
 
@@ -62,7 +59,7 @@ namespace Hydra.Module.Video.Backend.Controllers
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
 
-            var resultError = await _classService.CreateClass(newClassRequest.Name, newClassRequest.Description, imagePath, User.Identity.Name);
+            var resultError = await _classService.CreateClassAsync(newClassRequest.Name, newClassRequest.Description, $"/{imagePath}", User.Identity.Name);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);
@@ -71,7 +68,7 @@ namespace Hydra.Module.Video.Backend.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<ActionResult<ClassResponseDto>> Get(int id)
         {
             var videoClass = await _classService.GetClassAsync(id);

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Hydra.Module.Video.Models
 {
@@ -16,5 +18,8 @@ namespace Hydra.Module.Video.Models
         public byte[] Image { get; set; }
 
         public string ImageUrl { get; set; }
+
+        [JsonPropertyName("groups")]
+        public List<VideoGroup> VideoGroups { get; set; } = new();
     }
 }

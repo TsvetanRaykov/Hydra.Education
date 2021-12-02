@@ -1,7 +1,9 @@
-﻿<Div Class="hydra-card">
-    <header>@VideoGroup.Name</header>
-    <Image Source="@VideoGroup.ImageUrl" Class="hydra-card-circle"></Image>
-    <footer>@VideoGroup.Description</footer>
+﻿<Div Class="hydra-card hydra-card-group flex-row">
+    <Image Source="@VideoGroup.ImageUrl" Class="rounded-circle"></Image>
+    <Div Class="mx-4 d-flex flex-column">
+        <h5>@VideoGroup.Name</h5>
+        <p>@VideoGroup.Description</p>
+    </Div>
 </Div>
 
 @code {

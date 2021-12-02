@@ -8,7 +8,7 @@
 
 <hr />
 <Div Class="row col-12 p-4">
-    <Div Class="col-xl-4 col-lg-2 d-flex align-items-baseline">
+    <Div Class="col-xl-4 d-flex align-items-baseline">
         @if (_videoClass != null)
         {
             <ClassCard VideoClass="_videoClass"></ClassCard>
@@ -71,6 +71,7 @@
     protected override async Task OnInitializedAsync()
     {
         _videoClass = await _classService.GetClassAsync(ClassId);
+        _videoGroup.ClassId = _videoClass.Id;
     }
 
     protected override void OnAfterRender(bool firstRender)

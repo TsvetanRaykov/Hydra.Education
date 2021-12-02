@@ -7,7 +7,7 @@ namespace Hydra.Module.Video.Backend.Contracts
 
     public interface IClassService
     {
-        Task<string> CreateClass(string name, string description, string imageUrl, string trainerId);
+        Task<string> CreateClassAsync(string name, string description, string imageUrl, string trainerId);
         Task<IEnumerable<ClassResponseDto>> GetClassesAsync(string user);
         Task<ClassResponseDto> GetClassAsync(int id);
     }

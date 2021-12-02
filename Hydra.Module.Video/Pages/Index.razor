@@ -5,10 +5,10 @@
 
 @attribute [Authorize]
 
-<Div Class="d-flex flex-wrap">
 
-    @if (_videoClasses != null)
-    {
+@if (_videoClasses != null)
+{
+    <Div Class="d-flex flex-wrap">
         @if (_videoClasses.Any())
         {
             foreach (var videoClass in _videoClasses)
@@ -24,14 +24,15 @@
         {
             <Label>There are no classes defined yet.</Label>
         }
-    }
-    else
-    {
-        <div class="spinner-grow" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-    }
-</Div>
+    </Div>
+}
+else
+{
+    <Div Class="text-center">
+        <Div Class="spinner-border"></Div>
+        <Div Class="text-muted">Loading content ...</Div>
+    </Div>
+}
 
 @code {
 

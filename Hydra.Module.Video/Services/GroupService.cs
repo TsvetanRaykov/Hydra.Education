@@ -1,4 +1,7 @@
-﻿namespace Hydra.Module.Video.Services
+﻿using System;
+using System.Net.Http.Json;
+
+namespace Hydra.Module.Video.Services
 {
     using Contracts;
     using Models;
@@ -10,14 +13,17 @@
     {
         private readonly HttpClient _httpClient;
 
-        public GroupService(HttpClient httpClient)
+        public GroupService(IHttpClientFactory clientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = clientFactory.CreateClient("authorized");
         }
 
-        public Task<bool> CreateGroupAsync(VideoGroup videoClass)
+        public async Task<bool> CreateGroupAsync(VideoGroup videoGroup)
         {
-            throw new System.NotImplementedException();
+            var result = await _httpClient.PostAsJsonAsync("api/video/groups", videoGroup);
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
         }
 
         public Task<bool> UpdateGroupAsync(VideoGroup videoClass)

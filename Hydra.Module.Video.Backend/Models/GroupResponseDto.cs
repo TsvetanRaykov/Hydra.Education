@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace Hydra.Module.Video.Backend.Models
+﻿namespace Hydra.Module.Video.Backend.Models
 {
-    public class ClassResponseDto
+    public class GroupResponseDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
-        public List<GroupResponseDto> Groups { get; set; }
+        public int ClassId { get; set; }
     }
 }

@@ -91,3 +91,20 @@ a, .btn-link {
         height: 100px;
         width: 100px;
     }
+
+.hydra-card-group {
+    max-width: 350px;
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+    box-sizing: border-box;
+}
+
+    .hydra-card-group img {
+        width: 100px;
+        height: 100px;
+    }
+    .hydra-card-group p {
+        overflow-y: auto;
+        line-height: 1.1;
+        height: 48px;
+    }
