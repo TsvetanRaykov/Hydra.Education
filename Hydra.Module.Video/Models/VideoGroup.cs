@@ -2,7 +2,7 @@
 
 namespace Hydra.Module.Video.Models
 {
-    public class VideoGroup
+    public class VideoGroup : IManagedItem
     {
         [Required(AllowEmptyStrings = false)]
         [StringLength(100, ErrorMessage = "Group Name is not valid.", MinimumLength = 3)]

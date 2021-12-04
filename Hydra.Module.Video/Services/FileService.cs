@@ -1,8 +1,8 @@
-﻿using Hydra.Module.Video.Models;
+﻿using Hydra.Module.Video.Contracts;
+using Hydra.Module.Video.Models;
 
 namespace Hydra.Module.Video.Services
 {
-    using Contracts;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Net.Http;

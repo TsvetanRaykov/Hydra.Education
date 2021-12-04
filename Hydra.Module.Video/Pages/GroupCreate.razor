@@ -1,5 +1,6 @@
 ﻿@page "/GroupCreate/{classId}"
 
+@using Hydra.Module.Video.Contracts
 @inherits BaseCreate
 
 @inject NavigationManager _navigationManager
@@ -30,7 +31,7 @@
             <Validation UsePattern="true">
                 <Field>
                     <FieldLabel>Group Name</FieldLabel>
-                    <TextEdit Class="form-control" Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_videoGroup.Name" Role="@TextRole.Text">
+                    <TextEdit Class="form-control" Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@ManagedItem.Name" Role="@TextRole.Text">
                         <Feedback>
                             <ValidationError>Group Name is not valid.</ValidationError>
                         </Feedback>
@@ -39,14 +40,14 @@
             </Validation>
             <Field>
                 <FieldLabel>Group Description</FieldLabel>
-                <MemoEdit Rows="3" Class="form-control" @bind-Text="_videoGroup.Description" Placeholder="Write a short description..." />
+                <MemoEdit Rows="3" Class="form-control" @bind-Text="ManagedItem.Description" Placeholder="Write a short description..." />
             </Field>
             <Fields>
                 <Field Class="flex-grow-0">
                     <FieldLabel Display="Display.Block">Image</FieldLabel>
 
                     <label class="hydra-card hydra-card-circle rounded-circle">
-                        <InputFile OnChange="@OnInputFileChange" class="d-none"></InputFile>
+                        <InputFile OnChange="@OnImageChange" class="d-none"></InputFile>
                         <Image Source="@ImageUrl" Class="rounded-circle" />
                     </label>
                 </Field>
@@ -63,7 +64,7 @@
     [Parameter]
     public string ClassId { get; set; }
 
-    private readonly VideoGroup _videoGroup = new();
+    // private readonly VideoGroup _videoGroup = new();
 
     private Validations _validators;
     private VideoClass _videoClass;
@@ -71,7 +72,10 @@
     protected override async Task OnInitializedAsync()
     {
         _videoClass = await _classService.GetClassAsync(ClassId);
-        _videoGroup.ClassId = _videoClass.Id;
+        ManagedItem = new VideoGroup
+        {
+            ClassId = _videoClass.Id
+        };
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -87,13 +91,14 @@
     {
         if (_validators.ValidateAll())
         {
-            _videoGroup.Image = FileChunk.Data;
+            //_videoGroup.Image = FileChunk.Data;
 
-            if (await _groupService.CreateGroupAsync(_videoGroup))
+            if (await _groupService.CreateGroupAsync((VideoGroup)ManagedItem))
             {
                 _navigationManager.NavigateTo($"/Video/Class/{_videoClass.Id}");
             }
         }
     }
 
+    public override IManagedItem ManagedItem { get; set; }
 }

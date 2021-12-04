@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Hydra.Module.Video.Contracts;
 using Hydra.Module.Video.Models;
-using Hydra.Module.Video.Services.Contracts;
 
 namespace Hydra.Module.Video.Services
 {

@@ -1,9 +1,9 @@
-﻿namespace Hydra.Module.Video.Services.Contracts
-{
-    using Models;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Hydra.Module.Video.Models;
 
+namespace Hydra.Module.Video.Contracts
+{
     public interface IGroupService
     {
         Task<bool> CreateGroupAsync(VideoGroup videoGroup);

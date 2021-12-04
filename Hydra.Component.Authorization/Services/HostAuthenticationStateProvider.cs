@@ -25,14 +25,14 @@ namespace Hydra.Component.Authorization.Services
         private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
         private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
-        private readonly TempUser _tempUser;
+       // private readonly TempUser _tempUser;
 
-        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger, TempUser tempUser)
+        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger)
         {
             _navigation = navigation;
             _client = client;
             _logger = logger;
-            _tempUser = tempUser;
+         //   _tempUser = tempUser;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new AuthenticationState(await GetUser(useCache: true));
@@ -59,25 +59,25 @@ namespace Hydra.Component.Authorization.Services
                 return _cachedUser;
             }
 
-            if (_tempUser != null)
-            {
-                _logger.LogDebug("Taking TempUser for development");
-                var userInfo = new UserInfo
-                {
-                    IsAuthenticated = true,
-                    NameClaimType = JwtClaimTypes.Name,
-                    RoleClaimType = JwtClaimTypes.Role,
-                    Claims = new List<ClaimValue>()
-                };
-                userInfo.Claims.Add(new ClaimValue(userInfo.NameClaimType, _tempUser.Name));
-                foreach (var role in _tempUser.Roles)
-                {
-                    userInfo.Claims.Add(new ClaimValue(userInfo.RoleClaimType, role));
-                }
+            //if (_tempUser != null)
+            //{
+            //    _logger.LogDebug("Taking TempUser for development");
+            //    var userInfo = new UserInfo
+            //    {
+            //        IsAuthenticated = true,
+            //        NameClaimType = JwtClaimTypes.Name,
+            //        RoleClaimType = JwtClaimTypes.Role,
+            //        Claims = new List<ClaimValue>()
+            //    };
+            //    userInfo.Claims.Add(new ClaimValue(userInfo.NameClaimType, _tempUser.Name));
+            //    foreach (var role in _tempUser.Roles)
+            //    {
+            //        userInfo.Claims.Add(new ClaimValue(userInfo.RoleClaimType, role));
+            //    }
 
-                _cachedUser = BuildClaimsPrincipal(userInfo);
-                return _cachedUser;
-            }
+            //    _cachedUser = BuildClaimsPrincipal(userInfo);
+            //    return _cachedUser;
+            //}
 
             _logger.LogDebug("Fetching user");
             _cachedUser = await FetchUser();

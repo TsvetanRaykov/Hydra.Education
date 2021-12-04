@@ -1,9 +1,13 @@
 ﻿@using Hydra.Module.Video.Models
+@using Microsoft.Extensions.Configuration
+@using System.IO
+@using System.Text.Json
 
+@inject IConfiguration _configuration
 
 <Div Class="hydra-card">
     <header>@VideoClass.Name</header>
-    <Image Source="@VideoClass.ImageUrl"></Image>
+    <Image Source="@_imageUrl"></Image>
     <footer>@VideoClass.Description</footer>
 </Div>
 
@@ -11,4 +15,12 @@
 
     [Parameter]
     public VideoClass VideoClass { get; set; }
+
+    private string _imageUrl;
+
+    protected override void OnInitialized()
+    {
+        _imageUrl = $"{_configuration["ApiBaseUrl"]}{VideoClass.ImageUrl}";
+    }
+
 }

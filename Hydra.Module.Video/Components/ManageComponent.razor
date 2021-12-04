@@ -1,0 +1,30 @@
+﻿@using Hydra.Module.Video.Extensions
+
+@inherits BaseCreate
+
+    <Div Class="jumbotron my-5 d-flex flex-wrap">
+        <Div Class="d-flex flex-grow-1 mr-5 flex-wrap">
+            <label class="hydra-card mr-5 mb-3">
+                <InputFile OnChange="@OnImageChange" class="d-none"></InputFile>
+                <Image Source="@ImageUrl" />
+            </label>
+            <Div Class="w-75 d-flex flex-column justify-content-between mb-3">
+                <TextEdit @bind-Text="@ManagedItem.Name" Placeholder="@ManagedItem.GetDisplayName(nameof(ManagedItem.Name))" Class="mb-3"></TextEdit>
+                <MemoEdit Rows="3" @bind-Text="@ManagedItem.Description" Placeholder="@ManagedItem.GetDisplayName(nameof(ManagedItem.Description))"></MemoEdit>
+            </Div>
+        </Div>
+        <Div Class="flex-grow-1 pt-3 d-flex align-items-end mb-3">
+            @ChildContent
+        </Div>
+    </Div>
+
+
+    @code {
+
+        [Parameter]
+        public override IManagedItem ManagedItem { get; set; }
+
+        [Parameter]
+        public RenderFragment ChildContent { get; set; }
+
+    }

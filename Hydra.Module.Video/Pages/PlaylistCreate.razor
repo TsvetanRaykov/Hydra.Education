@@ -1,0 +1,22 @@
+﻿@page "/PlaylistCreate"
+
+
+<ManageComponent ManagedItem="_playlist">
+    <Button Color="Color.Warning" Clicked="@CreatePlaylist">Create</Button>
+</ManageComponent>
+
+
+@code {
+
+
+    private readonly Playlist _playlist = new();
+
+   
+
+    private void CreatePlaylist()
+    {
+        throw new NotImplementedException();
+    }
+
+
+}

@@ -1,8 +1,8 @@
-﻿using Hydra.Module.Video.Models;
+﻿using Hydra.Module.Video.Contracts;
+using Hydra.Module.Video.Models;
 
 namespace Hydra.Module.Video.Services
 {
-    using Contracts;
     using JWT;
     using JWT.Algorithms;
     using Microsoft.Extensions.Configuration;

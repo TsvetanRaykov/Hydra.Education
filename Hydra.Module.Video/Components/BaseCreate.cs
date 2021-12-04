@@ -1,23 +1,22 @@
 ﻿namespace Hydra.Module.Video.Components
 {
-    using System;
-    using System.IO;
-    using System.Threading.Tasks;
-    using Models;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
+    using Models;
+    using System;
+    using System.Threading.Tasks;
 
-    public class BaseCreate : ComponentBase
+    public abstract class BaseCreate : ComponentBase
     {
-        protected FileChunk FileChunk { get; private set; }
-        protected string ImageUrl { get; private set; }
+        public abstract IManagedItem ManagedItem { get; set; }
+        protected string ImageUrl { get; set; } 
 
-        public BaseCreate()
+        protected BaseCreate()
         {
             ImageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D";
         }
 
-        protected async Task OnInputFileChange(InputFileChangeEventArgs args)
+        protected async Task OnImageChange(InputFileChangeEventArgs args)
         {
             const string format = "image/png";
             var resizedImageFile = await args.File.RequestImageFileAsync(format, 150, 150);
@@ -25,18 +24,8 @@
             var buffer = new byte[resizedImageFile.Size];
             await resizedImageFile.OpenReadStream().ReadAsync(buffer);
 
-            var justFileName = Path.GetFileNameWithoutExtension(args.File.Name);
-            var newFileNameWithoutPath = $"{justFileName}-{DateTime.Now.Ticks.ToString()}.png";
-
-            this.FileChunk = new FileChunk
-            {
-                Data = buffer,
-                FileNameNoPath = newFileNameWithoutPath,
-                Offset = 0,
-                FirstChunk = true
-            };
-
-            this.ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(FileChunk.Data)}";
+            ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            ManagedItem.Image = buffer;
         }
     }
 }

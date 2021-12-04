@@ -1,7 +1,7 @@
-﻿using Hydra.Module.Video.Services.Contracts;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Hydra.Module.Video.Contracts;
 
 namespace Hydra.Module.Video.Services
 {

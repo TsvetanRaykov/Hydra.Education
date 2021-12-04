@@ -4,19 +4,17 @@ using System.Text.Json.Serialization;
 
 namespace Hydra.Module.Video.Models
 {
-    public class VideoClass
+    public class VideoClass : IManagedItem
     {
-        [Required(AllowEmptyStrings = false)]
-        [StringLength(100, ErrorMessage = "Class Name is not valid.", MinimumLength = 3)]
+        [Display(Name = "Class Name")]
         public string Name { get; set; }
-
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Class description is required.")]
+        [Display(Name = "Class Description")]
         public string Description { get; set; }
-
         public int Id { get; set; }
 
+        [Display(Name = "Class Image")]
         public byte[] Image { get; set; }
-
+        [Display(Name = "Class Image")]
         public string ImageUrl { get; set; }
 
         [JsonPropertyName("groups")]

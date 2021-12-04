@@ -1,19 +1,20 @@
 ﻿@page "/Class/{id}"
+@using Hydra.Module.Video.Contracts
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClassService _classService;
 
 <Div Class="jumbotron my-5 d-flex flex-wrap">
-    <Div Class="d-flex flex-grow-1 mr-5">
-        <Div Class="hydra-card">
+    <Div Class="d-flex flex-grow-1 mr-5 flex-wrap">
+        <Div Class="hydra-card mr-5 mb-3">
             <Image Source="@_videoClass.ImageUrl" alt="" />
         </Div>
-        <Div Class="ml-5 w-75 d-flex flex-column justify-content-between">
+        <Div Class="w-75 d-flex flex-column justify-content-between mb-3">
             <TextEdit @bind-Text="@_videoClass.Name" Placeholder="Class Name" Class="mb-3"></TextEdit>
             <MemoEdit Rows="3" @bind-Text="@_videoClass.Description" Placeholder="Class Description"></MemoEdit>
         </Div>
     </Div>
-    <Div Class="flex-grow-1 pt-3 d-flex align-items-end">
+    <Div Class="flex-grow-1 pt-3 d-flex align-items-end mb-3">
         <Button Color="Color.Primary">Save</Button>
         <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning" Class="ml-2">Create Group</Button>
     </Div>

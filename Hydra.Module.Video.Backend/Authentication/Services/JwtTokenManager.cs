@@ -1,4 +1,7 @@
-﻿namespace Hydra.Module.Video.Backend.Authentication.Services
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+
+namespace Hydra.Module.Video.Backend.Authentication.Services
 {
     using Contracts;
     using Microsoft.IdentityModel.Tokens;
@@ -45,8 +48,13 @@
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Expires = DateTime.UtcNow.AddMinutes(30),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                Claims = new Dictionary<string, object>()
             };
+
+            tokenDescriptor.Claims.Add(ClaimTypes.Name, "demo@demo.com");
+            tokenDescriptor.Claims.Add(ClaimTypes.Email, "demo@demo.com");
+            tokenDescriptor.Claims.Add(ClaimTypes.Role, "Trainer");
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 

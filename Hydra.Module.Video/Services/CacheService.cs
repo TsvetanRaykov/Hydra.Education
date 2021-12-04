@@ -1,5 +1,5 @@
 ﻿using System;
-using Hydra.Module.Video.Services.Contracts;
+using Hydra.Module.Video.Contracts;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Hydra.Module.Video.Services

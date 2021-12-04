@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Hydra.Module.Video.Services.Contracts
+namespace Hydra.Module.Video.Contracts
 {
     public interface ICacheService
     {

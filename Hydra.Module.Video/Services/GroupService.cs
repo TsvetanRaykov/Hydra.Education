@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Http.Json;
+using Hydra.Module.Video.Contracts;
 
 namespace Hydra.Module.Video.Services
 {
-    using Contracts;
     using Models;
     using System.Collections.Generic;
     using System.Net.Http;

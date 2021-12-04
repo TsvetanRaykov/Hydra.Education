@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Hydra.Module.Video.Services.Contracts
+namespace Hydra.Module.Video.Contracts
 {
     public interface ITokenService
     {
