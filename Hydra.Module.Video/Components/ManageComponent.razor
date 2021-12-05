@@ -53,8 +53,8 @@ else
 
     private void ValidateName(ValidatorEventArgs obj)
     {
-        var name = Convert.ToString(obj.Value);
-        obj.Status = string.IsNullOrWhiteSpace(name) || name.Length < 4
+        var name = Convert.ToString(obj.Value)?.Trim();
+        obj.Status = string.IsNullOrWhiteSpace(name) || name.Length < 3
             ? ValidationStatus.Error
             : ValidationStatus.Success;
     }

@@ -1,8 +1,9 @@
 ﻿namespace Hydra.Module.Video.Backend.Data
 {
-    public class UserToGroup
+    public class PlaylistToGroup
     {
-        public string UserId { get; set; }
+        public int PlaylistId { get; set; }
+        public virtual Playlist Playlist { get; set; }
 
         public int GroupId { get; set; }
         public virtual VideoGroup VideoGroup { get; set; }

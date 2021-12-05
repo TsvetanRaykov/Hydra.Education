@@ -11,14 +11,14 @@ namespace Hydra.Module.Video.Backend.Data
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
+        public string ImageUrl { get; set; }
 
         [Required]
         public int VideoClassId { get; set; }
-
-        public string ImageUrl { get; set; }
-
-        public VideoClass VideoClass { get; set; }
+        
+        public virtual VideoClass VideoClass { get; set; }
 
         public List<UserToGroup> Users { get; set; }
+        public List<PlaylistToGroup> Playlists { get; set; }
     }
 }
