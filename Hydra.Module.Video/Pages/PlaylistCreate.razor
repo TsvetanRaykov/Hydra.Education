@@ -5,7 +5,10 @@
 @inject NavigationManager _navigationManager
 
 <ManageComponent ManagedItem="_playlist" @ref="_manageComponent">
-    <Button Color="Color.Warning" Clicked="@CreatePlaylist">Create</Button>
+    <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+        <h5>Create a new playlist to group videos within.</h5>
+        <Button Color="Color.Primary" Clicked="@CreatePlaylist">Create</Button>
+    </Div>
 </ManageComponent>
 
 

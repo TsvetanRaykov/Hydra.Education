@@ -4,9 +4,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Models;
-    using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Threading.Tasks;
 
     public class ClassesController : ApiControllerBase
@@ -35,7 +33,7 @@
         public async Task<ActionResult> Post(ClassRequestDto newClassRequest)
         {
             var imagePath = BuildImagePath(newClassRequest.Name);
-            var fileSaveError = await SaveImage(imagePath, newClassRequest.Image);
+            var fileSaveError = await SaveImage(_fileService, imagePath, newClassRequest.Image);
 
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
@@ -63,7 +61,7 @@
             if (classUpdate.Image != null)
             {
                 var imagePath = BuildImagePath(classUpdate.Name);
-                var fileSaveError = await SaveImage(imagePath, classUpdate.Image);
+                var fileSaveError = await SaveImage(_fileService, imagePath, classUpdate.Image);
 
                 if (!string.IsNullOrWhiteSpace(fileSaveError))
                     return BadRequest(false);
@@ -80,30 +78,5 @@
             return BadRequest(false);
         }
 
-
-        private static string BuildImagePath(string className)
-        {
-            var imageName = className.ToLower().Replace(' ', '_');
-            // $"{name}-{DateTime.Now.Ticks}.png";
-            var imagePath = $"Files/{imageName}.png";
-            return imagePath;
-        }
-
-        private async Task<string> SaveImage(string imagePath, byte[] imageData)
-        {
-            var filePath = Path.Combine(Environment.CurrentDirectory, imagePath);
-
-            var file = new FileChunk
-            {
-                Data = imageData,
-                Offset = 0,
-                FirstChunk = true
-            };
-
-            var fileSaveError = await _fileService.WriteFileChunkAsync(filePath, file);
-
-            return fileSaveError;
-
-        }
     }
 }
