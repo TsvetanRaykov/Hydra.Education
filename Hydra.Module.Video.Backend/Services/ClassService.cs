@@ -31,7 +31,7 @@
 
             await _dbContext.VideoClasses.AddAsync(newClass);
 
-            return await Update(_dbContext);
+            return await UpdateDbAsync(_dbContext);
         }
 
         public async Task<ClassResponseDto> GetClassAsync(int id)
@@ -56,6 +56,34 @@
                     ImageUrl = @group.ImageUrl
                 }).ToList()
             };
+        }
+
+        public async Task<string> UpdateClassAsync(int id, string name, string description, string imageUrl)
+        {
+            var @class = await _dbContext.FindAsync<VideoClass>(id);
+            var toUpdate = false;
+            if (@class.Name != name)
+            {
+                @class.Name = name;
+                toUpdate = true;
+            }
+            if (@class.Description != description)
+            {
+                @class.Description = description;
+                toUpdate = true;
+            }
+            if (@class.ImageUrl != imageUrl)
+            {
+                @class.ImageUrl = imageUrl;
+                toUpdate = true;
+            }
+
+            if (toUpdate)
+            {
+                return await UpdateDbAsync(_dbContext);
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<ClassResponseDto>> GetClassesAsync(string user)

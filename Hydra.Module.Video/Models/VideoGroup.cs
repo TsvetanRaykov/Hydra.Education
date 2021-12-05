@@ -4,17 +4,18 @@ namespace Hydra.Module.Video.Models
 {
     public class VideoGroup : IManagedItem
     {
-        [Required(AllowEmptyStrings = false)]
-        [StringLength(100, ErrorMessage = "Group Name is not valid.", MinimumLength = 3)]
+        [Display(Name = "Group Name")]
         public string Name { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "A short description of the Group is required.")]
+        [Display(Name = "Group Description")]
         public string Description { get; set; }
 
         public int Id { get; set; }
 
+        [Display(Name = "Group Image")]
         public byte[] Image { get; set; }
 
+        [Display(Name = "Group Image")]
         public string ImageUrl { get; set; }
 
         public int ClassId { get; set; }

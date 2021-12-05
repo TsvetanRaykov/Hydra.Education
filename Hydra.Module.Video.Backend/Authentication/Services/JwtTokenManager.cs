@@ -19,27 +19,20 @@ namespace Hydra.Module.Video.Backend.Authentication.Services
             _configuration = configuration;
         }
 
-        public string Authenticate(string clientName, string clientSecret)
-        {
-            if (!Data.Clients.Any(c => c.Key.Equals(clientName) && c.Value.Equals(clientSecret)))
-            {
-                return null;
-            }
-
-            return CreateToken();
-        }
-
         public string Authenticate(string apiKey)
         {
-            if (string.IsNullOrWhiteSpace(apiKey) || apiKey != _configuration.ApiKey)
+
+            var client = _configuration.ApiClients.FirstOrDefault(c => c.ApiKey.Equals(apiKey));
+
+            if (string.IsNullOrWhiteSpace(apiKey) || client == null)
             {
                 return null;
             }
 
-            return CreateToken();
+            return CreateToken(client);
         }
 
-        private string CreateToken()
+        private string CreateToken(ApiClient client)
         {
             var key = Encoding.ASCII.GetBytes(_configuration.JwtConfig.Key);
 
@@ -52,9 +45,13 @@ namespace Hydra.Module.Video.Backend.Authentication.Services
                 Claims = new Dictionary<string, object>()
             };
 
-            tokenDescriptor.Claims.Add(ClaimTypes.Name, "demo@demo.com");
-            tokenDescriptor.Claims.Add(ClaimTypes.Email, "demo@demo.com");
-            tokenDescriptor.Claims.Add(ClaimTypes.Role, "Trainer");
+            foreach (var role in client.Roles)
+            {
+                tokenDescriptor.Claims.Add(ClaimTypes.Role, role);
+            }
+
+            tokenDescriptor.Claims.Add(ClaimTypes.Name, client.UserName);
+            tokenDescriptor.Claims.Add(ClaimTypes.Email, client.UserName);
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 

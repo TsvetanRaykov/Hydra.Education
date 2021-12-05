@@ -27,7 +27,7 @@
 
             await _dbContext.VideoGroups.AddAsync(newGroup);
 
-            return await Update(_dbContext);
+            return await UpdateDbAsync(_dbContext);
         }
     }
 }

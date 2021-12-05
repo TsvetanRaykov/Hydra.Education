@@ -4,43 +4,57 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClassService _classService;
 
-<Div Class="jumbotron my-5 d-flex flex-wrap">
-    <Div Class="d-flex flex-grow-1 mr-5 flex-wrap">
-        <Div Class="hydra-card mr-5 mb-3">
-            <Image Source="@_videoClass.ImageUrl" alt="" />
-        </Div>
-        <Div Class="w-75 d-flex flex-column justify-content-between mb-3">
-            <TextEdit @bind-Text="@_videoClass.Name" Placeholder="Class Name" Class="mb-3"></TextEdit>
-            <MemoEdit Rows="3" @bind-Text="@_videoClass.Description" Placeholder="Class Description"></MemoEdit>
-        </Div>
-    </Div>
-    <Div Class="flex-grow-1 pt-3 d-flex align-items-end mb-3">
-        <Button Color="Color.Primary">Save</Button>
-        <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning" Class="ml-2">Create Group</Button>
-    </Div>
-</Div>
-<Div class="container-fluid d-flex flex-wrap">
-    @foreach (var @group in _videoClass.VideoGroups)
-    {
-        <Div Class="m-4">
-            <a href="@($"Group/{@group.Id}")">
-                <GroupCard VideoGroup="@group"></GroupCard>
-            </a>
-        </Div>
-    }
-</Div>
+@if (_videoClass != null)
+{
 
+    <ManageComponent @ref="_managedComponent" ManagedItem="_videoClass">
+        <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+            <h5>Edit class</h5>
+            <Div Class="d-flex align-items-baseline">
+                <Button Color="Color.Primary" Clicked="@UpdateClass" Class="mr-2">Save</Button>
+                <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning" Class="ml-2">Create Group</Button>
+            </Div>
+        </Div>
+    </ManageComponent>
+
+    <Div class="container-fluid d-flex flex-wrap">
+        @foreach (var @group in _videoClass.VideoGroups)
+        {
+            <Div Class="m-4">
+                <Button Type="@ButtonType.Link" To="@($"Group/{@group.Id}")">
+
+                    <GroupCard VideoGroup="@group"></GroupCard>
+                </Button>
+            </Div>
+        }
+    </Div>
+
+}
+else
+{
+    <HydraLoader />
+}
 
 @code
 {
     [Parameter]
     public string Id { get; set; }
 
-    private VideoClass _videoClass = new();
+    private VideoClass _videoClass;
+
+    private ManageComponent _managedComponent;
 
     protected override async Task OnInitializedAsync()
     {
         _videoClass = await _classService.GetClassAsync(Id);
+    }
+
+    private void UpdateClass()
+    {
+        if (_managedComponent.Validate())
+        {
+            _classService.UpdateClassAsync(_videoClass);
+        }
     }
 
 }

@@ -15,9 +15,9 @@
             foreach (var videoClass in _videoClasses)
             {
                 <Div Class="m-4">
-                    <a href="@($"Class/{videoClass.Id}")">
+                    <Button Type="@ButtonType.Link" To="@($"Class/{videoClass.Id}")">
                         <ClassCard VideoClass="@videoClass" />
-                    </a>
+                    </Button>
                 </Div>
             }
         }
@@ -29,10 +29,7 @@
 }
 else
 {
-    <Div Class="text-center">
-        <Div Class="spinner-border"></Div>
-        <Div Class="text-muted">Loading content ...</Div>
-    </Div>
+    <HydraLoader />
 }
 
 @code {

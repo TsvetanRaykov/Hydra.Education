@@ -41,9 +41,12 @@ namespace Hydra.Module.Video.Services
             return responseBody;
         }
 
-        public Task<bool> UpdateClassAsync(VideoClass videoClass)
+        public async Task<bool> UpdateClassAsync(VideoClass videoClass)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PutAsJsonAsync("api/video/classes", videoClass);
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
         }
     }
 }

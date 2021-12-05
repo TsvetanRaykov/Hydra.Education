@@ -4,64 +4,23 @@
 
 @inject NavigationManager _navigationManager
 @inject IClassService _classService
-@*<Div Class="row col-12">
 
-        <Div Class="col-xl-4 offset-xl-4 col-lg-8 offset-lg-2 col-12">
-            <Validations @ref="@_validators">
-                <Validation UsePattern="true">
-                    <Field>
-                        <FieldLabel>Class Name</FieldLabel>
-                        <TextEdit Class="form-control" Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@_videoClass.Name" Role="@TextRole.Text">
-                            <Feedback>
-                                <ValidationError>Class Name is not valid.</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </Field>
-                </Validation>
-                <Field>
-                    <FieldLabel>Class Description</FieldLabel>
-                    <MemoEdit Rows="3" Class="form-control" @bind-Text="_videoClass.Description" Placeholder="Write a short description..." />
-                </Field>
-                <Fields>
-                    <Field>
-                        <FieldLabel Display="Display.Block">Image</FieldLabel>
-                        <label class="hydra-card" style="width: 150px;">
-                            <InputFile OnChange="@OnImageChange" class="d-none"></InputFile>
-                            <Image Source="@ImageUrl" />
-                        </label>
-                    </Field>
-                    <Field Class="align-self-center">
-                        <Button Class="btn btn-primary" Clicked="@CreateClass">Create</Button>
-                    </Field>
-                </Fields>
-            </Validations>
-        </Div>
-    </Div>*@
 
-<ManageComponent ManagedItem="_videoClass">
+<ManageComponent @ref="_manageComponent" ManagedItem="_videoClass">
     <Button Color="Color.Warning" Clicked="@CreateClass">Create</Button>
 </ManageComponent>
 
-
 @code
 {
-    //private Validations _validators;
     private readonly VideoClass _videoClass = new();
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
-        if (firstRender)
-        {
-            //_validators.ClearAll();
-        }
-    }
+    private ManageComponent _manageComponent;
 
     private async Task CreateClass()
     {
-        //if (_validators.ValidateAll())
+
+        if (_manageComponent.Validate())
         {
-            //  _videoClass.Image = FileChunk.Data;
 
             if (await _classService.CreateClassAsync(_videoClass))
             {

@@ -1,7 +1,10 @@
 ﻿@page "/PlaylistCreate"
+@using Hydra.Module.Video.Contracts
 
+@inject IPlaylistService _playlistService
+@inject NavigationManager _navigationManager
 
-<ManageComponent ManagedItem="_playlist">
+<ManageComponent ManagedItem="_playlist" @ref="_manageComponent">
     <Button Color="Color.Warning" Clicked="@CreatePlaylist">Create</Button>
 </ManageComponent>
 
@@ -11,11 +14,19 @@
 
     private readonly Playlist _playlist = new();
 
-   
+    private ManageComponent _manageComponent;
 
-    private void CreatePlaylist()
+    private async Task CreatePlaylist()
     {
-        throw new NotImplementedException();
+
+        if (_manageComponent.Validate())
+        {
+
+            if (await _playlistService.CreatePlaylist(_playlist))
+            {
+                _navigationManager.NavigateTo("/Video");
+            }
+        }
     }
 
 

@@ -2,6 +2,7 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Hydra.Component.Authorization;
+using Hydra.Module.Video.Contracts;
 using Hydra.Module.Video.Services;
 using JWT;
 using JWT.Algorithms;
@@ -10,12 +11,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Hydra.Component.Authorization.Models;
-using Hydra.Component.Authorization.Services;
-using Hydra.Module.Video.Contracts;
 
 namespace Hydra.Module.Video
 {
@@ -34,16 +31,9 @@ namespace Hydra.Module.Video
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
 
-
-            //var apiUrl = builder.Services
-            //    .BuildServiceProvider()
-            //    .GetRequiredService<IConfiguration>()
-            //    .GetValue<string>("ApiBaseUrl");
-
             builder.AddHydraAuthorization();
 
             builder.Services.AddSingleton<BearerTokenHandler>();
-            //builder.Services.AddSingleton<AuthorizedHandler>();
 
             builder.Services.AddHttpClient("authorized", config =>
                 {
@@ -51,7 +41,6 @@ namespace Hydra.Module.Video
                     config.BaseAddress = new Uri(configuration.GetValue<string>("ApiBaseUrl"));
                 })
                 .AddHttpMessageHandler<BearerTokenHandler>();
-                //.AddHttpMessageHandler<AuthorizedHandler>();
 
             builder.Services.AddSingleton(sp =>
                 sp.GetRequiredService<IHttpClientFactory>().CreateClient("authorized"));
@@ -62,6 +51,7 @@ namespace Hydra.Module.Video
             builder.Services.AddSingleton<IFileService, FileService>();
             builder.Services.AddSingleton<IClassService, ClassService>();
             builder.Services.AddSingleton<IGroupService, GroupService>();
+            builder.Services.AddSingleton<IPlaylistService, PlaylistService>();
 
             builder.Services.AddSingleton<IJsonSerializer, JsonNetSerializer>();
             builder.Services.AddSingleton<IDateTimeProvider, UtcDateTimeProvider>();

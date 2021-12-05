@@ -1,25 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System.Collections.Generic;
-
-namespace Hydra.Module.Video.Backend.Controllers
+﻿namespace Hydra.Module.Video.Backend.Controllers
 {
     using Contracts;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Models;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
 
     public class ClassesController : ApiControllerBase
     {
-        private readonly ILogger<ClassesController> _logger;
         private readonly IClassService _classService;
         private readonly IFileService _fileService;
 
-        public ClassesController(ILogger<ClassesController> logger, IClassService classService, IFileService fileService)
+        public ClassesController(IClassService classService, IFileService fileService)
         {
-            _logger = logger;
             _classService = classService;
             _fileService = fileService;
         }
@@ -38,28 +34,13 @@ namespace Hydra.Module.Video.Backend.Controllers
         [Authorize(Roles = "Admin, Trainer")]
         public async Task<ActionResult> Post(ClassRequestDto newClassRequest)
         {
-            if (User.Identity == null)
-            {
-                return BadRequest("Authentication error");
-            }
-
-            var imagePath = $"Files/{newClassRequest.Name}-{DateTime.Now.Ticks}.png";
-
-            var filePath = Path.Combine(Environment.CurrentDirectory, imagePath);
-
-            var file = new FileChunk
-            {
-                Data = newClassRequest.Image,
-                Offset = 0,
-                FirstChunk = true
-            };
-
-            var fileSaveError = await _fileService.WriteFileChunkAsync(filePath, file);
+            var imagePath = BuildImagePath(newClassRequest.Name);
+            var fileSaveError = await SaveImage(imagePath, newClassRequest.Image);
 
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
 
-            var resultError = await _classService.CreateClassAsync(newClassRequest.Name, newClassRequest.Description, $"/{imagePath}", User.Identity.Name);
+            var resultError = await _classService.CreateClassAsync(newClassRequest.Name, newClassRequest.Description, $"/{imagePath}", User.Identity?.Name);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);
@@ -72,8 +53,57 @@ namespace Hydra.Module.Video.Backend.Controllers
         public async Task<ActionResult<ClassResponseDto>> Get(int id)
         {
             var videoClass = await _classService.GetClassAsync(id);
-
             return Ok(videoClass);
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> Put(ClassRequestDto classUpdate)
+        {
+            if (classUpdate.Image != null)
+            {
+                var imagePath = BuildImagePath(classUpdate.Name);
+                var fileSaveError = await SaveImage(imagePath, classUpdate.Image);
+
+                if (!string.IsNullOrWhiteSpace(fileSaveError))
+                    return BadRequest(false);
+
+                classUpdate.ImageUrl = imagePath;
+            }
+
+            var resultError = await _classService.UpdateClassAsync(classUpdate.Id, classUpdate.Name, classUpdate.Description,
+               $"/{classUpdate.ImageUrl}");
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+
+        private static string BuildImagePath(string className)
+        {
+            var imageName = className.ToLower().Replace(' ', '_');
+            // $"{name}-{DateTime.Now.Ticks}.png";
+            var imagePath = $"Files/{imageName}.png";
+            return imagePath;
+        }
+
+        private async Task<string> SaveImage(string imagePath, byte[] imageData)
+        {
+            var filePath = Path.Combine(Environment.CurrentDirectory, imagePath);
+
+            var file = new FileChunk
+            {
+                Data = imageData,
+                Offset = 0,
+                FirstChunk = true
+            };
+
+            var fileSaveError = await _fileService.WriteFileChunkAsync(filePath, file);
+
+            return fileSaveError;
+
         }
     }
 }

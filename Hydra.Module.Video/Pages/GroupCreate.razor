@@ -1,104 +1,82 @@
 ﻿@page "/GroupCreate/{classId}"
 
 @using Hydra.Module.Video.Contracts
-@inherits BaseCreate
+@using Microsoft.Extensions.Configuration
 
+@inject IConfiguration _configuration
 @inject NavigationManager _navigationManager
 @inject IClassService _classService
 @inject IGroupService _groupService
 
 <hr />
-<Div Class="row col-12 p-4">
-    <Div Class="col-xl-4 d-flex align-items-baseline">
-        @if (_videoClass != null)
-        {
-            <ClassCard VideoClass="_videoClass"></ClassCard>
-        }
-        else
-        {
-            <Div Class="spinner-grow" role="status">
-                <span class="sr-only">Loading...</span>
+@if (_videoClass == null)
+{
+    <HydraLoader />
+}
+else
+{
+    <Div>
+        <Div Class="d-flex">
+
+            <Tooltip Text="Edit that class" Placement="TooltipPlacement.RightStart" Class="mr-4">
+                <Button Type="@ButtonType.Link" To="@($"Class/{_videoClass.Id}")">
+                    <Div Class="hydra-card">
+                        <Image Source="@_imageUrl"></Image>
+                    </Div>
+                </Button>
+            </Tooltip>
+            <Div Class="flex-grow-1">
+                <blockquote class="blockquote">
+                    <p class="mb-0">@_videoClass.Name</p>
+                    <footer class="blockquote-footer"><cite>@_videoClass.Description</cite></footer>
+                </blockquote>
             </Div>
-        }
-        <Div Class="flex-grow-1 text-center">
-            <br />
-            <h4>Create a group</h4>
-            <h4>in this Class</h4>
+
+        </Div>
+        <Div>
+            <ManageComponent ManagedItem="@_videoGroup" @ref="_managedComponent">
+                <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+
+                    <h5>Add a new group to @_videoClass.Name</h5>
+                    <Button Color="Color.Primary" Clicked="@CreateGroup">Create</Button>
+                </Div>
+            </ManageComponent>
         </Div>
     </Div>
-    <Div Class="col-xl-4 col-lg-8 col-12">
-        <Validations @ref="@_validators">
-            <Validation UsePattern="true">
-                <Field>
-                    <FieldLabel>Group Name</FieldLabel>
-                    <TextEdit Class="form-control" Pattern="\p{L}{3,}" Placeholder="Enter name..." @bind-Text="@ManagedItem.Name" Role="@TextRole.Text">
-                        <Feedback>
-                            <ValidationError>Group Name is not valid.</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </Field>
-            </Validation>
-            <Field>
-                <FieldLabel>Group Description</FieldLabel>
-                <MemoEdit Rows="3" Class="form-control" @bind-Text="ManagedItem.Description" Placeholder="Write a short description..." />
-            </Field>
-            <Fields>
-                <Field Class="flex-grow-0">
-                    <FieldLabel Display="Display.Block">Image</FieldLabel>
 
-                    <label class="hydra-card hydra-card-circle rounded-circle">
-                        <InputFile OnChange="@OnImageChange" class="d-none"></InputFile>
-                        <Image Source="@ImageUrl" Class="rounded-circle" />
-                    </label>
-                </Field>
-                <Field Class="align-self-center">
-                    <Button Class="btn btn-primary mt-4 ml-4" Clicked="@CreateGroup">Create</Button>
-                </Field>
-            </Fields>
-        </Validations>
-    </Div>
-</Div>
-
+}
 @code {
 
     [Parameter]
     public string ClassId { get; set; }
 
-    // private readonly VideoGroup _videoGroup = new();
+    private VideoGroup _videoGroup;
+    private ManageComponent _managedComponent;
 
-    private Validations _validators;
     private VideoClass _videoClass;
+    private string _imageUrl;
 
     protected override async Task OnInitializedAsync()
     {
         _videoClass = await _classService.GetClassAsync(ClassId);
-        ManagedItem = new VideoGroup
+        _videoGroup = new VideoGroup
         {
             ClassId = _videoClass.Id
         };
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
-        if (firstRender)
-        {
-            _validators.ClearAll();
-        }
+        _imageUrl = $"{_configuration["ApiBaseUrl"]}{_videoClass.ImageUrl}";
     }
 
     private async Task CreateGroup()
     {
-        if (_validators.ValidateAll())
+        if (_managedComponent.Validate())
         {
             //_videoGroup.Image = FileChunk.Data;
 
-            if (await _groupService.CreateGroupAsync((VideoGroup)ManagedItem))
+            if (await _groupService.CreateGroupAsync(_videoGroup))
             {
                 _navigationManager.NavigateTo($"/Video/Class/{_videoClass.Id}");
             }
         }
     }
 
-    public override IManagedItem ManagedItem { get; set; }
 }

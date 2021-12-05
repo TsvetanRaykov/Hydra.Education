@@ -2,7 +2,6 @@
 {
     public interface IJwtTokenManager
     {
-        string Authenticate(string clientName, string clientSecret);
         string Authenticate(string apiKey);
     }
 }

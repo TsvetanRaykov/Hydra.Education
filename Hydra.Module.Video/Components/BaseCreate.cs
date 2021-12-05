@@ -9,11 +9,25 @@
     public abstract class BaseCreate : ComponentBase
     {
         public abstract IManagedItem ManagedItem { get; set; }
-        protected string ImageUrl { get; set; } 
 
-        protected BaseCreate()
+        public abstract string ApiBaseUrl { get; }
+
+        protected string ImageUrl
         {
-            ImageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D";
+            get
+            {
+                if (ManagedItem?.Image != null)
+                {
+                    return $"data:image/png;base64,{Convert.ToBase64String(ManagedItem.Image)}";
+                }
+
+                if (ManagedItem?.ImageUrl != null)
+                {
+                    return $"{ApiBaseUrl}{ManagedItem.ImageUrl}?{Guid.NewGuid()}";
+                }
+
+                return "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D";
+            }
         }
 
         protected async Task OnImageChange(InputFileChangeEventArgs args)
@@ -24,7 +38,7 @@
             var buffer = new byte[resizedImageFile.Size];
             await resizedImageFile.OpenReadStream().ReadAsync(buffer);
 
-            ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            // ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
             ManagedItem.Image = buffer;
         }
     }

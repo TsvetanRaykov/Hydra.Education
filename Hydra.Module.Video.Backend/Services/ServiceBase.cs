@@ -12,7 +12,7 @@
         {
             Logger = logger;
         }
-        protected async Task<string> Update(DbContext db)
+        protected async Task<string> UpdateDbAsync(DbContext db)
         {
             try
             {
@@ -21,7 +21,7 @@
             }
             catch (DbUpdateException ex)
             {
-                Logger.LogError(nameof(Update), ex);
+                Logger.LogError(nameof(UpdateDbAsync), ex);
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 return "Database operation failed.";
             }
