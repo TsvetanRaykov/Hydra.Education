@@ -2,7 +2,7 @@
 
 namespace Hydra.Module.Video.Models
 {
-    public class Playlist : IManagedItem
+    public class VideoPlaylist : IManagedItem
     {
         [Display(Name = "Playlist Name")]
         public string Name { get; set; }

@@ -26,9 +26,12 @@ namespace Hydra.Module.Video.Services
             return Convert.ToBoolean(responseBody);
         }
 
-        public Task<bool> UpdateGroupAsync(VideoGroup videoClass)
+        public async Task<bool> UpdateGroupAsync(VideoGroup videoGroup)
         {
-            throw new System.NotImplementedException();
+            var result = await _httpClient.PutAsJsonAsync("api/video/groups", videoGroup);
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
         }
 
         public Task<List<VideoGroup>> GetUserGroupsAsync(string userId)
@@ -41,12 +44,15 @@ namespace Hydra.Module.Video.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<VideoGroup> GetGroupAsync(int id)
+        public async Task<VideoGroup> GetGroupAsync(string id)
         {
-            throw new System.NotImplementedException();
+            var result = await _httpClient.GetAsync($"api/video/groups/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadFromJsonAsync<VideoGroup>();
+            return responseBody;
         }
 
-        public Task<bool> DeleteGroupAsync(int id)
+        public Task<bool> DeleteGroupAsync(string id)
         {
             throw new System.NotImplementedException();
         }

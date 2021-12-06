@@ -1,4 +1,8 @@
-﻿namespace Hydra.Module.Video.Backend.Services
+﻿using System.Linq;
+using Hydra.Module.Video.Backend.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace Hydra.Module.Video.Backend.Services
 {
     using Contracts;
     using Data;
@@ -15,7 +19,7 @@
             _dbContext = dbContext;
         }
 
-        public async Task<string> CreateVideoGroupAsync(string name, string description, string imageUrl, int classId)
+        public async Task<string> CreateGroupAsync(string name, string description, string imageUrl, int classId)
         {
             var newGroup = new VideoGroup()
             {
@@ -28,6 +32,71 @@
             await _dbContext.VideoGroups.AddAsync(newGroup);
 
             return await UpdateDbAsync(_dbContext);
+        }
+
+        public async Task<GroupResponseDto> GetGroupAsync(int id)
+        {
+            var group = await _dbContext
+                .VideoGroups
+                .Include(c => c.Users)
+                .Include(c => c.Playlists)
+                .ThenInclude(p => p.Playlist.Videos)
+                .FirstAsync(c => c.Id.Equals(id));
+
+            return new GroupResponseDto()
+            {
+                Name = group.Name,
+                ImageUrl = group.ImageUrl,
+                Description = group.Description,
+                Id = group.Id,
+                Playlists = group.Playlists.Select(p => new PlaylistResponseDto
+                {
+                    Name = p.Playlist.Name,
+                    Videos = p.Playlist.Videos.Select(v => new VideoResponseDto
+                    {
+                        Name = v.Video.Name,
+                        Description = v.Video.Description,
+                        Id = v.VideoId,
+                        UploadedBy = v.Video.UploadedBy,
+                        Url = v.Video.Url
+                    }).ToList(),
+                }).ToList(),
+                Users = group.Users.Select(u => u.UserId).ToList(),
+                Class = group.VideoClass
+            };
+        }
+
+        public async Task<string> UpdateGroupAsync(int id, string name, string description, string imageUrl)
+        {
+            var group = await _dbContext.FindAsync<VideoGroup>(id);
+            var toUpdate = false;
+            if (group.Name != name)
+            {
+                group.Name = name;
+                toUpdate = true;
+            }
+            if (group.Description != description)
+            {
+                group.Description = description;
+                toUpdate = true;
+            }
+            if (group.ImageUrl != imageUrl)
+            {
+                group.ImageUrl = imageUrl;
+                toUpdate = true;
+            }
+
+            if (toUpdate)
+            {
+                return await UpdateDbAsync(_dbContext);
+            }
+
+            return null;
+        }
+
+        public Task<string> DeleteGroupAsync(int id)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

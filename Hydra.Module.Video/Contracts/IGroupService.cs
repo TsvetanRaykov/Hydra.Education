@@ -10,7 +10,7 @@ namespace Hydra.Module.Video.Contracts
         Task<bool> UpdateGroupAsync(VideoGroup videoGroup);
         Task<List<VideoGroup>> GetUserGroupsAsync(string userId);
         Task<List<VideoGroup>> GetClassGroupsAsync(string classId);
-        Task<VideoGroup> GetGroupAsync(int id);
-        Task<bool> DeleteGroupAsync(int id);
+        Task<VideoGroup> GetGroupAsync(string id);
+        Task<bool> DeleteGroupAsync(string id);
     }
 }

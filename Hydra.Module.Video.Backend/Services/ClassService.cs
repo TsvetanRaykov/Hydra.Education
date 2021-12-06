@@ -47,13 +47,12 @@
                 ImageUrl = @class.ImageUrl,
                 Description = @class.Description,
                 Id = @class.Id,
-                Groups = @class.VideoGroups.Select(@group => new GroupResponseDto
+                Groups = @class.VideoGroups.Select(group => new GroupResponseDto
                 {
-                    Id = @group.Id,
-                    Name = @group.Name,
-                    Description = @group.Description,
-                    ClassId = @group.VideoClassId,
-                    ImageUrl = @group.ImageUrl
+                    Id = group.Id,
+                    Name = group.Name,
+                    Description = group.Description,
+                    ImageUrl = group.ImageUrl
                 }).ToList()
             };
         }
@@ -99,13 +98,12 @@
                 ImageUrl = @class.ImageUrl,
                 Description = @class.Description,
                 Id = @class.Id,
-                Groups = @class.VideoGroups.Select(@group => new GroupResponseDto
+                Groups = @class.VideoGroups.Select(group => new GroupResponseDto
                 {
-                    Id = @group.Id,
-                    Name = @group.Name,
-                    Description = @group.Description,
-                    ClassId = @group.VideoClassId,
-                    ImageUrl = @group.ImageUrl
+                    Id = group.Id,
+                    Name = group.Name,
+                    Description = group.Description,
+                    ImageUrl = group.ImageUrl
                 }).ToList()
             }).ToList();
         }

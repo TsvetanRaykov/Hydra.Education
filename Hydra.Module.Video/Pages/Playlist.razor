@@ -1,0 +1,47 @@
+﻿@page "/Playlist/{id}"
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IPlaylistService _playlistService
+
+@if (_playlist != null)
+{
+
+    <ManageComponent @ref="_managedComponent" ManagedItem="_playlist">
+        <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+            <h5>Edit Playlist</h5>
+            <Div Class="d-flex align-items-baseline">
+                <Button Color="Color.Primary" Clicked="@UpdatePlaylist" Class="mr-2">Save</Button>
+            </Div>
+        </Div>
+    </ManageComponent>
+
+    <Div class="container-fluid d-flex flex-wrap">
+
+    </Div>
+
+}
+else
+{
+    <HydraLoader />
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private VideoPlaylist _playlist;
+
+    private ManageComponent _managedComponent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _playlist = await _playlistService.GetPlaylistAsync(Id);
+    }
+
+    private void UpdatePlaylist()
+    {
+        if (_managedComponent.Validate())
+        {
+            _playlistService.UpdatePlaylistAsync(_playlist);
+        }
+    }
+}

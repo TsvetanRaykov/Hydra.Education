@@ -1,47 +1,82 @@
 ﻿@page "/"
-@using Hydra.Module.Video.Contracts
 
 @inject AuthenticationStateProvider _authenticationStateProvider
-@inject IClassService _classService;
+@inject IClassService _classService
+@inject IPlaylistService _playlistService
 
 @attribute [Authorize]
 
+<Div Class="d-flex bg-light mt-3">
+    <Div Class="flex-grow-1"><h5>Classes</h5></Div>
+    <Div Class="flex-grow-1"><h5>Playlists</h5></Div>
+</Div>
 
-@if (_videoClasses != null)
-{
-    <Div Class="d-flex flex-wrap">
-        @if (_videoClasses.Any())
+<Div Class="d-flex">
+    <Div Class="d-flex flex-wrap flex-grow-1">
+        @if (_videoClasses != null)
         {
-            foreach (var videoClass in _videoClasses)
+            @if (_videoClasses.Any())
             {
-                <Div Class="m-4">
-                    <Button Type="@ButtonType.Link" To="@($"Class/{videoClass.Id}")">
-                        <ClassCard VideoClass="@videoClass" />
-                    </Button>
-                </Div>
+                foreach (var videoClass in _videoClasses)
+                {
+                    <Div Class="m-4">
+                        <Button Type="@ButtonType.Link" To="@($"Class/{videoClass.Id}")">
+                            <ClassCard VideoClass="@videoClass" />
+                        </Button>
+                    </Div>
+                }
+            }
+            else
+            {
+                <Label>There are no classes defined yet.</Label>
             }
         }
         else
         {
-            <Label>There are no classes defined yet.</Label>
+            <HydraLoader />
         }
     </Div>
-}
-else
-{
-    <HydraLoader />
-}
+    <Div Class="d-flex flex-wrap flex-grow-1 bg-info">
+        @if (_playlists != null)
+        {
+            @if (_playlists.Any())
+            {
+                foreach (var playlist in _playlists)
+                {
+                    <Div Class="m-4">
+                        <Button Type="@ButtonType.Link" To="@($"Playlist/{playlist.Id}")">
+                            <PlaylistCard Playlist="playlist" />
+                        </Button>
+                    </Div>
+                }
+            }
+            else
+            {
+                <Label>There are no playlists created yet.</Label>
+            }
+        }
+        else
+        {
+            <HydraLoader />
+        }
+    </Div>
+</Div>
+
 
 @code {
 
     private ClaimsPrincipal _user;
     private List<VideoClass> _videoClasses;
+    private List<VideoPlaylist> _playlists;
 
     protected override async void OnInitialized()
     {
         var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         _user = authenticationState.User;
         _videoClasses = await _classService.GetClassesAsync(_user.Identity?.Name);
+
+        _playlists = await _playlistService.GetPlayListsAsync(_user.Identity?.Name);
+
         StateHasChanged();
     }
 

@@ -1,0 +1,48 @@
+﻿@page "/Group/{id}"
+
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IGroupService _groupService
+
+@if (_videoGroup != null)
+{
+
+    <ManageComponent @ref="_managedComponent" ManagedItem="_videoGroup">
+        <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+            <h5>Edit group</h5>
+            <Div Class="d-flex align-items-baseline">
+                <Button Color="Color.Primary" Clicked="@UpdateGroup" Class="mr-2">Save</Button>
+            </Div>
+        </Div>
+    </ManageComponent>
+
+    <Div class="container-fluid d-flex flex-wrap">
+
+    </Div>
+
+}
+else
+{
+    <HydraLoader />
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private VideoGroup _videoGroup;
+
+    private ManageComponent _managedComponent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _videoGroup = await _groupService.GetGroupAsync(Id);
+    }
+
+    private void UpdateGroup()
+    {
+        if (_managedComponent.Validate())
+        {
+            _groupService.UpdateGroupAsync(_videoGroup);
+        }
+    }
+}

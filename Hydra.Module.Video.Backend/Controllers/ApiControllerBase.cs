@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Hydra.Module.Video.Backend.Contracts;
 using Hydra.Module.Video.Backend.Models;
@@ -15,7 +16,8 @@ namespace Hydra.Module.Video.Backend.Controllers
     {
         protected static string BuildImagePath(string className)
         {
-            var imageName = className.ToLower().Replace(' ', '_');
+            var imageName = Convert.ToBase64String(Encoding.UTF8.GetBytes(className));
+            
             // $"{name}-{DateTime.Now.Ticks}.png";
             var imagePath = $"Files/{imageName}.png";
             return imagePath;

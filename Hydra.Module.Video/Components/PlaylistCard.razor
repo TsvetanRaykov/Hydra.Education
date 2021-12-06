@@ -1,0 +1,22 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration _configuration
+
+<Div Class="hydra-card">
+    <header>@Playlist.Name</header>
+    <Image Source="@_imageUrl"></Image>
+    <footer>@Playlist.Description</footer>
+</Div>
+
+@code {
+
+    [Parameter]
+    public VideoPlaylist Playlist { get; set; }
+
+    private string _imageUrl;
+
+    protected override void OnInitialized()
+    {
+        _imageUrl = $"{_configuration["ApiBaseUrl"]}{Playlist.ImageUrl}";
+    }
+
+}

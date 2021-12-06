@@ -23,10 +23,6 @@ namespace Hydra.Module.Video.Backend.Controllers
         [Authorize(Roles = "Admin, Trainer")]
         public async Task<ActionResult> Post(GroupRequestDto groupRequestDto)
         {
-            if (User.Identity == null)
-            {
-                return BadRequest("Authentication error");
-            }
 
             var imagePath = $"Files/{groupRequestDto.Name}-{DateTime.Now.Ticks}.png";
 
@@ -44,7 +40,39 @@ namespace Hydra.Module.Video.Backend.Controllers
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
 
-            var resultError = await _groupService.CreateVideoGroupAsync(groupRequestDto.Name, groupRequestDto.Description, $"/{imagePath}", groupRequestDto.ClassId);
+            var resultError = await _groupService.CreateGroupAsync(groupRequestDto.Name, groupRequestDto.Description, $"/{imagePath}", groupRequestDto.ClassId);
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<ActionResult<GroupResponseDto>> Get(int id)
+        {
+            var videoClass = await _groupService.GetGroupAsync(id);
+            return Ok(videoClass);
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> Put(GroupRequestDto groupUpdate)
+        {
+            if (groupUpdate.Image != null)
+            {
+                var imagePath = BuildImagePath(groupUpdate.Name);
+                var fileSaveError = await SaveImage(_fileService, imagePath, groupUpdate.Image);
+
+                if (!string.IsNullOrWhiteSpace(fileSaveError))
+                    return BadRequest(false);
+
+                groupUpdate.ImageUrl = imagePath;
+            }
+
+            var resultError = await _groupService.UpdateGroupAsync(groupUpdate.Id, groupUpdate.Name, groupUpdate.Description,
+                $"/{groupUpdate.ImageUrl}");
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

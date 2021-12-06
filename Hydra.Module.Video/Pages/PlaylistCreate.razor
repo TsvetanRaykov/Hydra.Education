@@ -1,5 +1,4 @@
 ﻿@page "/PlaylistCreate"
-@using Hydra.Module.Video.Contracts
 
 @inject IPlaylistService _playlistService
 @inject NavigationManager _navigationManager
@@ -15,7 +14,7 @@
 @code {
 
 
-    private readonly Playlist _playlist = new();
+    private readonly VideoPlaylist _playlist = new();
 
     private ManageComponent _manageComponent;
 
@@ -25,7 +24,7 @@
         if (_manageComponent.Validate())
         {
 
-            if (await _playlistService.CreatePlaylist(_playlist))
+            if (await _playlistService.CreatePlaylistAsync(_playlist))
             {
                 _navigationManager.NavigateTo("/Video");
             }
