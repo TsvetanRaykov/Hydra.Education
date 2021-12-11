@@ -1,0 +1,116 @@
+﻿@page "/VideoCreate"
+
+@inject IPlaylistService _playlistService
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+<Div Class="align-items-center d-flex flex-column mt-5">
+    <Div Class="d-flex flex-column w-25">
+        <FieldLabel class="d-flex hydra-video-upload m-0 rounded text-center">
+            <Div Class="align-items-center d-flex p-3 small">Select or drag and drop</Div>
+            <Div Class="w-50">
+                <Icon Class="text-danger my-3" Name="IconName.Video" IconSize="IconSize.x3" />
+            </Div>
+            <InputFile OnChange="@OnFileSelected"
+                       accept=".mp4"
+                       class="d-none"></InputFile>
+        </FieldLabel>
+        <Validations @ref="_validators" Mode="ValidationMode.Auto" ValidateOnLoad="false">
+            <Validation UsePattern="true">
+                <TextEdit Pattern="\p{L}{3,}" Class="my-4" @bind-Text="@_videoName" Placeholder="Name this video">
+                    <Feedback>
+                        <ValidationError Class="hydra-validation-message">Enter valid name!</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </Validation>
+            <Dropdown Class="mb-4" Direction="Direction.Right">
+                <DropdownToggle Class="w-100 btn-outline-info">
+                    Add to playlist
+                </DropdownToggle>
+                <DropdownMenu>
+                    @foreach (var playlist in _playlistAll)
+                    {
+                        <DropdownItem Clicked="() => OnPlaylistSelect(playlist)">@playlist.Name</DropdownItem>
+                    }
+                </DropdownMenu>
+            </Dropdown>
+        </Validations>
+        <Button Color="Color.Primary" Clicked="@Upload">Upload</Button>
+    </Div>
+</Div>
+<Div Class="my-3" style="height: 25px;">
+    @if (_selectedVideo != null)
+    {
+        <Div Class="mb-1 mx-auto text-center" style="left: 0; right: 0;">
+            <Span Class="mr-2 font-weight-bolder">@StringFileSize(_selectedVideo.Size)</Span>
+            <Span>@_selectedVideo.Name</Span>
+        </Div>
+    }
+    <Div Class="my-1 mx-auto text-center" style="left: 0; right: 0;">
+        @foreach (var playlist in _playlistSelected)
+        {
+            <Badge Color="Color.Info" Class="mx-1 hydra-badge-close d-inline" Pill="true"
+                   CloseClicked="@(()=>OnPlaylistRemoved(playlist))">@playlist.Name</Badge>
+            }
+    </Div>
+</Div>
+
+@code {
+
+    private ClaimsPrincipal _user;
+    private string _videoName;
+    private IBrowserFile _selectedVideo;
+    private Validations _validators;
+    private List<VideoPlaylist> _playlistAll = new();
+    private readonly HashSet<VideoPlaylist> _playlistSelected = new();
+    private static readonly string[] Sizes = { "B", "KB", "MB", "GB", "TB" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _user = authenticationState.User;
+
+        _playlistAll = await _playlistService.GetPlayListsAsync(_user?.Identity?.Name);
+
+        for (int i = 0; i < 5; i++)
+        {
+            _playlistAll.Add(new VideoPlaylist
+            {
+                Id = 10 + i,
+                Name = $"Playlist {i}"
+            });
+        }
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs arg)
+    {
+        _selectedVideo = arg.File;
+    }
+
+    private void Upload()
+    {
+        _validators.ValidateAll();
+    }
+
+    private static object StringFileSize(long size)
+    {
+        var order = 0;
+        while (size >= 1024 && order < Sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+
+        return $"{size:0.##} {Sizes[order]}";
+    }
+
+    private void OnPlaylistSelect(VideoPlaylist playlist)
+    {
+        _playlistSelected.Add(playlist);
+    }
+
+    private void OnPlaylistRemoved(VideoPlaylist playlist)
+    {
+        _playlistSelected.Remove(playlist);
+    }
+
+}

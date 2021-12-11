@@ -1,5 +1,5 @@
 {
-  "ConnectionString": "Data Source = VideoDb.sqlite",
+  "ConnectionString": "Data Source = D:\\Gabrovo\\MasterDegree\\VideoDb.sqlite",
   "ApiSettings": {
     "BaseUrl": "https://localhost:44351"
   },

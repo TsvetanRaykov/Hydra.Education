@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace Hydra.Module.Video.Backend
+﻿namespace Hydra.Module.Video.Backend
 {
-    public class ModuleVideoConfiguration
+    public class ModuleVideoSettings
     {
         public string ConnectionString { get; set; }
 

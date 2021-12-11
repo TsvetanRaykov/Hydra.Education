@@ -90,7 +90,10 @@ namespace Hydra.Server.Auth
             app.UseAuthorization();
 
             // *** USE MODULES
-            app.UseHydraModuleVideo();
+            app.UseHydraModuleVideo(opt =>
+            {
+                opt.StaticFilesLocation = Configuration["FileStoragePath"];
+            });
 
             app.MapWhen(c => c.Request.Path.StartsWithSegments("/Video"), app1 =>
             {

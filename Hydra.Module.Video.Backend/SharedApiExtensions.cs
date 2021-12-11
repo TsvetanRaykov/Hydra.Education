@@ -48,14 +48,18 @@
             return services;
         }
 
-        public static void UseHydraModuleVideo(this IApplicationBuilder builder)
+        public static void UseHydraModuleVideo(this IApplicationBuilder builder, Action<ModuleArguments> configAction = null)
         {
             using var scope = builder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             using var ctx = scope.ServiceProvider.GetRequiredService<VideoDbContext>();
 
             ctx.Database.EnsureCreated();
 
-            var filesPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
+            var moduleConfig = new ModuleArguments();
+            configAction?.Invoke(moduleConfig);
+
+            var staticFilesPath = moduleConfig.StaticFilesLocation ?? Path.Combine(Directory.GetCurrentDirectory(), "Files");
+            var filesPath = Path.Combine(staticFilesPath, "ModuleVideo");
 
             if (!Directory.Exists(filesPath))
             {
@@ -71,14 +75,14 @@
             builder.UseAuthentication();
         }
 
-        private static ModuleVideoConfiguration ModuleVideoConfiguration()
+        private static ModuleVideoSettings ModuleVideoConfiguration()
         {
             var configBuilder = new ConfigurationBuilder();
             configBuilder.AddJsonFile(Path.Combine(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty,
-                "ModuleVideoSettings.json"));
+                "module-video-settings.json"));
 
-            var settings = configBuilder.Build().Get<ModuleVideoConfiguration>();
+            var settings = configBuilder.Build().Get<ModuleVideoSettings>();
             return settings;
         }
 

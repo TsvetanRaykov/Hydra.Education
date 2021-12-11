@@ -12,9 +12,9 @@ namespace Hydra.Module.Video.Backend.Authentication.Services
 
     public class JwtTokenManager : IJwtTokenManager
     {
-        private readonly ModuleVideoConfiguration _configuration;
+        private readonly ModuleVideoSettings _configuration;
 
-        public JwtTokenManager(ModuleVideoConfiguration configuration)
+        public JwtTokenManager(ModuleVideoSettings configuration)
         {
             _configuration = configuration;
         }
