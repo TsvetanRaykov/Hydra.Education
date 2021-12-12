@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Components\ManageComponent.razor" />
+    <_ContentIncludedByDefault Remove="Components\VideoCard.razor" />
     <_ContentIncludedByDefault Remove="Pages\Class.razor" />
     <_ContentIncludedByDefault Remove="Pages\PlaylistCreate.razor" />
   </ItemGroup>
@@ -47,6 +48,10 @@
 
 	<ItemGroup>
 	  <UpToDateCheckInput Remove="Components\ManageComponent.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Components\VideoCard.razor" />
 	</ItemGroup>
 
 </Project>

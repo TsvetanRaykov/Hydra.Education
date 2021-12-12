@@ -12,7 +12,7 @@
         private readonly IClassService _classService;
         private readonly IFileService _fileService;
 
-        public ClassesController(IClassService classService, IFileService fileService)
+        public ClassesController(IClassService classService, IFileService fileService, ModuleVideoSettings config) : base(config)
         {
             _classService = classService;
             _fileService = fileService;

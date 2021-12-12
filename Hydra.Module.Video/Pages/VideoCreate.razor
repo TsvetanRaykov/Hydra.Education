@@ -2,7 +2,7 @@
 @using System.IO
 
 @inject IPlaylistService _playlistService
-@inject IFileService _fileService
+@inject IVideoService _videoService
 @inject AuthenticationStateProvider _authenticationStateProvider
 
 <Div Class="align-items-center d-flex flex-column mt-5">
@@ -14,11 +14,11 @@
             </Div>
             <InputFile OnChange="@OnFileSelected" accept=".mp4" disabled="@_uploading" />
         </FieldLabel>
-        <Validations @ref="_validators" Mode="ValidationMode.Auto" ValidateOnLoad="false">
+        <Validations @ref="_validators" Mode="ValidationMode.Manual" ValidateOnLoad="false">
             <Validation UsePattern="true">
                 <TextEdit Pattern="\p{L}{3,}" Class="my-4" @bind-Text="@_videoName" Placeholder="Name this video" Disabled="@_uploading">
                     <Feedback>
-                        <ValidationError Class="position-absolute" Style="top: 14rem;">Enter valid name!</ValidationError>
+                        <ValidationError Class="position-absolute w-25" Style="top: 14rem;">Enter valid name!</ValidationError>
                     </Feedback>
                 </TextEdit>
             </Validation>
@@ -57,6 +57,12 @@
             </Div>
         }
     }
+    else
+    {
+        <Div Class="my-1 mx-auto text-center text-danger" style="left: 0; right: 0;">
+            No file is selected
+        </Div>
+    }
     <Div Class="my-1 mx-auto text-center" style="left: 0; right: 0;">
         @if (_uploading)
         {
@@ -75,6 +81,18 @@
     </Div>
 </Div>
 
+<Div Class="d-flex flex-wrap flex-grow-1 bg-white rounded">
+    @if (_videos != null)
+    {
+        foreach (var video in _videos)
+        {
+            <Div Class="m-4">
+                <VideoCard Video="video" />
+            </Div>
+        }
+    }
+</Div>
+
 @code {
 
     private ClaimsPrincipal _user;
@@ -89,6 +107,7 @@
     private long _uploadedBytes;
     private long _totalBytes;
     private long _percent;
+    private IEnumerable<Video> _videos;
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,14 +116,12 @@
 
         _playlistAll = await _playlistService.GetPlayListsAsync(_user?.Identity?.Name);
 
-        for (var i = 0; i < 5; i++)
-        {
-            _playlistAll.Add(new VideoPlaylist
-            {
-                Id = 10 + i,
-                Name = $"Playlist {i}"
-            });
-        }
+        await LoadVideosAsync();
+    }
+
+    private async Task LoadVideosAsync()
+    {
+        _videos = await _videoService.GetOwnedVideosAsync(_user?.Identity?.Name);
     }
 
     private void OnFileSelected(InputFileChangeEventArgs arg)
@@ -114,7 +131,7 @@
 
     private async Task Upload()
     {
-        if (_validators.ValidateAll())
+        if (_validators.ValidateAll() && _selectedVideo != null)
         {
             _uploadedBytes = 0;
             _uploading = true;
@@ -122,7 +139,7 @@
             await InvokeAsync(StateHasChanged);
 
             _totalBytes = _selectedVideo.Size;
-            long chunkSize = 400000;
+            const long chunkSize = 400000;
             var numChunks = _totalBytes / chunkSize;
             var remainder = _totalBytes % chunkSize;
 
@@ -154,7 +171,7 @@
                     FullSize = _totalBytes
                 };
 
-                await _fileService.UploadFile(uploadRequest);
+                await _videoService.UploadVideoAsync(uploadRequest);
 
                 firstChunk = false;
 
@@ -178,15 +195,17 @@
                     FullSize = _totalBytes
                 };
 
-                await _fileService.UploadFile(uploadRequest);
+                await _videoService.UploadVideoAsync(uploadRequest);
 
                 _uploadedBytes += remainder;
                 _percent = _uploadedBytes * 100 / _totalBytes;
                 await InvokeAsync(StateHasChanged);
             }
+            _uploading = false;
+            ClearForm();
+            await LoadVideosAsync();
+            StateHasChanged();
         }
-        _uploading = false;
-        ClearForm();
     }
 
     private static object StringFileSize(long size)
@@ -220,6 +239,13 @@
         _percent = 0;
         _uploadedBytes = 0;
         _videoDescription = null;
-        StateHasChanged();
     }
+
+    private void ValidateFile(ValidatorEventArgs obj)
+    {
+        obj.Status = _selectedVideo == null
+            ? ValidationStatus.Error
+            : ValidationStatus.Success;
+    }
+
 }

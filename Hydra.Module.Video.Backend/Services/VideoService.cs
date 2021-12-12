@@ -1,12 +1,14 @@
-﻿using System;
-
-namespace Hydra.Module.Video.Backend.Services
+﻿namespace Hydra.Module.Video.Backend.Services
 {
     using Contracts;
     using Data;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Models;
+    using System;
     using System.Collections.Generic;
+    using System.Drawing;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     public class VideoService : ServiceBase, IVideoService
@@ -18,8 +20,10 @@ namespace Hydra.Module.Video.Backend.Services
             _dbContext = dbContext;
         }
 
-        public async Task<string> CreateVideoAsync(VideoRequestDto video, string uploaderId, string url)
+        public async Task<string> CreateVideoAsync(VideoRequestDto video, string uploaderId, string fullFilePath)
         {
+            var videoUrl = $"Files/{Path.GetFileName(fullFilePath)}";
+
             var newVideo = new Video()
             {
                 Name = video.Name,
@@ -30,7 +34,7 @@ namespace Hydra.Module.Video.Backend.Services
                 }).ToList(),
                 UploadedOn = DateTime.UtcNow,
                 UploadedBy = uploaderId,
-                Url = url,
+                Url = videoUrl,
                 Description = video.Description
             };
 
@@ -39,14 +43,102 @@ namespace Hydra.Module.Video.Backend.Services
             return await UpdateDbAsync(_dbContext);
         }
 
-        public Task<IEnumerable<VideoResponseDto>> GetVideosAsync(int playlistId)
+        public async Task<IEnumerable<VideoResponseDto>> GetVideosInPlayListsAsync(int[] playlists)
         {
-            throw new System.NotImplementedException();
+            var videos = await _dbContext
+                .Playlists.Where(p => playlists.Contains(p.Id))
+                .Select(p => p.Videos)
+                .SelectMany(v2P => v2P.Select(v => v.Video))
+                .Select(v => new VideoResponseDto
+                {
+                    Name = v.Name,
+                    Description = v.Description,
+                    Id = v.Id,
+                    UploadedBy = v.UploadedBy,
+                    UploadedOn = v.UploadedOn,
+                    Url = v.Url,
+                    PlayLists = v.Playlists.Select(v2P => new PlaylistResponseDto
+                    {
+                        Id = v2P.Playlist.Id,
+                        Description = v2P.Playlist.Description,
+                        ImageUrl = v2P.Playlist.ImageUrl,
+                        Name = v2P.Playlist.Name,
+                    }).ToList(),
+                })
+                .ToArrayAsync();
+
+            return videos;
         }
 
-        public Task<ClassResponseDto> GetVideoAsync(int id)
+        public async Task<IEnumerable<VideoResponseDto>> GetVideosByUploader(string uploaderId)
         {
-            throw new System.NotImplementedException();
+            var videos = await _dbContext
+                .Videos.Where(v => v.UploadedBy.Equals(uploaderId))
+                .Select(v => new VideoResponseDto
+                {
+                    Name = v.Name,
+                    Description = v.Description,
+                    Id = v.Id,
+                    UploadedBy = v.UploadedBy,
+                    UploadedOn = v.UploadedOn,
+                    Url = v.Url,
+                    PlayLists = v.Playlists.Select(v2P => new PlaylistResponseDto
+                    {
+                        Id = v2P.Playlist.Id,
+                        Description = v2P.Playlist.Description,
+                        ImageUrl = v2P.Playlist.ImageUrl,
+                        Name = v2P.Playlist.Name,
+                    }).ToList(),
+                })
+                .ToArrayAsync();
+
+            return videos;
+        }
+
+        public async Task<VideoResponseDto> GetVideoAsync(int id)
+        {
+            var video = await _dbContext.Videos
+                .Include(v => v.Playlists)
+                .ThenInclude(p => p.Playlist)
+                .ThenInclude(p => p.VideoGroups)
+                .ThenInclude(g => g.VideoGroup)
+
+                .FirstOrDefaultAsync(v => v.Id == id);
+            if (video == null) return null;
+
+            return new VideoResponseDto
+            {
+                Id = video.Id,
+                Name = video.Name,
+                Description = video.Description,
+                PlayLists = video.Playlists.Select(p => new PlaylistResponseDto
+                {
+                    Id = p.PlaylistId,
+                    Description = p.Playlist.Description,
+                    Name = p.Playlist.Name,
+                    ImageUrl = p.Playlist.ImageUrl,
+                }).ToList(),
+                UploadedBy = video.UploadedBy,
+                UploadedOn = video.UploadedOn,
+                Url = video.Url
+            };
+        }
+
+        private Image GenerateThumbnail(Uri imageUri, int width = 100, int height = 100)
+        {
+            try
+            {
+                using var fileStream = File.OpenRead(imageUri.AbsolutePath);
+                var image = Image.FromStream(fileStream);
+                var thumb = image.GetThumbnailImage(width, height, () => false, IntPtr.Zero);
+
+                return thumb;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.Message, e);
+                return null;
+            }
         }
     }
 }

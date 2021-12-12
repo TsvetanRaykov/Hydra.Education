@@ -3,9 +3,8 @@
     public class ModuleVideoSettings
     {
         public string ConnectionString { get; set; }
-
+        public string StaticFilesLocation { get; set; }
         public ApiSettings ApiSettings { get; set; }
-
         public JwtConfig JwtConfig { get; set; }
         public ApiClient[] ApiClients { get; set; }
     }

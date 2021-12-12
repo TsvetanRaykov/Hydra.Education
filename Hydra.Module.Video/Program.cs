@@ -48,10 +48,10 @@ namespace Hydra.Module.Video
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<ICacheService, CacheService>();
             builder.Services.AddSingleton<ITokenService, TokenService>();
-            builder.Services.AddSingleton<IFileService, FileService>();
             builder.Services.AddSingleton<IClassService, ClassService>();
             builder.Services.AddSingleton<IGroupService, GroupService>();
             builder.Services.AddSingleton<IPlaylistService, PlaylistService>();
+            builder.Services.AddSingleton<IVideoService, VideoService>();
 
             builder.Services.AddSingleton<IJsonSerializer, JsonNetSerializer>();
             builder.Services.AddSingleton<IDateTimeProvider, UtcDateTimeProvider>();

@@ -13,7 +13,7 @@ namespace Hydra.Module.Video.Backend.Controllers
 
         private readonly IGroupService _groupService;
         private readonly IFileService _fileService;
-        public GroupsController(IGroupService groupService, IFileService fileService)
+        public GroupsController(IGroupService groupService, IFileService fileService, ModuleVideoSettings config) : base(config)
         {
             _groupService = groupService;
             _fileService = fileService;

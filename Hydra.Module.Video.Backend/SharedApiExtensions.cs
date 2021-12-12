@@ -52,9 +52,10 @@
         public static void UseHydraModuleVideo(this IApplicationBuilder builder, Action<ModuleArguments> configAction = null)
         {
             using var scope = builder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            using var ctx = scope.ServiceProvider.GetRequiredService<VideoDbContext>();
+            using var dbContext = scope.ServiceProvider.GetRequiredService<VideoDbContext>();
+            var config = scope.ServiceProvider.GetService<ModuleVideoSettings>();
 
-            ctx.Database.EnsureCreated();
+            dbContext.Database.EnsureCreated();
 
             var moduleConfig = new ModuleArguments();
             configAction?.Invoke(moduleConfig);
@@ -72,6 +73,8 @@
                 FileProvider = new PhysicalFileProvider(filesPath),
                 RequestPath = "/Files"
             });
+
+            if (config != null) config.StaticFilesLocation = filesPath;
 
             builder.UseAuthentication();
         }

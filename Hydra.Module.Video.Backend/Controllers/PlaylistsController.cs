@@ -12,7 +12,7 @@ namespace Hydra.Module.Video.Backend.Controllers
         private readonly IFileService _fileService;
         private readonly IPlaylistService _playlistService;
 
-        public PlaylistsController(IFileService fileService, IPlaylistService playlistService)
+        public PlaylistsController(IFileService fileService, IPlaylistService playlistService, ModuleVideoSettings config) : base(config)
         {
             _fileService = fileService;
             _playlistService = playlistService;

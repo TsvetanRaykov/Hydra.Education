@@ -1,0 +1,21 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration _configuration
+
+<video preload="metadata" width="320" height="240" controls>
+    <source src="@_imageUrl" type="video/mp4">
+</video>
+
+@code {
+
+    [Parameter]
+    public Video Video { get; set; }
+
+    private string _imageUrl;
+
+    protected override void OnInitialized()
+    {
+        _imageUrl = $"{_configuration["ApiBaseUrl"]}/{Video.Url}";
+    }
+
+
+}
