@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace Hydra.Module.Video.Models
+﻿namespace Hydra.Module.Video.Contracts
 {
     public interface IManagedItem
     {

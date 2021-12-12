@@ -1,28 +1,28 @@
 ﻿@page "/VideoCreate"
+@using System.IO
 
 @inject IPlaylistService _playlistService
+@inject IFileService _fileService
 @inject AuthenticationStateProvider _authenticationStateProvider
 
 <Div Class="align-items-center d-flex flex-column mt-5">
     <Div Class="d-flex flex-column w-25">
         <FieldLabel class="d-flex hydra-video-upload m-0 rounded text-center">
-            <Div Class="align-items-center d-flex p-3 small">Select or drag and drop</Div>
+            <Div Class="align-items-center d-flex p-3 small">Select or drop a video file</Div>
             <Div Class="w-50">
                 <Icon Class="text-danger my-3" Name="IconName.Video" IconSize="IconSize.x3" />
             </Div>
-            <InputFile OnChange="@OnFileSelected"
-                       accept=".mp4"
-                       class="d-none"></InputFile>
+            <InputFile OnChange="@OnFileSelected" accept=".mp4" disabled="@_uploading" />
         </FieldLabel>
         <Validations @ref="_validators" Mode="ValidationMode.Auto" ValidateOnLoad="false">
             <Validation UsePattern="true">
-                <TextEdit Pattern="\p{L}{3,}" Class="my-4" @bind-Text="@_videoName" Placeholder="Name this video">
+                <TextEdit Pattern="\p{L}{3,}" Class="my-4" @bind-Text="@_videoName" Placeholder="Name this video" Disabled="@_uploading">
                     <Feedback>
-                        <ValidationError Class="hydra-validation-message">Enter valid name!</ValidationError>
+                        <ValidationError Class="position-absolute" Style="top: 14rem;">Enter valid name!</ValidationError>
                     </Feedback>
                 </TextEdit>
             </Validation>
-            <Dropdown Class="mb-4" Direction="Direction.Right">
+            <Dropdown Class="mb-4" Direction="Direction.Right" Disabled="@_uploading">
                 <DropdownToggle Class="w-100 btn-outline-info">
                     Add to playlist
                 </DropdownToggle>
@@ -33,24 +33,45 @@
                     }
                 </DropdownMenu>
             </Dropdown>
+            <MemoEdit Rows="3" Class="mb-4" @bind-Text="@_videoDescription" Placeholder="Write a short description" Disabled="@_uploading"></MemoEdit>
         </Validations>
-        <Button Color="Color.Primary" Clicked="@Upload">Upload</Button>
+        <Button Disabled="@_uploading" Color="Color.Primary" Clicked="@Upload">Upload</Button>
     </Div>
 </Div>
 <Div Class="my-3" style="height: 25px;">
     @if (_selectedVideo != null)
     {
-        <Div Class="mb-1 mx-auto text-center" style="left: 0; right: 0;">
-            <Span Class="mr-2 font-weight-bolder">@StringFileSize(_selectedVideo.Size)</Span>
-            <Span>@_selectedVideo.Name</Span>
-        </Div>
+        if (_uploading)
+        {
+            <Div Class="progress mb-2" style="height: 20px;">
+                <Div Class="font-italic progress-bar px-1 text-dark text-left" role="progressbar" Style="@($"width:{_percent}%;background-color: #A1D8AE")" aria-valuenow="@_uploadedBytes" aria-valuemin="0" aria-valuemax="@_totalBytes">
+                    @($"{_videoName} {_percent}%")
+                </Div>
+            </Div>
+        }
+        else
+        {
+            <Div Class="mb-1 mx-auto text-center" style="left: 0; right: 0;">
+                <Span Class="mr-2 font-weight-bolder">@StringFileSize(_selectedVideo.Size)</Span>
+                <Span>@_selectedVideo.Name</Span>
+            </Div>
+        }
     }
     <Div Class="my-1 mx-auto text-center" style="left: 0; right: 0;">
-        @foreach (var playlist in _playlistSelected)
+        @if (_uploading)
         {
-            <Badge Color="Color.Info" Class="mx-1 hydra-badge-close d-inline" Pill="true"
-                   CloseClicked="@(()=>OnPlaylistRemoved(playlist))">@playlist.Name</Badge>
+            @foreach (var playlist in _playlistSelected)
+            {
+                <Badge Color="Color.Info" Class="mx-1 hydra-badge-close d-inline" Pill="true">@playlist.Name</Badge>
             }
+        }
+        else
+        {
+            @foreach (var playlist in _playlistSelected)
+            {
+                <Badge Color="Color.Info" Class="mx-1 hydra-badge-close d-inline" Pill="true" CloseClicked="@(() => OnPlaylistRemoved(playlist))">@playlist.Name</Badge>
+            }
+        }
     </Div>
 </Div>
 
@@ -58,11 +79,16 @@
 
     private ClaimsPrincipal _user;
     private string _videoName;
+    private string _videoDescription;
     private IBrowserFile _selectedVideo;
     private Validations _validators;
     private List<VideoPlaylist> _playlistAll = new();
     private readonly HashSet<VideoPlaylist> _playlistSelected = new();
     private static readonly string[] Sizes = { "B", "KB", "MB", "GB", "TB" };
+    private bool _uploading;
+    private long _uploadedBytes;
+    private long _totalBytes;
+    private long _percent;
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,7 +97,7 @@
 
         _playlistAll = await _playlistService.GetPlayListsAsync(_user?.Identity?.Name);
 
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
         {
             _playlistAll.Add(new VideoPlaylist
             {
@@ -86,9 +112,81 @@
         _selectedVideo = arg.File;
     }
 
-    private void Upload()
+    private async Task Upload()
     {
-        _validators.ValidateAll();
+        if (_validators.ValidateAll())
+        {
+            _uploadedBytes = 0;
+            _uploading = true;
+
+            await InvokeAsync(StateHasChanged);
+
+            _totalBytes = _selectedVideo.Size;
+            long chunkSize = 400000;
+            var numChunks = _totalBytes / chunkSize;
+            var remainder = _totalBytes % chunkSize;
+
+            var justFileName = Path.GetFileNameWithoutExtension(_selectedVideo.Name);
+            var extension = Path.GetExtension(_selectedVideo.Name);
+            var newFileNameWithoutPath = $"{justFileName}-{DateTime.Now.Ticks.ToString()}{extension}";
+
+            var firstChunk = true;
+
+            await using var inStream = _selectedVideo.OpenReadStream(long.MaxValue);
+
+            var uploadRequest = new VideoUploadRequest
+            {
+                Name = _videoName,
+                Playlists = _playlistSelected.Select(l => l.Id).ToArray(),
+                Description = _videoDescription
+            };
+
+            for (var i = 0; i < numChunks; i++)
+            {
+                var buffer = new byte[chunkSize];
+                await inStream.ReadAsync(buffer, 0, buffer.Length);
+                uploadRequest.FileChunk = new FileChunk
+                {
+                    Data = buffer,
+                    FileNameNoPath = newFileNameWithoutPath,
+                    Offset = _uploadedBytes,
+                    FirstChunk = firstChunk,
+                    FullSize = _totalBytes
+                };
+
+                await _fileService.UploadFile(uploadRequest);
+
+                firstChunk = false;
+
+                _uploadedBytes += chunkSize;
+                _percent = _uploadedBytes * 100 / _totalBytes;
+
+                await InvokeAsync(StateHasChanged);
+            }
+
+            if (remainder > 0)
+            {
+                var buffer = new byte[remainder];
+                await inStream.ReadAsync(buffer, 0, buffer.Length);
+
+                uploadRequest.FileChunk = new FileChunk
+                {
+                    Data = buffer,
+                    FileNameNoPath = newFileNameWithoutPath,
+                    Offset = _uploadedBytes,
+                    FirstChunk = firstChunk,
+                    FullSize = _totalBytes
+                };
+
+                await _fileService.UploadFile(uploadRequest);
+
+                _uploadedBytes += remainder;
+                _percent = _uploadedBytes * 100 / _totalBytes;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        _uploading = false;
+        ClearForm();
     }
 
     private static object StringFileSize(long size)
@@ -113,4 +211,15 @@
         _playlistSelected.Remove(playlist);
     }
 
+    private void ClearForm()
+    {
+        _selectedVideo = null;
+        _videoName = null;
+        _playlistSelected.Clear();
+        _totalBytes = 0;
+        _percent = 0;
+        _uploadedBytes = 0;
+        _videoDescription = null;
+        StateHasChanged();
+    }
 }

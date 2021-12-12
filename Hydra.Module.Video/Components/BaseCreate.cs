@@ -1,4 +1,6 @@
-﻿namespace Hydra.Module.Video.Components
+﻿using Hydra.Module.Video.Contracts;
+
+namespace Hydra.Module.Video.Components
 {
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;

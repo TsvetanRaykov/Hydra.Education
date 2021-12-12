@@ -1,4 +1,6 @@
-﻿namespace Hydra.Module.Video.Extensions
+﻿using Hydra.Module.Video.Contracts;
+
+namespace Hydra.Module.Video.Extensions
 {
     using Models;
     using System.ComponentModel.DataAnnotations;

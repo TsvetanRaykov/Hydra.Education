@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Hydra.Module.Video.Contracts;
 
 namespace Hydra.Module.Video.Models
 {

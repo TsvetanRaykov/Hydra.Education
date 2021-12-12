@@ -38,7 +38,9 @@ namespace Hydra.Module.Video.Backend.Services
                 .Playlists
                 .Where(c => c.TrainerId.Equals(user))
                 .Include(c => c.VideoGroups)
+                .ThenInclude(g => g.VideoGroup)
                 .Include(p => p.Videos)
+                .ThenInclude(p => p.Video)
                 .ToListAsync();
 
             return playlist.Select(p => new PlaylistResponseDto

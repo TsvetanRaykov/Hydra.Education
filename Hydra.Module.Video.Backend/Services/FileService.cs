@@ -13,7 +13,7 @@
             try
             {
 
-                if (fileChunk.FirstChunk && System.IO.File.Exists(fullPath))
+                if (fileChunk.FirstChunk && File.Exists(fullPath))
                 {
                     File.Delete(fullPath);
                 }
@@ -29,6 +29,20 @@
             {
                 return Task.FromResult(ex.Message);
             }
+        }
+
+        public string DeleteFile(string fullPath)
+        {
+            try
+            {
+                File.Delete(fullPath);
+            }
+            catch (IOException e)
+            {
+                return e.Message;
+            }
+
+            return null;
         }
     }
 }

@@ -20,11 +20,11 @@ namespace Hydra.Module.Video.Services
             _httpClient = httpClientFactory.CreateClient("authorized");
         }
 
-        public async Task<bool> UploadFileChunk(FileChunk fileChunk)
+        public async Task<bool> UploadFile<T>(T file) where T : IChunk
         {
             try
             {
-                var result = await _httpClient.PostAsJsonAsync("api/video/file", fileChunk);
+                var result = await _httpClient.PostAsJsonAsync("api/video/file", file);
                 result.EnsureSuccessStatusCode();
                 var responseBody = await result.Content.ReadAsStringAsync();
                 return Convert.ToBoolean(responseBody);
