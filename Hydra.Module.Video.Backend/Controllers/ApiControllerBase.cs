@@ -21,13 +21,19 @@
             Configuration = configuration;
         }
 
-        protected static string BuildImagePath(string className)
+        protected string BuildImagePath(string imageName)
         {
-            var imageName = Convert.ToBase64String(Encoding.UTF8.GetBytes(className));
+            var newName = Convert.ToBase64String(Encoding.UTF8.GetBytes(imageName));
 
-            // $"{name}-{DateTime.Now.Ticks}.png";
-            var imagePath = $"Files/{imageName}.png";
+            var imagePath = Path.Combine(Configuration.StaticFilesLocation, $"{newName}.png");
+
             return imagePath;
+        }
+
+        protected string BuildImageUrl(string absoluteLocalPath)
+        {
+            var imagePath = absoluteLocalPath.Replace(Configuration.StaticFilesLocation, "");
+            return $"/Files/{imagePath}";
         }
 
         protected async Task<string> SaveImage(IFileService fileService, string imagePath, byte[] imageData)

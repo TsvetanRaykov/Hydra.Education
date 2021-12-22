@@ -23,10 +23,7 @@ namespace Hydra.Module.Video.Backend.Controllers
         [Authorize(Roles = "Admin, Trainer")]
         public async Task<ActionResult> Post(GroupRequestDto groupRequestDto)
         {
-
-            var imagePath = $"Files/{groupRequestDto.Name}-{DateTime.Now.Ticks}.png";
-
-            var filePath = Path.Combine(Environment.CurrentDirectory, imagePath);
+            var imagePath = BuildImagePath(groupRequestDto.Name);
 
             var file = new FileChunk
             {
@@ -35,12 +32,12 @@ namespace Hydra.Module.Video.Backend.Controllers
                 FirstChunk = true
             };
 
-            var fileSaveError = await _fileService.WriteFileChunkAsync(filePath, file);
+            var fileSaveError = await _fileService.WriteFileChunkAsync(imagePath, file);
 
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
 
-            var resultError = await _groupService.CreateGroupAsync(groupRequestDto.Name, groupRequestDto.Description, $"/{imagePath}", groupRequestDto.ClassId);
+            var resultError = await _groupService.CreateGroupAsync(groupRequestDto.Name, groupRequestDto.Description, BuildImageUrl(imagePath), groupRequestDto.ClassId);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);
@@ -68,11 +65,11 @@ namespace Hydra.Module.Video.Backend.Controllers
                 if (!string.IsNullOrWhiteSpace(fileSaveError))
                     return BadRequest(false);
 
-                groupUpdate.ImageUrl = imagePath;
+                groupUpdate.ImageUrl = BuildImageUrl(imagePath);
             }
 
             var resultError = await _groupService.UpdateGroupAsync(groupUpdate.Id, groupUpdate.Name, groupUpdate.Description,
-                $"/{groupUpdate.ImageUrl}");
+                groupUpdate.ImageUrl);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

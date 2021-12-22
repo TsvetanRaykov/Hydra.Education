@@ -27,8 +27,8 @@ namespace Hydra.Module.Video.Backend.Controllers
 
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
-
-            var resultError = await _playlistService.CreatePlaylistAsync(newPlaylist.Name, newPlaylist.Description, $"/{imagePath}", User.Identity?.Name);
+            
+            var resultError = await _playlistService.CreatePlaylistAsync(newPlaylist.Name, newPlaylist.Description, BuildImageUrl(imagePath), User.Identity?.Name);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);
@@ -64,11 +64,11 @@ namespace Hydra.Module.Video.Backend.Controllers
                 if (!string.IsNullOrWhiteSpace(fileSaveError))
                     return BadRequest(false);
 
-                playlistUpdate.ImageUrl = imagePath;
+                playlistUpdate.ImageUrl = BuildImageUrl(imagePath);
             }
 
             var resultError = await _playlistService.UpdatePlaylistAsync(playlistUpdate.Id, playlistUpdate.Name, playlistUpdate.Description,
-                $"/{playlistUpdate.ImageUrl}");
+                playlistUpdate.ImageUrl);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

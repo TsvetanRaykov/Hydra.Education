@@ -38,7 +38,7 @@
             if (!string.IsNullOrWhiteSpace(fileSaveError))
                 return BadRequest(false);
 
-            var resultError = await _classService.CreateClassAsync(newClassRequest.Name, newClassRequest.Description, $"/{imagePath}", User.Identity?.Name);
+            var resultError = await _classService.CreateClassAsync(newClassRequest.Name, newClassRequest.Description, BuildImageUrl(imagePath), User.Identity?.Name);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);
@@ -66,11 +66,11 @@
                 if (!string.IsNullOrWhiteSpace(fileSaveError))
                     return BadRequest(false);
 
-                classUpdate.ImageUrl = imagePath;
+                classUpdate.ImageUrl = BuildImageUrl(imagePath);
             }
 
             var resultError = await _classService.UpdateClassAsync(classUpdate.Id, classUpdate.Name, classUpdate.Description,
-               $"/{classUpdate.ImageUrl}");
+               classUpdate.ImageUrl);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

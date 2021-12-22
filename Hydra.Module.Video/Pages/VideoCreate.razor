@@ -6,7 +6,7 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 
 <Div Class="align-items-center d-flex flex-column mt-5">
-    <Div Class="d-flex flex-column w-25">
+    <Div Class="d-flex flex-column w-25 position-relative">
         <FieldLabel class="d-flex hydra-video-upload m-0 rounded text-center">
             <Div Class="align-items-center d-flex p-3 small">Select or drop a video file</Div>
             <Div Class="w-50">
@@ -18,11 +18,11 @@
             <Validation UsePattern="true">
                 <TextEdit Pattern="\p{L}{3,}" Class="my-4" @bind-Text="@_videoName" Placeholder="Name this video" Disabled="@_uploading">
                     <Feedback>
-                        <ValidationError Class="position-absolute w-25" Style="top: 14rem;">Enter valid name!</ValidationError>
+                        <ValidationError Class="position-absolute w-25" Style="top: 8rem;">Enter valid name!</ValidationError>
                     </Feedback>
                 </TextEdit>
             </Validation>
-            <Dropdown Class="mb-4" Direction="Direction.Right" Disabled="@_uploading">
+            <Dropdown Class="mb-4" Direction="Direction.Right" Disabled="@(_uploading || _playlistAll.Count == 0)">
                 <DropdownToggle Class="w-100 btn-outline-info">
                     Add to playlist
                 </DropdownToggle>
