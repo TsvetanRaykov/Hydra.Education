@@ -38,8 +38,9 @@ namespace Hydra.Module.Video.Backend.Services
         {
             var group = await _dbContext
                 .VideoGroups
-                .Include(c => c.Users)
-                .Include(c => c.Playlists)
+                .Include(g => g.VideoClass)
+                .Include(g => g.Users)
+                .Include(g => g.Playlists)
                 .ThenInclude(p => p.Playlist.Videos)
                 .FirstAsync(c => c.Id.Equals(id));
 
@@ -62,7 +63,14 @@ namespace Hydra.Module.Video.Backend.Services
                     }).ToList(),
                 }).ToList(),
                 Users = group.Users.Select(u => u.UserId).ToList(),
-                Class = group.VideoClass
+                Class = new VideoClass
+                {
+                    Name = group.VideoClass.Name,
+                    Id = group.VideoClass.Id,
+                    ImageUrl = group.VideoClass.ImageUrl,
+                    TrainerId = group.VideoClass.TrainerId,
+                    Description = group.VideoClass.Description
+                }
             };
         }
 

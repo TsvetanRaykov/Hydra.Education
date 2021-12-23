@@ -1,0 +1,61 @@
+﻿@inject IStudentsService _studentsService
+
+<Modal @ref="_modalUsersToGroup">
+    <ModalContent>
+        <ModalHeader>Students</ModalHeader>
+        <ModalBody>
+            @if (_students != null)
+            {
+                <Div style="max-height: 70vh; overflow-y: auto;">
+                    <DataGrid TItem="StudentDto"
+                          Data="_students"
+                          SelectionMode="DataGridSelectionMode.Multiple"
+                          @bind-SelectedRows="_selectedStudents" Responsive>
+                        <DataGridMultiSelectColumn TItem="StudentDto" Width="30px"></DataGridMultiSelectColumn>
+                        <DataGridCommandColumn TItem="StudentDto"></DataGridCommandColumn>
+                        <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.FullName)" Caption="Name" Sortable="true" />
+                        <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.IdentityNumber)" Caption="Faculty Number" Sortable="true" />
+                    </DataGrid>
+                </Div>
+            }
+            else
+            {
+                <HydraLoader />
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
+            <Button Color="Color.Primary" Clicked="@OnSubmit">Add</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    private Modal _modalUsersToGroup;
+
+    private StudentDto[] _students;
+
+    private List<StudentDto> _selectedStudents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _students = await _studentsService.GetStudentsAsync();
+    }
+
+    public void ShowModel()
+    {
+        _modalUsersToGroup.Show();
+    }
+
+    private void HideModal()
+    {
+        _modalUsersToGroup.Hide();
+    }
+
+    private void OnSubmit()
+    {
+        _modalUsersToGroup.Hide();
+    }
+
+}

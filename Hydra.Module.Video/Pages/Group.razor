@@ -15,10 +15,17 @@
         </Div>
     </ManageComponent>
 
-    <Div class="container-fluid d-flex flex-wrap">
-
+    <Div Class="d-flex">
+        <Div Class="d-flex flex-wrap flex-grow-1 flex-column">
+            <Div Class="h5">
+                Members <Icon Name="IconName.Add" Clicked="() => _modalAddUsers.ShowModel()" Style="cursor: pointer"></Icon>
+            </Div>
+            <ModalAddUsersToGroup @ref="_modalAddUsers" />
+        </Div>
+        <Div Class="d-flex flex-wrap bg-white flex-grow-1 flex-column">
+            <Div Class="h5">Playlists</Div>
+        </Div>
     </Div>
-
 }
 else
 {
@@ -45,4 +52,16 @@ else
             _groupService.UpdateGroupAsync(_videoGroup);
         }
     }
+
+    private void AddMembersToGroup()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void AddPlaylistToGroup()
+    {
+        throw new NotImplementedException();
+    }
+
+    private ModalAddUsersToGroup _modalAddUsers;
 }

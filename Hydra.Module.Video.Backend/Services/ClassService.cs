@@ -49,6 +49,14 @@
                 Id = @class.Id,
                 Groups = @class.VideoGroups.Select(group => new GroupResponseDto
                 {
+                    Class = new VideoClass
+                    {
+                        Name = @class.Name,
+                        Id = @class.Id,
+                        ImageUrl = @class.ImageUrl,
+                        TrainerId = @class.TrainerId,
+                        Description = @class.Description
+                    },
                     Id = group.Id,
                     Name = group.Name,
                     Description = group.Description,
@@ -100,6 +108,14 @@
                 Id = @class.Id,
                 Groups = @class.VideoGroups.Select(group => new GroupResponseDto
                 {
+                    Class = new VideoClass
+                    {
+                        Name = @class.Name,
+                        Id = @class.Id,
+                        ImageUrl = @class.ImageUrl,
+                        TrainerId = @class.TrainerId,
+                        Description = @class.Description
+                    },
                     Id = group.Id,
                     Name = group.Name,
                     Description = group.Description,

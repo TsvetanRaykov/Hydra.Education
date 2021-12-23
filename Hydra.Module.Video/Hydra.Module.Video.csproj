@@ -8,6 +8,7 @@
 
 	<ItemGroup>
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.9" />
+    <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.9" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.9" />
     <PackageReference Include="JWT" Version="8.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.1" />
@@ -33,10 +34,6 @@
     <_ContentIncludedByDefault Remove="Pages\Class.razor" />
     <_ContentIncludedByDefault Remove="Pages\PlaylistCreate.razor" />
   </ItemGroup>
-
-	<ItemGroup>
-		<None Update="Pages/Class.razor.css" CssScope="video-001-scope" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="wwwroot\js\video-module.js" />

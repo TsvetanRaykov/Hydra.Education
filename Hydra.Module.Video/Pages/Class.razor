@@ -20,10 +20,7 @@
         @foreach (var @group in _videoClass.VideoGroups)
         {
             <Div Class="m-4">
-                <Button Type="@ButtonType.Link" To="@($"Group/{@group.Id}")">
-
-                    <GroupCard VideoGroup="@group"></GroupCard>
-                </Button>
+                <GroupCard VideoGroup="@group"></GroupCard>
             </Div>
         }
     </Div>

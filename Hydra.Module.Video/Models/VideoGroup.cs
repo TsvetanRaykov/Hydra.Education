@@ -20,5 +20,7 @@ namespace Hydra.Module.Video.Models
         public string ImageUrl { get; set; }
 
         public int ClassId { get; set; }
+
+        public VideoClass Class { get; set; }
     }
 }
