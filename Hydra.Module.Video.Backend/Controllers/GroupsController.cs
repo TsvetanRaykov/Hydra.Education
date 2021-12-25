@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Hydra.Module.Video.Backend.Contracts;
-using Hydra.Module.Video.Backend.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Hydra.Module.Video.Backend.Controllers
+﻿namespace Hydra.Module.Video.Backend.Controllers
 {
+    using Contracts;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Models;
+    using System.Threading.Tasks;
+    
     public class GroupsController : ApiControllerBase
     {
 
@@ -70,6 +68,18 @@ namespace Hydra.Module.Video.Backend.Controllers
 
             var resultError = await _groupService.UpdateGroupAsync(groupUpdate.Id, groupUpdate.Name, groupUpdate.Description,
                 groupUpdate.ImageUrl);
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpPost("{id:int}/users")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> SetUsers(int id, [FromBody] string[] usersIds)
+        {
+            var resultError = await _groupService.SetUsersToGroup(id, usersIds);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

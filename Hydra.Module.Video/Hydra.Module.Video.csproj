@@ -6,6 +6,10 @@
 
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="wwwroot\endpoints.json" />
+  </ItemGroup>
+
 	<ItemGroup>
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.9" />
     <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.9" />
@@ -36,6 +40,9 @@
   </ItemGroup>
 
 	<ItemGroup>
+	  <None Include="wwwroot\endpoints.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Include="wwwroot\js\video-module.js" />
 	</ItemGroup>
 

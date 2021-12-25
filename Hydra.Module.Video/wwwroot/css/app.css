@@ -145,3 +145,7 @@ a, .btn-link {
     margin-left: 10px;
     border-radius: 50%;
 }
+
+.hydra-group-members-container .table-fixed-header {
+    height: auto !important;
+}

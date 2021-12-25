@@ -102,6 +102,22 @@ namespace Hydra.Module.Video.Backend.Services
             return null;
         }
 
+        public async Task<string> SetUsersToGroup(int groupId, string[] usersIds)
+        {
+            var @group = await _dbContext.VideoGroups
+                .Include(g => g.Users)
+                .FirstOrDefaultAsync(g => g.Id == groupId);
+
+            if (@group != null)
+            {
+                @group.Users.Clear();
+                @group.Users.AddRange(usersIds.Select(id => new UserToGroup { UserId = id, VideoGroup = @group }));
+                return await UpdateDbAsync(_dbContext);
+            }
+
+            return "Group not found";
+        }
+
         public Task<string> DeleteGroupAsync(int id)
         {
             throw new System.NotImplementedException();

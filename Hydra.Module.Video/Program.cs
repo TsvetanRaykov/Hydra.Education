@@ -32,13 +32,22 @@ namespace Hydra.Module.Video
                 .AddFontAwesomeIcons();
 
             builder.AddHydraAuthorization();
-
+          
             builder.Services.AddSingleton<BearerTokenHandler>();
+
+            var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+            };
+            
+            using var response = await httpClient.GetAsync("endpoints.json");
+            await using var stream = await response.Content.ReadAsStreamAsync();
+            builder.Configuration.AddJsonStream(stream);
+
 
             builder.Services.AddHttpClient("authorized", config =>
                 {
-                    var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-                    config.BaseAddress = new Uri(configuration.GetValue<string>("ApiBaseUrl"));
+                    config.BaseAddress = new Uri("https://localhost:5001");
                 })
                 .AddHttpMessageHandler<BearerTokenHandler>();
 

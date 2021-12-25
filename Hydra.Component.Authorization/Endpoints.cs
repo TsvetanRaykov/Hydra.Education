@@ -1,9 +1,12 @@
 ﻿namespace Hydra.Component.Authorization
 {
-    public static class Endpoints
+    public class Endpoints
     {
-        public const string SignIn = @"/Account/Login";
-        public const string SignOut = @"/Account/Logout";
-        public const string User = @"/User";
+        public string SignIn { get; set; }
+        public string SignOut { get; set; }
+        public string User { get; set; }
+
+        // The public list of users that API expose to the authorized clients
+        public string Users { get; set; }
     }
 }

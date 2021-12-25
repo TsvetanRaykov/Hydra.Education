@@ -2,6 +2,7 @@
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IGroupService _groupService
+@inject IStudentsService _studentsService
 
 @if (_videoGroup != null)
 {
@@ -15,12 +16,40 @@
         </Div>
     </ManageComponent>
 
-    <Div Class="d-flex">
-        <Div Class="d-flex flex-wrap flex-grow-1 flex-column">
-            <Div Class="h5">
-                Members <Icon Name="IconName.Add" Clicked="() => _modalAddUsers.ShowModel()" Style="cursor: pointer"></Icon>
+    <Div Class="d-flex flex-wrap">
+        <Div Class="d-flex flex-wrap flex-grow-1 flex-column hydra-group-members-container pr-4">
+            <Div Flex="Flex.JustifyContent.Between">
+                <Div Class="h5">
+                    Members <Icon Name="IconName.Edit" IconSize="IconSize.Small" TextColor="TextColor.Success"
+                              Clicked="() => _modalAddUsers.ShowModal(_members.Select(m=>m.UserName).ToArray())"
+                              Style="cursor: pointer" />
+                </Div>
+                <Field Horizontal="true" Width="Width.Is75" Class="mr-3">
+                    <TextEdit @bind-Text="@_customFilterValue" Placeholder="search..." Role="@TextRole.Search" />
+                </Field>
             </Div>
-            <ModalAddUsersToGroup @ref="_modalAddUsers" />
+            @if (_members != null)
+            {
+                @if (_members.Count > 0)
+                {
+                    <DataGrid TItem="StudentDto"
+                  Data="_members"
+                  SelectedRowChanged="OnStudentSelect"
+                  TotalItems="@_members.Count"
+                  PageSize="7"
+                  ShowPager="@(_members.Count > 7)"
+                  FixedHeader="true"
+                  CustomFilter="@OnCustomFilter">
+                        <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.FullName)" Caption="Name" Sortable="true" />
+                        <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.IdentityNumber)" Caption="#" Sortable="true" />
+                    </DataGrid>
+                }
+            }
+            else
+            {
+                <HydraLoader />
+            }
+            <ModalAddUsersToGroup @ref="_modalAddUsers" OnFormSubmit="AddMembersToGroup" />
         </Div>
         <Div Class="d-flex flex-wrap bg-white flex-grow-1 flex-column">
             <Div Class="h5">Playlists</Div>
@@ -40,9 +69,21 @@ else
 
     private ManageComponent _managedComponent;
 
+    private StudentDto[] _students;
+
+    private List<StudentDto> _members;
+
     protected override async Task OnInitializedAsync()
     {
+        _students = await _studentsService.GetStudentsAsync();
+        await LoadMembers();
+    }
+
+    private async Task LoadMembers()
+    {
         _videoGroup = await _groupService.GetGroupAsync(Id);
+        _members = _students.Where(s => _videoGroup.Users.Contains(s.UserName)).ToList();
+        await InvokeAsync(StateHasChanged);
     }
 
     private void UpdateGroup()
@@ -53,9 +94,11 @@ else
         }
     }
 
-    private void AddMembersToGroup()
+    private async Task AddMembersToGroup(List<StudentDto> students)
     {
-        throw new NotImplementedException();
+        _members = null;
+        await _groupService.SetUsersAsync(int.Parse(Id), students.Select(s => s.UserName).ToArray());
+        await LoadMembers();
     }
 
     private void AddPlaylistToGroup()
@@ -64,4 +107,25 @@ else
     }
 
     private ModalAddUsersToGroup _modalAddUsers;
+
+    private void OnStudentSelect(StudentDto student)
+    {
+        //throw new NotImplementedException();
+    }
+
+    private string _customFilterValue;
+
+    private bool OnCustomFilter(StudentDto model)
+    {
+        if (string.IsNullOrEmpty(_customFilterValue))
+        {
+            return true;
+        }
+
+        return
+            model.FullName?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
+            || model.IdentityNumber?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+
 }

@@ -16,8 +16,8 @@ public class StudentsService : IStudentsService
     {
         _navigationManager = navigationManager;
         _httpClient = httpClientFactory.CreateClient("authorized");
-        _httpClient.BaseAddress = new Uri(_navigationManager.BaseUri);
     }
+
     public async Task<StudentDto[]> GetStudentsAsync()
     {
         var result = await _httpClient.GetAsync($"/User/students");
@@ -27,13 +27,4 @@ public class StudentsService : IStudentsService
 
     }
 
-    public Task<bool> AddStudentsToGroup(string[] studentIds, string groupId)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<bool> RemoveStudentsFromGroup(string[] studentIds, string groupId)
-    {
-        throw new System.NotImplementedException();
-    }
 }
