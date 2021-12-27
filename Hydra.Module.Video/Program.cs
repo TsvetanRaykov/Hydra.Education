@@ -33,7 +33,7 @@ namespace Hydra.Module.Video
 
             builder.AddHydraAuthorization();
           
-            builder.Services.AddSingleton<BearerTokenHandler>();
+            builder.Services.AddTransient<BearerTokenHandler>();
 
             var httpClient = new HttpClient
             {

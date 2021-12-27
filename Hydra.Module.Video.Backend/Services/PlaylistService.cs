@@ -38,7 +38,7 @@ namespace Hydra.Module.Video.Backend.Services
                 .Playlists
                 .Where(c => c.TrainerId.Equals(user))
                 .Include(c => c.VideoGroups)
-                .ThenInclude(g => g.VideoGroup)
+                .ThenInclude(g => g.Group)
                 .Include(p => p.Videos)
                 .ThenInclude(p => p.Video)
                 .ToListAsync();
@@ -58,11 +58,11 @@ namespace Hydra.Module.Video.Backend.Services
                 }).ToList(),
                 VideoGroups = p.VideoGroups.Select(g => new GroupResponseDto
                 {
-                    Name = g.VideoGroup.Name,
-                    Description = g.VideoGroup.Description,
+                    Name = g.Group.Name,
+                    Description = g.Group.Description,
                     Id = g.GroupId,
-                    ImageUrl = g.VideoGroup.ImageUrl,
-                    Class = g.VideoGroup.VideoClass
+                    ImageUrl = g.Group.ImageUrl,
+                    Class = g.Group.VideoClass
                 }).ToList()
 
             }).ToList();
@@ -85,11 +85,11 @@ namespace Hydra.Module.Video.Backend.Services
                 VideoGroups = playlist.VideoGroups.Select(g => new GroupResponseDto
                 {
                     Id = g.GroupId,
-                    Name = g.VideoGroup.Name,
-                    ImageUrl = g.VideoGroup.ImageUrl,
-                    Description = g.VideoGroup.Description,
-                    Class = g.VideoGroup.VideoClass,
-                    Users = g.VideoGroup.Users.Select(u => u.UserId).ToList(),
+                    Name = g.Group.Name,
+                    ImageUrl = g.Group.ImageUrl,
+                    Description = g.Group.Description,
+                    Class = g.Group.VideoClass,
+                    Users = g.Group.Users.Select(u => u.UserId).ToList(),
                 }).ToList()
             };
         }

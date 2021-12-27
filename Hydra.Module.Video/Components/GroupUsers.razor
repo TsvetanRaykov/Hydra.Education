@@ -1,0 +1,76 @@
+﻿@inject IGroupService _groupService
+@inject IStudentsService _studentsService
+
+<Div Flex="Flex.JustifyContent.Between">
+    <Div Class="h5 ml-3">
+        Members <Icon Name="IconName.Edit" IconSize="IconSize.Small" TextColor="TextColor.Success"
+                      Clicked="() => _modalAddUsers.ShowModal(_members.Select(m=>m.UserName).ToArray())"
+                      Style="cursor: pointer" />
+    </Div>
+    <Field Horizontal="true" Width="Width.Is75" Class="mr-3">
+        <TextEdit @bind-Text="@_studentsFilter" Placeholder="search..." Role="@TextRole.Search" />
+    </Field>
+</Div>
+@if (_members != null)
+{
+    @if (_members.Count > 0)
+    {
+        <DataGrid TItem="StudentDto"
+          Data="_members"
+          TotalItems="@_members.Count"
+          PageSize="7"
+          ShowPager="@(_members.Count > 7)"
+          FixedHeader="true"
+          CustomFilter="@OnCustomFilter">
+            <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.FullName)" Caption="Name" Sortable="true" />
+            <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.IdentityNumber)" Caption="#" Sortable="true" />
+        </DataGrid>
+    }
+}
+else
+{
+    <HydraLoader />
+}
+<ModalAddUsersToGroup @ref="_modalAddUsers" OnFormSubmit="AddMembersToGroup" />
+
+@code {
+
+    [CascadingParameter]
+    public VideoGroup Group { get; set; }
+
+    private StudentDto[] _students;
+    private List<StudentDto> _members;
+    private ModalAddUsersToGroup _modalAddUsers;
+    private string _studentsFilter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _students = await _studentsService.GetStudentsAsync();
+        _members = _students.Where(s => Group.Users.Contains(s.UserName)).ToList();
+    }
+
+    private bool OnCustomFilter(StudentDto model)
+    {
+        if (string.IsNullOrEmpty(_studentsFilter))
+        {
+            return true;
+        }
+
+        return
+            model.FullName?.Contains(_studentsFilter, StringComparison.OrdinalIgnoreCase) == true
+            || model.IdentityNumber?.Contains(_studentsFilter, StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private async Task AddMembersToGroup(List<StudentDto> students)
+    {
+        _members = null;
+        await _groupService.SetUsersAsync(Group.Id, students.Select(s => s.UserName).ToArray());
+        await LoadMembers();
+    }
+
+    private async Task LoadMembers()
+    {
+        var videoGroup = await _groupService.GetGroupAsync(Group.Id.ToString());
+        _members = _students.Where(s => videoGroup.Users.Contains(s.UserName)).ToList();
+    }
+}

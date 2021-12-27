@@ -10,7 +10,7 @@ namespace Hydra.Module.Video.Backend.Data
         public string ImageUrl { get; set; }
         public string TrainerId { get; set; }
 
-        public List<VideoToPlaylist> Videos { get; set; }
-        public List<PlaylistToGroup> VideoGroups { get; set; }
+        public ICollection<VideoToPlaylist> Videos { get; set; }
+        public ICollection<PlaylistToGroup> VideoGroups { get; set; }
     }
 }

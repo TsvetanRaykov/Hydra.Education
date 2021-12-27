@@ -16,9 +16,9 @@ namespace Hydra.Module.Video.Backend.Data
         [Required]
         public int VideoClassId { get; set; }
         
-        public virtual VideoClass VideoClass { get; set; }
+        public VideoClass VideoClass { get; set; }
 
-        public List<UserToGroup> Users { get; set; }
-        public List<PlaylistToGroup> Playlists { get; set; }
+        public ICollection<UserToGroup> Users { get; set; }
+        public ICollection<PlaylistToGroup> Playlists { get; set; }
     }
 }

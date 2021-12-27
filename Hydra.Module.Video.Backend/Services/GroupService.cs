@@ -110,8 +110,7 @@ namespace Hydra.Module.Video.Backend.Services
 
             if (@group != null)
             {
-                @group.Users.Clear();
-                @group.Users.AddRange(usersIds.Select(id => new UserToGroup { UserId = id, VideoGroup = @group }));
+                @group.Users = usersIds.Select(id => new UserToGroup { UserId = id, Group = @group }).ToArray();
                 return await UpdateDbAsync(_dbContext);
             }
 

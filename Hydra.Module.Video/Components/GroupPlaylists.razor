@@ -1,0 +1,57 @@
+﻿@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IPlaylistService _playlistService
+@inject IGroupService _groupService
+
+<Div Class="h5 ml-3">
+    Playlists <Dropdown Direction="Direction.Right" Class="d-inline-block">
+        <DropdownToggle Class="border-0 btn-outline-info">
+            <Icon Name="IconName.Add" IconSize="IconSize.Small"></Icon>
+        </DropdownToggle>
+        <DropdownMenu>
+            @if (_availablePlaylists is {Count: > 0 })
+            {
+                foreach (var playlist in _availablePlaylists)
+                {
+                    <DropdownItem Value="playlist" Clicked="AddPlaylistToGroup">@playlist.Name</DropdownItem>
+                }
+            }
+            else
+            {
+                <DropdownItem>No playlists. Create <a href="PlaylistCreate">the first one</a>.</DropdownItem>
+            }
+        </DropdownMenu>
+    </Dropdown>
+</Div>
+
+@code {
+
+    [CascadingParameter]
+    public VideoGroup Group { get; set; }
+
+    private List<VideoPlaylist> _allPlaylists;
+    private List<VideoPlaylist> _availablePlaylists;
+    private List<VideoPlaylist> _groupPlaylists;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _allPlaylists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
+        _groupPlaylists = Group.Playlists;
+        _availablePlaylists = _allPlaylists.Except(_groupPlaylists).ToList();
+    //await LoadGroupPlaylists();
+    }
+
+    private async Task LoadGroupPlaylists()
+    {
+        var videoGroup = await _groupService.GetGroupAsync(Group.Id.ToString());
+        _groupPlaylists = videoGroup.Playlists;
+        _availablePlaylists = _allPlaylists.Except(_groupPlaylists).ToList();
+    }
+
+    private void AddPlaylistToGroup(object playlist)
+    {
+        //_playlistService.
+        throw new NotImplementedException();
+    }
+
+}

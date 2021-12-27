@@ -21,7 +21,7 @@ namespace Hydra.Module.Video.Backend.Data
                 .HasForeignKey(c => c.VideoClassId);
 
             modelBuilder.Entity<UserToGroup>()
-                .HasOne(g => g.VideoGroup)
+                .HasOne(g => g.Group)
                 .WithMany(u => u.Users)
                 .HasForeignKey(u => u.GroupId);
 
@@ -29,7 +29,7 @@ namespace Hydra.Module.Video.Backend.Data
                 .HasKey(k => new { k.UserId, k.GroupId });
 
             modelBuilder.Entity<PlaylistToGroup>()
-                .HasOne(e => e.VideoGroup)
+                .HasOne(e => e.Group)
                 .WithMany(p => p.Playlists);
 
             modelBuilder.Entity<PlaylistToGroup>()

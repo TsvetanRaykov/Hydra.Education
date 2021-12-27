@@ -15,9 +15,10 @@
                       Data="_students"
                       SelectionMode="DataGridSelectionMode.Multiple"
                       TotalItems="@_students.Length"
-                      PageSize="@_students.Length"
-                      @bind-SelectedRows="_selectedStudents"
+                      PageSize="10"
+                      ShowPager="true"
                       FixedHeader="true"
+                      @bind-SelectedRows="_selectedStudents"
                       CustomFilter="@OnCustomFilter"
                       Responsive>
                     <DataGridMultiSelectColumn TItem="StudentDto" Width="30px"></DataGridMultiSelectColumn>
@@ -33,7 +34,7 @@
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
-            <Button Color="Color.Primary" Clicked="@OnSubmit">Add</Button>
+            <Button Color="Color.Primary" Clicked="@OnSubmit">Set</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>

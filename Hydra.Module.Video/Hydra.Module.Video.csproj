@@ -33,6 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\GroupPlaylists.razor" />
+    <_ContentIncludedByDefault Remove="Components\GroupUsers.razor" />
     <_ContentIncludedByDefault Remove="Components\ManageComponent.razor" />
     <_ContentIncludedByDefault Remove="Components\VideoCard.razor" />
     <_ContentIncludedByDefault Remove="Pages\Class.razor" />
@@ -56,6 +58,14 @@
 
 	<ItemGroup>
 	  <UpToDateCheckInput Remove="Components\VideoCard.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Components\GroupUsers.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Components\GroupPlaylists.razor" />
 	</ItemGroup>
 
 </Project>

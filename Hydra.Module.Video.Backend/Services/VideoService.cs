@@ -101,7 +101,7 @@
                 .Include(v => v.Playlists)
                 .ThenInclude(p => p.Playlist)
                 .ThenInclude(p => p.VideoGroups)
-                .ThenInclude(g => g.VideoGroup)
+                .ThenInclude(g => g.Group)
 
                 .FirstOrDefaultAsync(v => v.Id == id);
             if (video == null) return null;
