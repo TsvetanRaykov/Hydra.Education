@@ -11,5 +11,6 @@
         Task<IEnumerable<VideoResponseDto>> GetVideosByUploader(string uploaderId);
         Task<IEnumerable<VideoResponseDto>> GetAllVideosAsync();
         Task<VideoResponseDto> GetVideoAsync(int id);
+        Task<string> DeleteVideoAsync(int id);
     }
 }

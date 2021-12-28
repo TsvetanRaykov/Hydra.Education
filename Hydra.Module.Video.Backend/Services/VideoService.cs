@@ -148,6 +148,16 @@
             };
         }
 
+        public async Task<string> DeleteVideoAsync(int id)
+        {
+            var video = await _dbContext.Videos.FindAsync(id);
+            if (video == null) return "Video not found.";
+
+            _dbContext.Videos.Remove(video);
+
+            return await UpdateDbAsync(_dbContext);
+        }
+
         private Image GenerateThumbnail(Uri imageUri, int width = 100, int height = 100)
         {
             try

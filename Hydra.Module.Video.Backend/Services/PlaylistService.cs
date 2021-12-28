@@ -160,6 +160,7 @@ namespace Hydra.Module.Video.Backend.Services
         {
             var playlist = await _dbContext.Playlists
                 .Include(p => p.Videos)
+                .ThenInclude(v => v.Video)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (playlist == null) return "Playlist not found.";

@@ -149,3 +149,14 @@ a, .btn-link {
 .hydra-group-members-container .table-fixed-header {
     height: auto !important;
 }
+
+.hydra-menu-more-icon {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+
+    .hydra-menu-more-icon:hover {
+        background-color: #E9ECEF;
+        color: #0069D9;
+    }

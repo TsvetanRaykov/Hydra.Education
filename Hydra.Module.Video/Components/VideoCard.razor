@@ -1,21 +1,109 @@
 ﻿@using Microsoft.Extensions.Configuration
+@using System.Diagnostics.CodeAnalysis
 @inject IConfiguration _configuration
+@inject IPlaylistService _playlistService
+@inject IVideoService _videoService
+@inject AuthenticationStateProvider _authenticationStateProvider
 
-<video preload="metadata" width="320" height="240" controls>
-    <source src="@_imageUrl" type="video/mp4">
-</video>
+<Div Class="align-items-start d-flex">
+    <video preload="metadata" width="320" height="240" controls>
+        <source src="@_imageUrl" type="video/mp4">
+    </video>
+    @if (_actionsAllowed)
+    {
+        <Div @onclick="ShowActions"
+         Class="align-items-center border d-flex justify-content-center rounded-circle hydra-menu-more-icon">
+            
+            <Dropdown @ref="_actionDropDown" Direction="Direction.Left">
+                <DropdownMenu>
+                    @if (Playlist is not null)
+                    {
+                        <DropdownItem Value="Video" Clicked="RemoveVideoFromPlaylist">Remove</DropdownItem>
+                    }
+                    <DropdownItem Value="Video" Clicked="DeleteVideo">Delete</DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+            <Icon Name="IconName.MoreHorizontal"></Icon>
+        </Div>
+    }
+</Div>
+<Div Class="">
+    <Div>@Video.Name</Div>
+    <Div>@Video.Description</Div>
+    <Div>@Video.UploadedBy</Div>
+    <Div>@Video.UploadedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</Div>
+</Div>
+
+<HydraDialog @ref="_confirmDialog" ButtonNoText="Cancel" ButtonYesText="Ok" EventId="@_eventId" OnAccept="ActionAcceptedAsync">
+    @_confirmationText
+</HydraDialog>
 
 @code {
 
     [Parameter]
     public Video Video { get; set; }
 
+    [Parameter, AllowNull]
+    public VideoPlaylist Playlist { get; set; }
+
+    [Parameter]
+    public EventCallback VideoRemoved { get; set; }
+
     private string _imageUrl;
 
-    protected override void OnInitialized()
+    private bool _actionsAllowed;
+
+    private Dropdown _actionDropDown;
+
+    private string _confirmationText;
+
+    private HydraDialog _confirmDialog;
+
+    private int _eventId;
+
+    protected override async Task OnInitializedAsync()
     {
         _imageUrl = $"{_configuration["ApiBaseUrl"]}/{Video.Url}";
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
+        {
+            _actionsAllowed = Playlist is not null || Video.UploadedBy == authState.User.Identity?.Name;
+        }
     }
 
+    private void RemoveVideoFromPlaylist(object arg)
+    {
+        _eventId = 1;
+        _confirmationText = $"{Video.Name} will be removed from playlist {Playlist.Name}.";
+        _confirmDialog.Show();
+    }
+
+    private void DeleteVideo(object obj)
+    {
+        _eventId = 2;
+        _confirmationText = $"{Video.Name} will be permanently deleted from the storage.";
+        _confirmDialog.Show();
+    }
+
+    private void ShowActions()
+    {
+        _actionDropDown.Toggle();
+    }
+
+    private async Task ActionAcceptedAsync(int eventId)
+    {
+        switch (eventId)
+        {
+            case 1:
+                await _playlistService.RemoveVideoAsync(Playlist.Id.ToString(), Video.Id.ToString());
+                await VideoRemoved.InvokeAsync();
+                break;
+            case 2:
+                await _videoService.DeleteVideoAsync(Video.Id.ToString());
+                await VideoRemoved.InvokeAsync();
+                break;
+
+        }
+    }
 
 }

@@ -9,7 +9,7 @@
         Task<bool> UploadVideoAsync(VideoUploadRequest video);
         Task<IEnumerable<Video>> GetOwnedVideosAsync(string ownerId);
         Task<IEnumerable<Video>> GetAllVideosAsync();
-
+        Task<bool> DeleteVideoAsync(string id);
     }
 
 }
