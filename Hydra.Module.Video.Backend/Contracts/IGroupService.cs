@@ -8,7 +8,8 @@ namespace Hydra.Module.Video.Backend.Contracts
         Task<string> CreateGroupAsync(string name, string description, string imageUrl, int classId);
         Task<GroupResponseDto> GetGroupAsync(int id);
         Task<string> UpdateGroupAsync(int id, string name, string description, string imageUrl);
-        Task<string> SetUsersToGroup(int groupId, string[] usersIds);
+        Task<string> SetUsersAsync(int groupId, string[] usersIds);
+        Task<string> AddPlaylist(int groupId, int playlistId);
         Task<string> DeleteGroupAsync(int id);
     }
 }

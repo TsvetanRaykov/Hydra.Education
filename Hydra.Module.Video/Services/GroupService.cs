@@ -1,11 +1,10 @@
-﻿using Hydra.Module.Video.Contracts;
-using System;
-using System.Net.Http.Json;
-
-namespace Hydra.Module.Video.Services
+﻿namespace Hydra.Module.Video.Services
 {
+    using Contracts;
     using Models;
+    using System;
     using System.Net.Http;
+    using System.Net.Http.Json;
     using System.Threading.Tasks;
 
     public class GroupService : IGroupService
@@ -44,6 +43,14 @@ namespace Hydra.Module.Video.Services
         public async Task<bool> SetUsersAsync(int id, string[] userIds)
         {
             var result = await _httpClient.PostAsJsonAsync($"api/video/groups/{id}/users", userIds);
+            result.EnsureSuccessStatusCode();
+            var response = await result.Content.ReadFromJsonAsync<bool>();
+            return response;
+        }
+
+        public async Task<bool> AddPlaylistAsync(int groupId, int playlistId)
+        {
+            var result = await _httpClient.PostAsync($"api/video/groups/{groupId}/playlists/{playlistId}", null);
             result.EnsureSuccessStatusCode();
             var response = await result.Content.ReadFromJsonAsync<bool>();
             return response;

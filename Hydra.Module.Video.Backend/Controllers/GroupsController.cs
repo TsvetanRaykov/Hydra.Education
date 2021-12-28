@@ -79,7 +79,19 @@
         [Authorize(Roles = "Admin, Trainer")]
         public async Task<ActionResult> SetUsers(int id, [FromBody] string[] usersIds)
         {
-            var resultError = await _groupService.SetUsersToGroup(id, usersIds);
+            var resultError = await _groupService.SetUsersAsync(id, usersIds);
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpPost("{groupId:int}/playlists/{playlistId}")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> SetUsers(int groupId, int playlistId)
+        {
+            var resultError = await _groupService.AddPlaylist(groupId, playlistId);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

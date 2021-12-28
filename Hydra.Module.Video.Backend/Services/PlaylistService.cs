@@ -73,7 +73,10 @@ namespace Hydra.Module.Video.Backend.Services
             var playlist = await _dbContext
                 .Playlists
                 .Include(c => c.VideoGroups)
+                .ThenInclude(g => g.Group)
+                .ThenInclude(g=>g.Users)
                 .Include(p => p.Videos)
+                .ThenInclude(g => g.Video)
                 .FirstAsync(p => p.Id.Equals(id));
 
             return new PlaylistResponseDto
@@ -90,6 +93,15 @@ namespace Hydra.Module.Video.Backend.Services
                     Description = g.Group.Description,
                     Class = g.Group.VideoClass,
                     Users = g.Group.Users.Select(u => u.UserId).ToList(),
+                }).ToList(),
+                Videos = playlist.Videos.Select(v => new VideoResponseDto
+                {
+                    Id = v.Video.Id,
+                    Description = v.Video.Description,
+                    Name = v.Video.Name,
+                    UploadedBy = v.Video.UploadedBy,
+                    Url = v.Video.Url,
+                    UploadedOn = v.Video.UploadedOn
                 }).ToList()
             };
         }
