@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Hydra.Module.Video.Contracts;
 
@@ -16,9 +17,12 @@ namespace Hydra.Module.Video.Models
         [Display(Name = "Playlist Image")]
         public string ImageUrl { get; set; }
 
+        public List<Video> Videos { get; set; } = new();
+
         public bool Equals(VideoPlaylist other)
         {
             return other != null && Id == other.Id;
         }
+
     }
 }

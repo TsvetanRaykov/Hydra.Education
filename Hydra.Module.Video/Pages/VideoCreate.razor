@@ -5,8 +5,8 @@
 @inject IVideoService _videoService
 @inject AuthenticationStateProvider _authenticationStateProvider
 
-<Div Class="align-items-center d-flex flex-column mt-5">
-    <Div Class="d-flex flex-column w-25 position-relative">
+<Div Class="justify-content-center mt-5 row col-12">
+    <Div Class="col-lg-5 col-md-7 col-sm-11 col-xl-3 d-flex flex-column position-relative">
         <FieldLabel class="d-flex hydra-video-upload m-0 rounded text-center">
             <Div Class="align-items-center d-flex p-3 small">Select or drop a video file</Div>
             <Div Class="w-50">
@@ -14,27 +14,29 @@
             </Div>
             <InputFile OnChange="@OnFileSelected" accept=".mp4" disabled="@_uploading" />
         </FieldLabel>
-        <Validations @ref="_validators" Mode="ValidationMode.Manual" ValidateOnLoad="false">
+        <Validations @ref="_validators" Mode="ValidationMode.Auto" ValidateOnLoad="false">
             <Validation UsePattern="true">
-                <TextEdit Pattern="\p{L}{3,}" Class="my-4" @bind-Text="@_videoName" Placeholder="Name this video" Disabled="@_uploading">
-                    <Feedback>
-                        <ValidationError Class="position-absolute w-25" Style="top: 8rem;">Enter valid name!</ValidationError>
-                    </Feedback>
-                </TextEdit>
+                <Div Class="position-relative">
+                    <TextEdit Pattern="\p{L}{3,}" Class="my-4" @bind-Text="@_videoName" Placeholder="Name this video" Disabled="@_uploading">
+                        <Feedback>
+                            <ValidationError Class="position-absolute" Style="top: 3.6rem;">Enter valid name!</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </Div>
             </Validation>
-            <Dropdown Class="mb-4" Direction="Direction.Right" Disabled="@(_uploading || _playlistAll.Count == 0)">
-                <DropdownToggle Class="w-100 btn-outline-info">
-                    Add to playlist
-                </DropdownToggle>
-                <DropdownMenu>
-                    @foreach (var playlist in _playlistAll)
-                    {
-                        <DropdownItem Clicked="() => OnPlaylistSelect(playlist)">@playlist.Name</DropdownItem>
-                    }
-                </DropdownMenu>
-            </Dropdown>
-            <MemoEdit Rows="3" Class="mb-4" @bind-Text="@_videoDescription" Placeholder="Write a short description" Disabled="@_uploading"></MemoEdit>
         </Validations>
+        <Dropdown Class="mb-4" Direction="Direction.Right" Disabled="@(_uploading || _playlistAll.Count == 0)">
+            <DropdownToggle Class="w-100 btn-outline-info">
+                Add to playlist
+            </DropdownToggle>
+            <DropdownMenu>
+                @foreach (var playlist in _playlistAll)
+                {
+                    <DropdownItem Clicked="() => OnPlaylistSelect(playlist)">@playlist.Name</DropdownItem>
+                }
+            </DropdownMenu>
+        </Dropdown>
+        <MemoEdit Rows="3" Class="mb-4" @bind-Text="@_videoDescription" Placeholder="Write a short description" Disabled="@_uploading"></MemoEdit>
         <Button Disabled="@_uploading" Color="Color.Primary" Clicked="@Upload">Upload</Button>
     </Div>
 </Div>
@@ -152,24 +154,24 @@
             await using var inStream = _selectedVideo.OpenReadStream(long.MaxValue);
 
             var uploadRequest = new VideoUploadRequest
-            {
-                Name = _videoName,
-                Playlists = _playlistSelected.Select(l => l.Id).ToArray(),
-                Description = _videoDescription
-            };
+                {
+                    Name = _videoName,
+                    Playlists = _playlistSelected.Select(l => l.Id).ToArray(),
+                    Description = _videoDescription
+                };
 
             for (var i = 0; i < numChunks; i++)
             {
                 var buffer = new byte[chunkSize];
                 await inStream.ReadAsync(buffer, 0, buffer.Length);
                 uploadRequest.FileChunk = new FileChunk
-                {
-                    Data = buffer,
-                    FileNameNoPath = newFileNameWithoutPath,
-                    Offset = _uploadedBytes,
-                    FirstChunk = firstChunk,
-                    FullSize = _totalBytes
-                };
+                    {
+                        Data = buffer,
+                        FileNameNoPath = newFileNameWithoutPath,
+                        Offset = _uploadedBytes,
+                        FirstChunk = firstChunk,
+                        FullSize = _totalBytes
+                    };
 
                 await _videoService.UploadVideoAsync(uploadRequest);
 
@@ -187,13 +189,13 @@
                 await inStream.ReadAsync(buffer, 0, buffer.Length);
 
                 uploadRequest.FileChunk = new FileChunk
-                {
-                    Data = buffer,
-                    FileNameNoPath = newFileNameWithoutPath,
-                    Offset = _uploadedBytes,
-                    FirstChunk = firstChunk,
-                    FullSize = _totalBytes
-                };
+                    {
+                        Data = buffer,
+                        FileNameNoPath = newFileNameWithoutPath,
+                        Offset = _uploadedBytes,
+                        FirstChunk = firstChunk,
+                        FullSize = _totalBytes
+                    };
 
                 await _videoService.UploadVideoAsync(uploadRequest);
 

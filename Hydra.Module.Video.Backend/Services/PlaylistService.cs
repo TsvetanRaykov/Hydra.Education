@@ -74,7 +74,7 @@ namespace Hydra.Module.Video.Backend.Services
                 .Playlists
                 .Include(c => c.VideoGroups)
                 .ThenInclude(g => g.Group)
-                .ThenInclude(g=>g.Users)
+                .ThenInclude(g => g.Users)
                 .Include(p => p.Videos)
                 .ThenInclude(g => g.Video)
                 .FirstAsync(p => p.Id.Equals(id));
@@ -109,6 +109,9 @@ namespace Hydra.Module.Video.Backend.Services
         public async Task<string> UpdatePlaylistAsync(int id, string name, string description, string imageUrl)
         {
             var playlist = await _dbContext.FindAsync<Playlist>(id);
+
+            if (playlist == null) return "Playlist not found.";
+
             var toUpdate = false;
             if (playlist.Name != name)
             {
@@ -132,6 +135,40 @@ namespace Hydra.Module.Video.Backend.Services
             }
 
             return null;
+        }
+
+        public async Task<string> AddVideo(int id, int videoId)
+        {
+            var playlist = await _dbContext.Playlists
+                .Include(p => p.Videos)
+                .ThenInclude(v => v.Video)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (playlist == null) return "Playlist not found.";
+
+            var exist = playlist.Videos.FirstOrDefault(v => v.Video.Id == videoId);
+            if (exist != null) return null;
+
+            playlist.Videos.Add(new VideoToPlaylist
+            {
+                VideoId = videoId
+            });
+
+            return await UpdateDbAsync(_dbContext);
+        }
+
+        public async Task<string> RemoveVideo(int id, int videoId)
+        {
+            var playlist = await _dbContext.Playlists
+                .Include(p => p.Videos)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (playlist == null) return "Playlist not found.";
+            var video = playlist.Videos.FirstOrDefault(v => v.Video.Id == videoId);
+            if (video == null) return null;
+
+            playlist.Videos.Remove(video);
+
+            return await UpdateDbAsync(_dbContext);
         }
     }
 }

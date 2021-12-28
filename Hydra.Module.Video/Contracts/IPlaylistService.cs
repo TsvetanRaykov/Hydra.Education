@@ -10,5 +10,7 @@ namespace Hydra.Module.Video.Contracts
         Task<bool> UpdatePlaylistAsync(VideoPlaylist videoPlaylist);
         Task<List<VideoPlaylist>> GetPlayListsAsync(string userId);
         Task<VideoPlaylist> GetPlaylistAsync(string id);
+        Task<bool> AddVideoAsync(string playlistId, string videoId);
+        Task<bool> RemoveVideoAsync(string playlistId, string videoId);
     }
 }

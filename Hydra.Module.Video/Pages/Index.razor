@@ -33,7 +33,7 @@
         }
         else
         {
-            <HydraLoader />
+            <HydraLoader>Loading Classes ...</HydraLoader>
         }
     </Div>
     <Div Class="d-flex flex-wrap flex-grow-1 bg-white rounded">
@@ -52,12 +52,12 @@
             }
             else
             {
-                <Label>There are no playlists created yet.</Label>
+                <Div>No playlists. <a href="PlaylistCreate">Create the first one</a></Div>
             }
         }
         else
         {
-            <HydraLoader />
+            <HydraLoader>Loading Playlists ...</HydraLoader>
         }
     </Div>
 </Div>
@@ -65,17 +65,14 @@
 
 @code {
 
-    private ClaimsPrincipal _user;
     private List<VideoClass> _videoClasses;
     private List<VideoPlaylist> _playlists;
 
     protected override async void OnInitialized()
     {
-        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        _user = authenticationState.User;
-        _videoClasses = await _classService.GetClassesAsync(_user.Identity?.Name);
-
-        _playlists = await _playlistService.GetPlayListsAsync(_user.Identity?.Name);
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _videoClasses = await _classService.GetClassesAsync(authState.User.Identity?.Name);
+        _playlists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
 
         StateHasChanged();
     }

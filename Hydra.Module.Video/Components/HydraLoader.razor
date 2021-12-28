@@ -1,4 +1,20 @@
-﻿<Div Class="text-center">
+﻿@using System.Diagnostics.CodeAnalysis
+<Div Class="text-center">
     <Div Class="spinner-border"></Div>
-    <Div Class="text-muted">Loading content ...</Div>
+    <Div Class="text-muted small">
+        @if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+        else
+        {
+            <Span>Loading content ...</Span>
+        }
+    </Div>
 </Div>
+
+@code
+{
+    [Parameter, AllowNull]
+    public RenderFragment ChildContent { get; set; }
+}

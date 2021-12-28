@@ -70,5 +70,12 @@
         {
             return await _videoService.GetVideosByUploader(id);
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<IEnumerable<VideoResponseDto>> GetAllVideos()
+        {
+            return await _videoService.GetAllVideosAsync();
+        }
     }
 }

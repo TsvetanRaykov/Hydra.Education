@@ -7,9 +7,9 @@
     public interface IVideoService
     {
         Task<bool> UploadVideoAsync(VideoUploadRequest video);
-        Task<IEnumerable<Video>> GetVideosInPlayListsAsync(int[] playlists);
         Task<IEnumerable<Video>> GetOwnedVideosAsync(string ownerId);
-        Task<Video> GetVideoAsync(int id);
+        Task<IEnumerable<Video>> GetAllVideosAsync();
+
     }
 
 }

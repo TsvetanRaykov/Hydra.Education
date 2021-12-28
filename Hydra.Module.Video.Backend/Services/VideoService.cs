@@ -95,6 +95,30 @@
             return videos;
         }
 
+        public async Task<IEnumerable<VideoResponseDto>> GetAllVideosAsync()
+        {
+            var videos = await _dbContext.Videos
+                .Select(v => new VideoResponseDto
+                {
+                    Name = v.Name,
+                    Description = v.Description,
+                    Id = v.Id,
+                    UploadedBy = v.UploadedBy,
+                    UploadedOn = v.UploadedOn,
+                    Url = v.Url,
+                    PlayLists = v.Playlists.Select(v2P => new PlaylistResponseDto
+                    {
+                        Id = v2P.Playlist.Id,
+                        Description = v2P.Playlist.Description,
+                        ImageUrl = v2P.Playlist.ImageUrl,
+                        Name = v2P.Playlist.Name,
+                    }).ToList(),
+                })
+                .ToArrayAsync();
+
+            return videos;
+        }
+
         public async Task<VideoResponseDto> GetVideoAsync(int id)
         {
             var video = await _dbContext.Videos
