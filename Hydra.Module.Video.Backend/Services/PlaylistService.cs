@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hydra.Module.Video.Backend.Contracts;
-using Hydra.Module.Video.Backend.Data;
-using Hydra.Module.Video.Backend.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
-namespace Hydra.Module.Video.Backend.Services
+﻿namespace Hydra.Module.Video.Backend.Services
 {
+    using Contracts;
+    using Data;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class PlaylistService : ServiceBase, IPlaylistService
     {
         private readonly VideoDbContext _dbContext;
@@ -39,8 +39,12 @@ namespace Hydra.Module.Video.Backend.Services
                 .Where(c => c.TrainerId.Equals(user))
                 .Include(c => c.VideoGroups)
                 .ThenInclude(g => g.Group)
+                .ThenInclude(v => v.VideoClass)
                 .Include(p => p.Videos)
                 .ThenInclude(p => p.Video)
+                .Include(p => p.VideoGroups)
+                .ThenInclude(g => g.Group)
+                .ThenInclude(g => g.Users)
                 .ToListAsync();
 
             return playlist.Select(p => new PlaylistResponseDto
@@ -62,7 +66,15 @@ namespace Hydra.Module.Video.Backend.Services
                     Description = g.Group.Description,
                     Id = g.GroupId,
                     ImageUrl = g.Group.ImageUrl,
-                    Class = g.Group.VideoClass
+                    Class = new ClassResponseDto()
+                    {
+                        Name = g.Group.VideoClass.Name,
+                        Id = g.Group.VideoClass.Id,
+                        ImageUrl = g.Group.VideoClass.ImageUrl,
+                        Description = g.Group.VideoClass.Description,
+                        TrainerId = g.Group.VideoClass.TrainerId
+                    },
+                    Users = g.Group.Users.Select(u => u.UserId).ToList()
                 }).ToList()
 
             }).ToList();
@@ -74,9 +86,12 @@ namespace Hydra.Module.Video.Backend.Services
                 .Playlists
                 .Include(c => c.VideoGroups)
                 .ThenInclude(g => g.Group)
+                .ThenInclude(v => v.VideoClass)
+                .Include(p => p.VideoGroups)
+                .ThenInclude(g => g.Group)
                 .ThenInclude(g => g.Users)
                 .Include(p => p.Videos)
-                .ThenInclude(g => g.Video)
+                .ThenInclude(p => p.Video)
                 .FirstAsync(p => p.Id.Equals(id));
 
             return new PlaylistResponseDto
@@ -91,7 +106,14 @@ namespace Hydra.Module.Video.Backend.Services
                     Name = g.Group.Name,
                     ImageUrl = g.Group.ImageUrl,
                     Description = g.Group.Description,
-                    Class = g.Group.VideoClass,
+                    Class = new ClassResponseDto()
+                    {
+                        Name = g.Group.VideoClass.Name,
+                        Id = g.Group.VideoClass.Id,
+                        ImageUrl = g.Group.VideoClass.ImageUrl,
+                        Description = g.Group.VideoClass.Description,
+                        TrainerId = g.Group.VideoClass.TrainerId
+                    },
                     Users = g.Group.Users.Select(u => u.UserId).ToList(),
                 }).ToList(),
                 Videos = playlist.Videos.Select(v => new VideoResponseDto

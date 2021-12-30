@@ -74,7 +74,7 @@
         _videoClasses = await _classService.GetClassesAsync(authState.User.Identity?.Name);
         _playlists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
 }

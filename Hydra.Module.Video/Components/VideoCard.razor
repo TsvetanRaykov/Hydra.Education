@@ -13,7 +13,7 @@
     {
         <Div @onclick="ShowActions"
          Class="align-items-center border d-flex justify-content-center rounded-circle hydra-menu-more-icon">
-            
+
             <Dropdown @ref="_actionDropDown" Direction="Direction.Left">
                 <DropdownMenu>
                     @if (Playlist is not null)
@@ -27,11 +27,11 @@
         </Div>
     }
 </Div>
-<Div Class="">
-    <Div>@Video.Name</Div>
-    <Div>@Video.Description</Div>
-    <Div>@Video.UploadedBy</Div>
-    <Div>@Video.UploadedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</Div>
+<Div Class="small">
+    <Div Class="font-weight-bold">@Video.Name</Div>
+    <Div Class="text-muted">@Video.Description</Div>
+    <Div>uploader: <Span Class="text-muted">@Video.UploadedBy</Span></Div>
+    <Div>uploaded on: <Span Class="text-muted">@Video.UploadedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</Span> </Div>
 </Div>
 
 <HydraDialog @ref="_confirmDialog" ButtonNoText="Cancel" ButtonYesText="Ok" EventId="@_eventId" OnAccept="ActionAcceptedAsync">

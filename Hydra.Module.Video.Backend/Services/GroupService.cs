@@ -41,6 +41,7 @@
                 .Include(g => g.Users)
                 .Include(g => g.Playlists)
                 .ThenInclude(p => p.Playlist.Videos)
+                .ThenInclude(v=>v.Video)
                 .FirstAsync(c => c.Id.Equals(id));
 
             return new GroupResponseDto()
@@ -65,7 +66,7 @@
                     }).ToList(),
                 }).ToList(),
                 Users = group.Users.Select(u => u.UserId).ToList(),
-                Class = new VideoClass
+                Class = new ClassResponseDto()
                 {
                     Name = group.VideoClass.Name,
                     Id = group.VideoClass.Id,

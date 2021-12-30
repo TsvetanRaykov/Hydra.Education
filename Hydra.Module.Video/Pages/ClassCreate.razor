@@ -1,22 +1,52 @@
 ﻿@page "/ClassCreate"
 
 @inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClassService _classService
-
 
 <ManageComponent @ref="_manageComponent" ManagedItem="_videoClass">
     <Button Color="Color.Warning" Clicked="@CreateClass">Create</Button>
 </ManageComponent>
-
+<Div Class="d-flex flex-wrap">
+    @if (_videoClasses != null)
+    {
+        @if (_videoClasses.Any())
+        {
+            foreach (var videoClass in _videoClasses.OrderByDescending(c => c.Id))
+            {
+                <Div Class="m-4">
+                    <Button Type="@ButtonType.Link" To="@($"Class/{videoClass.Id}")">
+                        <ClassCard VideoClass="@videoClass" />
+                    </Button>
+                </Div>
+            }
+        }
+        else
+        {
+            <Label>There are no classes defined yet.</Label>
+        }
+    }
+    else
+    {
+        <HydraLoader>Loading Classes ...</HydraLoader>
+    }
+</Div>
 @code
 {
     private readonly VideoClass _videoClass = new();
 
     private ManageComponent _manageComponent;
 
+    private IEnumerable<VideoClass> _videoClasses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _videoClasses = await _classService.GetClassesAsync(authState.User.Identity?.Name);
+    }
+
     private async Task CreateClass()
     {
-
         if (_manageComponent.Validate())
         {
 

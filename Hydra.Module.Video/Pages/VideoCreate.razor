@@ -86,7 +86,7 @@
 <Div Class="d-flex flex-wrap flex-grow-1 bg-white rounded">
     @if (_videos != null)
     {
-        foreach (var video in _videos)
+        foreach (var video in _videos.OrderByDescending(v=>v.UploadedOn))
         {
             <Div Class="m-4">
                 <VideoCard Video="video" />

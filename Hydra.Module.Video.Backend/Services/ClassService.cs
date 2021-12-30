@@ -39,6 +39,12 @@
             var @class = await _dbContext
                 .VideoClasses
                 .Include(c => c.VideoGroups)
+                .ThenInclude(g => g.Playlists)
+                .ThenInclude(p => p.Playlist)
+                .ThenInclude(p => p.Videos)
+                .ThenInclude(v => v.Video)
+                .Include(c => c.VideoGroups)
+                .ThenInclude(g => g.Users)
                 .FirstAsync(c => c.Id.Equals(id));
 
             return new ClassResponseDto
@@ -49,18 +55,35 @@
                 Id = @class.Id,
                 Groups = @class.VideoGroups.Select(group => new GroupResponseDto
                 {
-                    Class = new VideoClass
+                    Class = new ClassResponseDto
                     {
                         Name = @class.Name,
                         Id = @class.Id,
+                        Description = @class.Description,
                         ImageUrl = @class.ImageUrl,
-                        TrainerId = @class.TrainerId,
-                        Description = @class.Description
+                        TrainerId = @class.TrainerId
                     },
                     Id = group.Id,
                     Name = group.Name,
                     Description = group.Description,
-                    ImageUrl = group.ImageUrl
+                    ImageUrl = group.ImageUrl,
+                    Users = group.Users.Select(u => u.UserId).ToList(),
+                    Playlists = group.Playlists.Select(p => new PlaylistResponseDto
+                    {
+                        Id = p.PlaylistId,
+                        Name = p.Playlist.Name,
+                        Description = p.Playlist.Description,
+                        ImageUrl = p.Playlist.ImageUrl,
+                        Videos = p.Playlist.Videos.Select(v => new VideoResponseDto
+                        {
+                            Id = v.VideoId,
+                            Name = v.Video.Name,
+                            Description = v.Video.Description,
+                            UploadedBy = v.Video.UploadedBy,
+                            UploadedOn = v.Video.UploadedOn,
+                            Url = v.Video.Url
+                        }).ToList()
+                    }).ToList()
                 }).ToList()
             };
         }
@@ -68,6 +91,9 @@
         public async Task<string> UpdateClassAsync(int id, string name, string description, string imageUrl)
         {
             var @class = await _dbContext.FindAsync<VideoClass>(id);
+
+            if (@class == null) return "Class not found.";
+
             var toUpdate = false;
             if (@class.Name != name)
             {
@@ -108,13 +134,13 @@
                 Id = @class.Id,
                 Groups = @class.VideoGroups.Select(group => new GroupResponseDto
                 {
-                    Class = new VideoClass
+                    Class = new ClassResponseDto()
                     {
                         Name = @class.Name,
                         Id = @class.Id,
                         ImageUrl = @class.ImageUrl,
-                        TrainerId = @class.TrainerId,
-                        Description = @class.Description
+                        Description = @class.Description,
+                        TrainerId = @class.TrainerId
                     },
                     Id = group.Id,
                     Name = group.Name,
