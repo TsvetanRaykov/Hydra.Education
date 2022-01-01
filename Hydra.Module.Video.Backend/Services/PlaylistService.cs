@@ -168,6 +168,20 @@
             return null;
         }
 
+        public async Task<string> DeletePlaylistAsync(int id)
+        {
+            var playlist = _dbContext.Playlists
+                .Include(p => p.VideoGroups)
+                .Include(p => p.Videos)
+                .FirstOrDefault(g => g.Id == id);
+
+            if (playlist == null) return "Playlist not found.";
+
+           _dbContext.Remove(playlist);
+
+            return await UpdateDbAsync(_dbContext);
+        }
+
         public async Task<string> AddVideo(int id, int videoId)
         {
             var playlist = await _dbContext.Playlists

@@ -2,6 +2,7 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IPlaylistService _playlistService
 @inject IVideoService _videoService
+@inject NavigationManager _navigationManager
 
 @if (_playlist != null)
 {
@@ -11,7 +12,7 @@
             <h5>Edit Playlist</h5>
             <Div Class="d-flex align-items-baseline">
                 <Button Color="Color.Primary" Clicked="@UpdatePlaylist" Class="mr-2">Save</Button>
-                <Dropdown Direction="Direction.Down">
+                <Dropdown Direction="Direction.Down" Class="mr-2">
                     <DropdownToggle Color="Color.Warning">
                         Add Video
                     </DropdownToggle>
@@ -28,6 +29,7 @@
                         }
                     </DropdownMenu>
                 </Dropdown>
+                <Button Color="Color.Danger" Clicked="PlaylistDelete">Delete</Button>
             </Div>
         </Div>
     </ManageComponent>
@@ -39,7 +41,12 @@
             </Div>
         </Repeater>
     </Div>
-
+    <HydraDialog @ref="_confirmDialog"
+             ButtonNoText="Cancel"
+             ButtonYesText="Ok"
+             OnAccept="ActionAcceptedAsync">
+        @_playlist.Name playlist will be permanently removed.
+    </HydraDialog>
 }
 else
 {
@@ -59,6 +66,8 @@ else
     private List<Video> _availableVideos;
 
     private List<VideoPlaylist> _allPlaylists;
+
+    private HydraDialog _confirmDialog;
 
     protected override async Task OnInitializedAsync()
     {
@@ -92,6 +101,19 @@ else
         _playlist = await _playlistService.GetPlaylistAsync(Id);
         _allVideos = await _videoService.GetAllVideosAsync();
         _availableVideos = _allVideos.ToList().FindAll(x => !_playlist.Videos.Select(v => v.Id).Contains(x.Id));
+    }
+
+    private void PlaylistDelete()
+    {
+        _confirmDialog.Show();
+    }
+
+    private async Task ActionAcceptedAsync()
+    {
+        if (await _playlistService.DeletePlaylistAsync(_playlist.Id.ToString()))
+        {
+            _navigationManager.NavigateTo("");
+        }
     }
 
 }

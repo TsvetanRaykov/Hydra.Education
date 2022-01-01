@@ -75,6 +75,19 @@
             return BadRequest(false);
         }
 
+
+        [HttpDelete("{id:int}", Order = 1)]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var error = await _playlistService.DeletePlaylistAsync(id);
+
+            if (string.IsNullOrWhiteSpace(error))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
         [HttpPost("{playlistId:int}/video/{videoId:int}")]
         [Authorize(Roles = "Admin, Trainer")]
         public async Task<ActionResult> AddVideo(int playlistId, int videoId)

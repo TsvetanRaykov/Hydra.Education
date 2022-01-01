@@ -9,6 +9,7 @@
         Task<IEnumerable<PlaylistResponseDto>> GetPlayListsAsync(string user);
         Task<PlaylistResponseDto> GetPlaylistAsync(int id);
         Task<string> UpdatePlaylistAsync(int id, string name, string description, string imageUrl);
+        Task<string> DeletePlaylistAsync(int id);
         Task<string> AddVideo(int id, int videoId);
         Task<string> RemoveVideo(int id, int videoId);
     }

@@ -3,76 +3,139 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClassService _classService
 @inject IPlaylistService _playlistService
+@inject IVideoService _videoService
 
 @attribute [Authorize]
 
-<Div Class="d-flex bg-light mt-3">
-    <Div Class="flex-grow-1"><h5>Classes</h5></Div>
-    <Div Class="flex-grow-1"><h5>Playlists</h5></Div>
-</Div>
-
-<Div Class="d-flex">
-    <Div Class="d-flex flex-wrap flex-grow-1">
-        @if (_videoClasses != null)
-        {
-            @if (_videoClasses.Any())
-            {
-                <Repeater Items="_videoClasses">
-                    <Div Class="m-4">
-                        <Button Type="@ButtonType.Link" To="@($"Class/{@context.Id}")">
-                            <ClassCard @key="@context.Id" VideoClass="@context" />
-                        </Button>
-                    </Div>
-                </Repeater>
-            }
-            else
-            {
-                <Label>There are no classes defined yet.</Label>
-            }
-        }
-        else
-        {
-            <HydraLoader>Loading Classes ...</HydraLoader>
-        }
-    </Div>
-    <Div Class="d-flex flex-wrap flex-grow-1 bg-white rounded">
-        @if (_playlists != null)
-        {
-            @if (_playlists.Any())
-            {
-                <Repeater Items="_playlists">
-                    <Div Class="m-4">
-                        <Button Type="@ButtonType.Link" To="@($"Playlist/{@context.Id}")">
-                            <PlaylistCard @key="@context.Id" Playlist="@context" />
-                        </Button>
-                    </Div>
-                </Repeater>
-            }
-            else
-            {
-                <Div>No playlists. <a href="PlaylistCreate">Create the first one</a></Div>
-            }
-        }
-        else
-        {
-            <HydraLoader>Loading Playlists ...</HydraLoader>
-        }
-    </Div>
-</Div>
-
+<Accordion>
+    <Collapse Visible="@_classesVisible">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5" Class="mb-0">
+                <Button Class="btn btn-link btn-block text-left" Clicked="@(()=>_classesVisible = !_classesVisible)">Classes</Button>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Div Class="d-flex flex-wrap flex-grow-1">
+                @if (_videoClasses != null)
+                {
+                    @if (_videoClasses.Any())
+                    {
+                        <Repeater Items="_videoClasses">
+                            <Div Class="m-4">
+                                <Button Type="@ButtonType.Link" To="@($"Class/{@context.Id}")">
+                                    <ClassCard @key="@context.Id" VideoClass="@context" />
+                                </Button>
+                            </Div>
+                        </Repeater>
+                    }
+                    else
+                    {
+                        <Label>There are no classes defined yet.</Label>
+                    }
+                }
+                else
+                {
+                    <HydraLoader>Loading Classes ...</HydraLoader>
+                }
+            </Div>
+        </CollapseBody>
+    </Collapse>
+    <Collapse Visible="@_playlistsVisible">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5" Class="mb-0">
+                <Button Class="btn btn-link btn-block text-left" Clicked="@(()=>_playlistsVisible = !_playlistsVisible)">Playlists</Button>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Div Class="d-flex flex-wrap flex-grow-1 bg-white rounded">
+                @if (_playlists != null)
+                {
+                    @if (_playlists.Any())
+                    {
+                        <Repeater Items="_playlists">
+                            <Div Class="m-4">
+                                <Button Type="@ButtonType.Link" To="@($"Playlist/{@context.Id}")">
+                                    <PlaylistCard @key="@context.Id" Playlist="@context" />
+                                </Button>
+                            </Div>
+                        </Repeater>
+                    }
+                    else
+                    {
+                        <Div>No playlists. <a href="PlaylistCreate">Create the first one</a></Div>
+                    }
+                }
+                else
+                {
+                    <HydraLoader>Loading Playlists ...</HydraLoader>
+                }
+            </Div>
+        </CollapseBody>
+    </Collapse>
+    <Collapse Visible="@_videosVisible">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5" Class="mb-0">
+                <Button Class="btn btn-link btn-block text-left" Clicked="@(()=>_videosVisible = !_videosVisible)">Videos</Button>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Div Class="d-flex flex-wrap">
+                @if (_videos != null)
+                {
+                    @if (_videos.Any())
+                    {
+                        <Repeater Items="_videos">
+                            <Div Class="m-4">
+                                <VideoCard @key="@context.Id" Video="@context" AllPlaylists="_playlists" VideoRemoved="OnVideoRemoved" />
+                            </Div>
+                        </Repeater>
+                    }
+                    else
+                    {
+                        <Div><a href="VideoCreate">Upload</a></Div>
+                    }
+                }
+                else
+                {
+                    <HydraLoader>Loading Videos ...</HydraLoader>
+                }
+            </Div>
+        </CollapseBody>
+    </Collapse>
+</Accordion>
 
 @code {
 
+    private bool _classesVisible;
+    private bool _playlistsVisible;
+    private bool _videosVisible;
+
     private List<VideoClass> _videoClasses;
     private List<VideoPlaylist> _playlists;
+    private IEnumerable<Video> _videos;
 
     protected override async void OnInitialized()
+    {
+        await LoadData();
+
+        _classesVisible = _videoClasses.Any();
+        _playlistsVisible = _playlists.Any();
+        _videosVisible = _videos.Any();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadData()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         _videoClasses = await _classService.GetClassesAsync(authState.User.Identity?.Name);
         _playlists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
+        _videos = await _videoService.GetAllVideosAsync();
+    }
 
-        await InvokeAsync(StateHasChanged);
+    private async Task OnVideoRemoved()
+    {
+        await LoadData();
     }
 
 }
