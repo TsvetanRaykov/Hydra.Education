@@ -92,6 +92,8 @@
                 .ThenInclude(g => g.Users)
                 .Include(p => p.Videos)
                 .ThenInclude(p => p.Video)
+                .ThenInclude(v => v.Playlists)
+                .ThenInclude(p => p.Playlist)
                 .FirstAsync(p => p.Id.Equals(id));
 
             return new PlaylistResponseDto
@@ -123,7 +125,14 @@
                     Name = v.Video.Name,
                     UploadedBy = v.Video.UploadedBy,
                     Url = v.Video.Url,
-                    UploadedOn = v.Video.UploadedOn
+                    UploadedOn = v.Video.UploadedOn,
+                    PlayLists = v.Video.Playlists.Select(p => new PlaylistResponseDto
+                    {
+                        Id = p.Playlist.Id,
+                        Description = p.Playlist.Description,
+                        Name = p.Playlist.Name,
+                        ImageUrl = p.Playlist.ImageUrl
+                    }).ToList()
                 }).ToList()
             };
         }

@@ -47,8 +47,8 @@
         [Route("{id:int}")]
         public async Task<ActionResult<PlaylistResponseDto>> Get(int id)
         {
-            var videoClass = await _playlistService.GetPlaylistAsync(id);
-            return Ok(videoClass);
+            var response = await _playlistService.GetPlaylistAsync(id);
+            return Ok(response);
         }
 
         [HttpPut]

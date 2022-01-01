@@ -17,14 +17,13 @@
         {
             @if (_videoClasses.Any())
             {
-                foreach (var videoClass in _videoClasses)
-                {
+                <Repeater Items="_videoClasses">
                     <Div Class="m-4">
-                        <Button Type="@ButtonType.Link" To="@($"Class/{videoClass.Id}")">
-                            <ClassCard VideoClass="@videoClass" />
+                        <Button Type="@ButtonType.Link" To="@($"Class/{@context.Id}")">
+                            <ClassCard @key="@context.Id" VideoClass="@context" />
                         </Button>
                     </Div>
-                }
+                </Repeater>
             }
             else
             {
@@ -41,14 +40,13 @@
         {
             @if (_playlists.Any())
             {
-                foreach (var playlist in _playlists)
-                {
+                <Repeater Items="_playlists">
                     <Div Class="m-4">
-                        <Button Type="@ButtonType.Link" To="@($"Playlist/{playlist.Id}")">
-                            <PlaylistCard Playlist="playlist" />
+                        <Button Type="@ButtonType.Link" To="@($"Playlist/{@context.Id}")">
+                            <PlaylistCard @key="@context.Id" Playlist="@context" />
                         </Button>
                     </Div>
-                }
+                </Repeater>
             }
             else
             {

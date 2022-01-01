@@ -76,7 +76,7 @@
             }
 
             var error = await _videoService.DeleteVideoAsync(id);
-            if (string.IsNullOrWhiteSpace(error)) return Ok();
+            if (string.IsNullOrWhiteSpace(error)) return Ok(true);
 
             return BadRequest(error);
         }

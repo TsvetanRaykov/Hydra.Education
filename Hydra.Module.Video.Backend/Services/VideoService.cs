@@ -65,6 +65,7 @@
                         Name = v2P.Playlist.Name,
                     }).ToList(),
                 })
+                .OrderByDescending(v => v.Id)
                 .ToArrayAsync();
 
             return videos;
@@ -90,6 +91,7 @@
                         Name = v2P.Playlist.Name,
                     }).ToList(),
                 })
+                .OrderByDescending(v => v.Id)
                 .ToArrayAsync();
 
             return videos;

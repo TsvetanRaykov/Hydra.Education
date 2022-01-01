@@ -41,14 +41,13 @@ else
     <Div Class="d-flex flex-wrap">
         @if (_videoClass?.VideoGroups != null)
         {
-            @foreach (var @group in _videoClass.VideoGroups.OrderByDescending(g => g.Id))
-            {
+            <Repeater Items="_videoClass.VideoGroups.OrderByDescending(g => g.Id)">
                 <Div Class="m-4">
-                    <Button Type="@ButtonType.Link" To="@($"Group/{@group.Id}")">
-                        <GroupCard VideoGroup="@group"></GroupCard>
+                    <Button Type="@ButtonType.Link" To="@($"Group/{@context.Id}")">
+                        <GroupCard @key="@context.Id" VideoGroup="@context" />
                     </Button>
                 </Div>
-            }
+            </Repeater>
         }
 
     </Div>

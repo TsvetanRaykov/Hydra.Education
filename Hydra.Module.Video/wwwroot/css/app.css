@@ -112,6 +112,33 @@ a, .btn-link {
         height: 48px;
     }
 
+.hydra-card-class {
+}
+
+.hydra-card-video {
+    width: 350px;
+    position: relative;
+}
+
+    .hydra-card-video .accordion {
+        margin-right: 30px;
+    }
+
+        .hydra-card-video .accordion .card-header {
+            padding: 0;
+            background-color: inherit;
+        }
+
+    .hydra-card-video::after {
+        content: "";
+        background: #dee2e6;
+        position: absolute;
+        top: 15px;
+        right: 0;
+        width: 1px;
+        height: 70%;
+    }
+
 .hydra-validation-message {
     position: absolute;
     top: 2.3rem;
@@ -160,3 +187,7 @@ a, .btn-link {
         background-color: #E9ECEF;
         color: #0069D9;
     }
+
+.hydra-video-details {
+    overflow: inherit !important;
+}

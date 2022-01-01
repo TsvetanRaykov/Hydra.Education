@@ -13,16 +13,14 @@
 <Div Class="d-flex flex-wrap">
     @if (_playlists != null)
     {
-        foreach (var playlist in _playlists)
-        {
+        <Repeater Items="_playlists">
             <Div Class="m-4">
-                <Button Type="@ButtonType.Link" To="@($"Playlist/{playlist.Id}")">
-                    <PlaylistCard Playlist="playlist" />
+                <Button Type="@ButtonType.Link" To="@($"Playlist/{context.Id}")">
+                    <PlaylistCard @key="@context.Id" Playlist="context" />
                 </Button>
             </Div>
-        }
+        </Repeater>
     }
-
 </Div>
 
 @code {
@@ -33,10 +31,13 @@
 
     private IEnumerable<VideoPlaylist> _playlists;
 
+    private string _user;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        _playlists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
+        _user = authState.User.Identity?.Name;
+        _playlists = await _playlistService.GetPlayListsAsync(_user);
 
     }
 
@@ -48,7 +49,7 @@
 
             if (await _playlistService.CreatePlaylistAsync(_playlist))
             {
-                _navigationManager.NavigateTo("/Video");
+                _playlists = await _playlistService.GetPlayListsAsync(_user);
             }
         }
     }

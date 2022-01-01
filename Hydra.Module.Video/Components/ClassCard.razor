@@ -1,14 +1,11 @@
-﻿@using Hydra.Module.Video.Models
-@using Microsoft.Extensions.Configuration
-@using System.IO
-@using System.Text.Json
+﻿@using Microsoft.Extensions.Configuration
 
 @inject IConfiguration _configuration
 
-<Div Class="hydra-card">
+<Div Class="hydra-card hydra-card-class">
     <header>@VideoClass.Name</header>
     <Image Source="@_imageUrl"></Image>
-    <footer>@VideoClass.Description</footer>
+    <footer><cite>@VideoClass.Description</cite></footer>
 </Div>
 
 @code {

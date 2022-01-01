@@ -18,10 +18,9 @@
                     <DropdownMenu>
                         @if (_availableVideos is { Count: > 0 })
                         {
-                            foreach (var playlist in _availableVideos)
-                            {
-                                <DropdownItem Value="playlist" Clicked="AddVideoToPlaylist">@playlist.Name</DropdownItem>
-                            }
+                            <Repeater Items="_availableVideos">
+                                <DropdownItem @key="@context.Id" Value="context" Clicked="AddVideoToPlaylist">@context.Name</DropdownItem>
+                            </Repeater>
                         }
                         else
                         {
@@ -34,12 +33,11 @@
     </ManageComponent>
 
     <Div class="container-fluid d-flex flex-wrap">
-        @foreach (var video in _playlist.Videos)
-        {
+        <Repeater Items="_playlist.Videos">
             <Div Class="m-4">
-                <VideoCard Video="video" Playlist="_playlist" VideoRemoved="OnVideoRemoved" />
+                <VideoCard @key="@context.Id" Video="@context" Playlist="_playlist" AllPlaylists="_allPlaylists" VideoRemoved="OnVideoRemoved" />
             </Div>
-        }
+        </Repeater>
     </Div>
 
 }
@@ -57,11 +55,15 @@ else
     private ManageComponent _managedComponent;
 
     private IEnumerable<Video> _allVideos;
-    
+
     private List<Video> _availableVideos;
+
+    private List<VideoPlaylist> _allPlaylists;
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _allPlaylists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
         await LoadData();
     }
 

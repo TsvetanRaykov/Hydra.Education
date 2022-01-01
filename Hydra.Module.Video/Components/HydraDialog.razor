@@ -16,7 +16,7 @@
     private Modal _modal;
 
     [Parameter]
-    public int EventId { get; set; }
+    public DialogActionArgument Argument { get; set; }
 
     [Parameter]
     public string Text { get; set; }
@@ -25,7 +25,7 @@
     public RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public EventCallback<int> OnAccept { get; set; }
+    public EventCallback<DialogActionArgument> OnAccept { get; set; }
 
     [Parameter]
     public EventCallback OnDecline { get; set; }
@@ -50,6 +50,6 @@
     private void DialogAccepted()
     {
         _modal.Hide();
-        OnAccept.InvokeAsync(EventId);
+        OnAccept.InvokeAsync(Argument);
     }
 }

@@ -10,10 +10,9 @@
         <DropdownMenu>
             @if (_availablePlaylists is { Count: > 0 })
             {
-                foreach (var playlist in _availablePlaylists)
-                {
-                    <DropdownItem Value="playlist" Clicked="AddPlaylistToGroup">@playlist.Name</DropdownItem>
-                }
+                <Repeater Items="_availablePlaylists">
+                    <DropdownItem @key="context.Id" Value="@context" Clicked="AddPlaylistToGroup">@context.Name</DropdownItem>
+                </Repeater>
             }
             else
             {
@@ -22,7 +21,7 @@
         </DropdownMenu>
     </Dropdown>
 </Div>
-<Div>
+<Div Class="d-flex flex-wrap">
     @if (_loadingPlaylists)
     {
         <HydraLoader></HydraLoader>
@@ -31,14 +30,13 @@
     {
         @if (_groupPlaylists is { Count: > 0 })
         {
-            foreach (var playlist in _groupPlaylists)
-            {
+            <Repeater Items="_groupPlaylists">
                 <Div Class="m-4">
-                    <Button Type="@ButtonType.Link" To="@($"Playlist/{playlist.Id}")">
-                        <PlaylistCard Playlist="playlist" />
+                    <Button Type="@ButtonType.Link" To="@($"Playlist/{@context.Id}")">
+                        <PlaylistCard @key="@context.Id" Playlist="@context" />
                     </Button>
                 </Div>
-            }
+            </Repeater>
         }
         else
         {

@@ -17,12 +17,11 @@
     </ManageComponent>
 
     <Div class="container-fluid d-flex flex-wrap">
-        @foreach (var @group in _videoClass.VideoGroups)
-        {
+        <Repeater Items="_videoClass.VideoGroups">
             <Div Class="m-4">
-                <GroupCard VideoGroup="@group"></GroupCard>
+                <GroupCard @key="@context.Id" VideoGroup="@context" />
             </Div>
-        }
+        </Repeater>
     </Div>
 
 }
