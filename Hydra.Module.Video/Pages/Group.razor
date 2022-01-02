@@ -6,6 +6,14 @@
 
 @if (_videoGroup != null)
 {
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="@($"Class/{_videoGroup.Class.Id}")">@_videoGroup.Class.Name</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink To="@($"Group/{GroupId}")">@_videoGroup.Name</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
     <ManageComponent @ref="_managedComponent" ManagedItem="_videoGroup">
         <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
             <h5>Study Group</h5>

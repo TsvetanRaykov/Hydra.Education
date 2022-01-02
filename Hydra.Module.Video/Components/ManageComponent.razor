@@ -49,7 +49,8 @@ else
 
     protected override Task OnParametersSetAsync()
     {
-        ManagedItem.Image ??= Convert.FromBase64String(ManagedItemDefaultImages.Default);
+        if (ManagedItem.Id == 0)
+            ManagedItem.Image ??= Convert.FromBase64String(ManagedItemDefaultImages.Default);
         return Task.CompletedTask;
     }
 
