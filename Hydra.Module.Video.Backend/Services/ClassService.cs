@@ -119,6 +119,14 @@
             return null;
         }
 
+        public async Task<string> DeleteClassAsync(int id)
+        {
+            var @class = await _dbContext.FindAsync<VideoClass>(id);
+            if (@class == null) return "Class not found.";
+            _dbContext.Remove(@class);
+            return await UpdateDbAsync(_dbContext);
+        }
+
         public async Task<IEnumerable<ClassResponseDto>> GetClassesAsync(string user)
         {
             var classes = await _dbContext

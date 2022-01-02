@@ -1,10 +1,9 @@
-﻿using Hydra.Module.Video.Contracts;
-
-namespace Hydra.Module.Video.Components
+﻿namespace Hydra.Module.Video.Components
 {
+    using Contracts;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Forms;
-    using Models;
+    using Resources;
     using System;
     using System.Threading.Tasks;
 
@@ -23,12 +22,12 @@ namespace Hydra.Module.Video.Components
                     return $"data:image/png;base64,{Convert.ToBase64String(ManagedItem.Image)}";
                 }
 
-                if (ManagedItem?.ImageUrl != null)
+                if (!string.IsNullOrWhiteSpace(ManagedItem?.ImageUrl))
                 {
                     return $"{ApiBaseUrl}{ManagedItem.ImageUrl}?{Guid.NewGuid()}";
                 }
 
-                return "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D";
+                return $"data:image/gif;base64,{ManagedItemDefaultImages.Default}";
             }
         }
 

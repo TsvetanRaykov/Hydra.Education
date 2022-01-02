@@ -56,9 +56,12 @@
             return response;
         }
 
-        public Task<bool> DeleteGroupAsync(string id)
+        public async Task<bool> DeleteGroupAsync(string id)
         {
-            throw new System.NotImplementedException();
+            var result = await _httpClient.DeleteAsync($"api/video/groups/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
         }
     }
 }

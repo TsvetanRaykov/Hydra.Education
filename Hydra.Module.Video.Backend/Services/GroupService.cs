@@ -41,7 +41,7 @@
                 .Include(g => g.Users)
                 .Include(g => g.Playlists)
                 .ThenInclude(p => p.Playlist.Videos)
-                .ThenInclude(v=>v.Video)
+                .ThenInclude(v => v.Video)
                 .FirstAsync(c => c.Id.Equals(id));
 
             return new GroupResponseDto()
@@ -128,7 +128,6 @@
 
             if (group == null) return "Group not found.";
 
-
             var playlist = await _dbContext.Playlists.FindAsync(playlistId);
 
             if (playlist == null) return "Playlist not found.";
@@ -141,9 +140,18 @@
             return await UpdateDbAsync(_dbContext);
         }
 
-        public Task<string> DeleteGroupAsync(int id)
+        public async Task<string> DeleteGroupAsync(int id)
         {
-            throw new System.NotImplementedException();
+            var group = await _dbContext.VideoGroups
+                .Include(g => g.Playlists)
+                .Include(g => g.Users)
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (group == null) return "Group not found.";
+
+            _dbContext.Remove(group);
+
+            return await UpdateDbAsync(_dbContext);
         }
     }
 }

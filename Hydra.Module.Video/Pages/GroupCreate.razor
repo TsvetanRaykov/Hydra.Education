@@ -1,6 +1,7 @@
 ﻿@page "/GroupCreate/{classId}"
 
 @using Microsoft.Extensions.Configuration
+@using Hydra.Module.Video.Resources
 
 @inject IConfiguration _configuration
 @inject NavigationManager _navigationManager
@@ -33,7 +34,7 @@ else
     </Div>
     <ManageComponent ManagedItem="@_videoGroup" @ref="_managedComponent">
         <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-            <h5>Add a new group to @_videoClass.Name</h5>
+            <h5>Add Study Group to @_videoClass.Name Class</h5>
             <Button Color="Color.Primary" Clicked="@CreateGroup">Create</Button>
         </Div>
     </ManageComponent>
@@ -68,7 +69,8 @@ else
         _videoClass = await _classService.GetClassAsync(ClassId);
         _videoGroup = new VideoGroup
             {
-                ClassId = _videoClass.Id
+                ClassId = _videoClass.Id,
+                Image = Convert.FromBase64String(ManagedItemDefaultImages.Group)
             };
         _imageUrl = $"{_configuration["ApiBaseUrl"]}{_videoClass.ImageUrl}";
     }

@@ -2,6 +2,7 @@
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClassService _classService
+@inject IJSRuntime _jsRuntime
 
 @if (_videoClass != null)
 {
@@ -11,7 +12,8 @@
             <h5>Edit class</h5>
             <Div Class="d-flex align-items-baseline">
                 <Button Color="Color.Primary" Clicked="@UpdateClass" Class="mr-2">Save</Button>
-                <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning" Class="ml-2">Create Group</Button>
+                <Button Color="Color.Danger" Clicked="DeleteClass" Class="mr-2">Delete</Button>
+                <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning">Create Group</Button>
             </Div>
         </Div>
     </ManageComponent>
@@ -23,7 +25,12 @@
             </Div>
         </Repeater>
     </Div>
-
+    <HydraDialog @ref="_confirmDialog"
+             ButtonNoText="Cancel"
+             ButtonYesText="Ok"
+             OnAccept="ActionAcceptedAsync">
+        @_videoClass.Name Class will be permanently deleted.
+    </HydraDialog>
 }
 else
 {
@@ -39,6 +46,8 @@ else
 
     private ManageComponent _managedComponent;
 
+    private HydraDialog _confirmDialog;
+
     protected override async Task OnInitializedAsync()
     {
         _videoClass = await _classService.GetClassAsync(Id);
@@ -52,4 +61,16 @@ else
         }
     }
 
+    private void DeleteClass()
+    {
+        _confirmDialog.Show();
+    }
+
+    private async Task ActionAcceptedAsync()
+    {
+        if (await _classService.DeleteClassAsync(_videoClass.Id.ToString()))
+        {
+            await _jsRuntime.InvokeVoidAsync("history.back");
+        }
+    }
 }

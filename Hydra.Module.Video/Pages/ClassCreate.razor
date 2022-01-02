@@ -1,11 +1,15 @@
 ﻿@page "/ClassCreate"
+@using Hydra.Module.Video.Resources
 
 @inject NavigationManager _navigationManager
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClassService _classService
 
 <ManageComponent @ref="_manageComponent" ManagedItem="_videoClass">
-    <Button Color="Color.Warning" Clicked="@CreateClass">Create</Button>
+    <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+        <h5>Class</h5>
+        <Button Color="Color.Primary" Clicked="@CreateClass">Create</Button>
+    </Div>
 </ManageComponent>
 <Div Class="d-flex flex-wrap">
     @if (_videoClasses != null)
@@ -20,10 +24,6 @@
                 </Div>
             </Repeater>
         }
-        else
-        {
-            <Label>There are no classes defined yet.</Label>
-        }
     }
     else
     {
@@ -32,16 +32,19 @@
 </Div>
 @code
 {
-    private readonly VideoClass _videoClass = new();
+    private readonly VideoClass _videoClass = new() { Image = Convert.FromBase64String(ManagedItemDefaultImages.Class) };
 
     private ManageComponent _manageComponent;
 
     private IEnumerable<VideoClass> _videoClasses;
 
+    private string _user;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        _videoClasses = await _classService.GetClassesAsync(authState.User.Identity?.Name);
+        _user = authState.User.Identity?.Name;
+        _videoClasses = await _classService.GetClassesAsync(_user);
     }
 
     private async Task CreateClass()
@@ -51,7 +54,7 @@
 
             if (await _classService.CreateClassAsync(_videoClass))
             {
-                _navigationManager.NavigateTo("/Video");
+                _videoClasses = await _classService.GetClassesAsync(_user);
             }
         }
     }

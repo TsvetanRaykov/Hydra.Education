@@ -30,12 +30,12 @@
                     }
                     else
                     {
-                        <Label>There are no classes defined yet.</Label>
+                        <Div Class="small text-center w-100"><a href="ClassCreate">Create first class</a></Div>
                     }
                 }
                 else
                 {
-                    <HydraLoader>Loading Classes ...</HydraLoader>
+                    <Div Class="small text-center w-100"><HydraLoader>Loading Classes ...</HydraLoader></Div>
                 }
             </Div>
         </CollapseBody>
@@ -62,12 +62,12 @@
                     }
                     else
                     {
-                        <Div>No playlists. <a href="PlaylistCreate">Create the first one</a></Div>
+                        <Div Class="small text-center w-100"><a href="PlaylistCreate">Create first playlist</a></Div>
                     }
                 }
                 else
                 {
-                    <HydraLoader>Loading Playlists ...</HydraLoader>
+                    <Div Class="small text-center w-100"><HydraLoader>Loading Playlists ...</HydraLoader></Div>
                 }
             </Div>
         </CollapseBody>
@@ -92,12 +92,12 @@
                     }
                     else
                     {
-                        <Div><a href="VideoCreate">Upload</a></Div>
+                        <Div Class="small text-center w-100"><a href="VideoCreate">Upload first video</a></Div>
                     }
                 }
                 else
                 {
-                    <HydraLoader>Loading Videos ...</HydraLoader>
+                    <Div Class="small text-center w-100"><HydraLoader>Loading Videos ...</HydraLoader></Div>
                 }
             </Div>
         </CollapseBody>
@@ -106,9 +106,9 @@
 
 @code {
 
-    private bool _classesVisible;
-    private bool _playlistsVisible;
-    private bool _videosVisible;
+    private bool _classesVisible = true;
+    private bool _playlistsVisible = true;
+    private bool _videosVisible = true;
 
     private List<VideoClass> _videoClasses;
     private List<VideoPlaylist> _playlists;
@@ -117,11 +117,6 @@
     protected override async void OnInitialized()
     {
         await LoadData();
-
-        _classesVisible = _videoClasses.Any();
-        _playlistsVisible = _playlists.Any();
-        _videosVisible = _videos.Any();
-
         await InvokeAsync(StateHasChanged);
     }
 

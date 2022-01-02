@@ -31,6 +31,13 @@ namespace Hydra.Module.Video.Services
             var responseBody = await result.Content.ReadFromJsonAsync<VideoClass>();
             return responseBody;
         }
+        public async Task<bool> DeleteClassAsync(string id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/classes/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
+        }
 
         public async Task<List<VideoClass>> GetClassesAsync(string user)
         {

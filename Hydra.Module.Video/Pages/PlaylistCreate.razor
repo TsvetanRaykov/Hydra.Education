@@ -1,4 +1,5 @@
 ﻿@page "/PlaylistCreate"
+@using Hydra.Module.Video.Resources
 
 @inject IPlaylistService _playlistService
 @inject NavigationManager _navigationManager
@@ -6,7 +7,7 @@
 
 <ManageComponent ManagedItem="_playlist" @ref="_manageComponent">
     <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-        <h5>Create a new playlist to group videos within.</h5>
+        <h5>Playlist</h5>
         <Button Color="Color.Primary" Clicked="@CreatePlaylist">Create</Button>
     </Div>
 </ManageComponent>
@@ -25,7 +26,7 @@
 
 @code {
 
-    private readonly VideoPlaylist _playlist = new();
+    private readonly VideoPlaylist _playlist = new() { Image = Convert.FromBase64String(ManagedItemDefaultImages.Playlist) };
 
     private ManageComponent _manageComponent;
 

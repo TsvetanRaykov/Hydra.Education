@@ -1,4 +1,5 @@
 ﻿@using Hydra.Module.Video.Extensions
+@using Hydra.Module.Video.Resources
 @using Microsoft.Extensions.Configuration
 
 @inject IConfiguration _configuration
@@ -15,7 +16,7 @@ else
         <Validations @ref="_validators" Mode="ValidationMode.Auto" ValidateOnLoad="false">
             <Div Class="d-flex flex-grow-1 mr-5 flex-wrap">
                 <label class="hydra-card mr-5 mb-3">
-                    <InputFile OnChange="@OnImageChange" class="d-none"></InputFile>
+                    <InputFile OnChange="@OnImageChange" class="d-none" accept="image/*"></InputFile>
                     <Image Source="@ImageUrl" />
                 </label>
                 <Div Class="w-75 d-flex flex-column justify-content-between mb-3 position-relative">
@@ -36,7 +37,6 @@ else
     </Div>
 }
 
-
 @code {
 
     [Parameter]
@@ -46,6 +46,12 @@ else
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        ManagedItem.Image ??= Convert.FromBase64String(ManagedItemDefaultImages.Default);
+        return Task.CompletedTask;
+    }
 
     public bool Validate() => _validators.ValidateAll();
 

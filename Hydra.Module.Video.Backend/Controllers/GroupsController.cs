@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Models;
     using System.Threading.Tasks;
-    
+
     public class GroupsController : ApiControllerBase
     {
 
@@ -70,6 +70,18 @@
                 groupUpdate.ImageUrl);
 
             if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var error = await _groupService.DeleteGroupAsync(id);
+
+            if (string.IsNullOrWhiteSpace(error))
                 return Ok(true);
 
             return BadRequest(false);

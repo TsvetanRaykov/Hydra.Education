@@ -1,14 +1,17 @@
 ﻿@page "/Group/{GroupId}"
 
 @inject IGroupService _groupService
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _jsRuntime
 
 @if (_videoGroup != null)
 {
     <ManageComponent @ref="_managedComponent" ManagedItem="_videoGroup">
         <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-            <h5>Edit group</h5>
+            <h5>Study Group</h5>
             <Div Class="d-flex align-items-baseline">
                 <Button Color="Color.Primary" Clicked="@UpdateGroup" Class="mr-2">Save</Button>
+                <Button Color="Color.Danger" Clicked="DeleteGroup">Delete</Button>
             </Div>
         </Div>
     </ManageComponent>
@@ -22,10 +25,16 @@
             </Div>
         </Div>
     </CascadingValue>
+    <HydraDialog @ref="_confirmDialog"
+             ButtonNoText="Cancel"
+             ButtonYesText="Ok"
+             OnAccept="ActionAcceptedAsync">
+        @_videoGroup.Name Group will be permanently deleted.
+    </HydraDialog>
 }
 else
 {
-    <HydraLoader />
+    <HydraLoader>Loading Group ...</HydraLoader>
 }
 
 @code {
@@ -48,9 +57,19 @@ else
         }
     }
 
-    private void AddPlaylistToGroup()
+    private void DeleteGroup()
     {
-        throw new NotImplementedException();
+        _confirmDialog.Show();
+    }
+
+    private HydraDialog _confirmDialog;
+
+    private async Task ActionAcceptedAsync()
+    {
+        if (await _groupService.DeleteGroupAsync(_videoGroup.Id.ToString()))
+        {
+            await _jsRuntime.InvokeVoidAsync("history.back");
+        }
     }
 
 }
