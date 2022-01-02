@@ -9,7 +9,7 @@
 
     <ManageComponent @ref="_managedComponent" ManagedItem="_videoClass">
         <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-            <h5>Edit class</h5>
+            <h5>Class</h5>
             <Div Class="d-flex align-items-baseline">
                 <Button Color="Color.Primary" Clicked="@UpdateClass" Class="mr-2">Save</Button>
                 <Button Color="Color.Danger" Clicked="DeleteClass" Class="mr-2">Delete</Button>
@@ -31,6 +31,7 @@
              OnAccept="ActionAcceptedAsync">
         @_videoClass.Name Class will be permanently deleted.
     </HydraDialog>
+    <SnackbarStack @ref="_snackBarStack" Location="SnackbarStackLocation.Right" />
 }
 else
 {
@@ -48,6 +49,8 @@ else
 
     private HydraDialog _confirmDialog;
 
+    private SnackbarStack _snackBarStack;
+
     protected override async Task OnInitializedAsync()
     {
         _videoClass = await _classService.GetClassAsync(Id);
@@ -57,7 +60,17 @@ else
     {
         if (_managedComponent.Validate())
         {
-            _classService.UpdateClassAsync(_videoClass);
+            _classService.UpdateClassAsync(_videoClass).ContinueWith(async updateTask =>
+           {
+               if (await updateTask)
+               {
+                   await _snackBarStack.PushAsync("Changes has been saved.", SnackbarColor.Success, options =>
+                   {
+                       options.IntervalBeforeClose = 5000;
+                       options.ShowCloseButton = false;
+                   });
+               }
+           });
         }
     }
 
@@ -73,4 +86,5 @@ else
             await _jsRuntime.InvokeVoidAsync("history.back");
         }
     }
+
 }

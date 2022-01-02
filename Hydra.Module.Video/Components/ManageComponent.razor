@@ -61,7 +61,7 @@ else
     private void ValidateName(ValidatorEventArgs obj)
     {
         var name = Convert.ToString(obj.Value)?.Trim();
-        obj.Status = string.IsNullOrWhiteSpace(name) || name.Length < 3
+        obj.Status = string.IsNullOrWhiteSpace(name) || name.Length < 1
             ? ValidationStatus.Error
             : ValidationStatus.Success;
     }

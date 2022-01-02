@@ -19,7 +19,7 @@
         </Div>
     </Button>
     <Div Class="flex-row ml-3">
-        <Div Class="d-inline ml-1 text-muted">members <Badge Pill="true" Color="Color.Secondary">@VideoGroup.Users.Length</Badge></Div>
+        <Div Class="d-inline ml-1 text-muted">members <Badge Pill="true" Color="Color.Primary">@VideoGroup.Users.Length</Badge></Div>
         <Div Class="d-inline ml-1 text-muted">playlists <Badge Pill="true" Color="Color.Info">@VideoGroup.Playlists.Count</Badge></Div>
         <Div Class="d-inline ml-1 text-muted">videos <Badge Pill="true" Color="Color.Danger">@VideoGroup.Playlists.SelectMany(p=>p.Videos).Count()</Badge></Div>
     </Div>
