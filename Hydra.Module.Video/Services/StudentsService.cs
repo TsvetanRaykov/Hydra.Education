@@ -1,20 +1,17 @@
-﻿using System;
-using Hydra.Module.Video.Contracts;
-using Hydra.Module.Video.Models;
+﻿namespace Hydra.Module.Video.Services;
+
+using Contracts;
+using Models;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
-
-namespace Hydra.Module.Video.Services;
 
 public class StudentsService : IStudentsService
 {
     private readonly HttpClient _httpClient;
-    private readonly NavigationManager _navigationManager;
-    public StudentsService(IHttpClientFactory httpClientFactory, NavigationManager navigationManager)
+
+    public StudentsService(IHttpClientFactory httpClientFactory)
     {
-        _navigationManager = navigationManager;
         _httpClient = httpClientFactory.CreateClient("authorized");
     }
 
@@ -24,7 +21,13 @@ public class StudentsService : IStudentsService
         result.EnsureSuccessStatusCode();
         var responseBody = await result.Content.ReadFromJsonAsync<StudentDto[]>();
         return responseBody;
-
     }
 
+    public async Task<VideoGroup[]> GetStudentGroups(string studentId)
+    {
+        var result = await _httpClient.GetAsync($"api/video/students/{studentId}/groups");
+        result.EnsureSuccessStatusCode();
+        var responseBody = await result.Content.ReadFromJsonAsync<VideoGroup[]>();
+        return responseBody;
+    }
 }

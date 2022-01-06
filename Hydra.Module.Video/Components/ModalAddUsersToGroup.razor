@@ -24,6 +24,7 @@
                     <DataGridMultiSelectColumn TItem="StudentDto" Width="30px"></DataGridMultiSelectColumn>
                     <DataGridCommandColumn TItem="StudentDto"></DataGridCommandColumn>
                     <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.FullName)" Caption="Name" Sortable="true" />
+                    <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.UserName)" Caption="Email" Sortable="true" />
                     <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.IdentityNumber)" Caption="#" Sortable="true" />
                 </DataGrid>
             }

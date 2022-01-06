@@ -23,6 +23,7 @@
           FixedHeader="true"
           CustomFilter="@OnCustomFilter">
             <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.FullName)" Caption="Name" Sortable="true" />
+            <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.UserName)" Caption="Email" Sortable="true" />
             <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.IdentityNumber)" Caption="#" Sortable="true" />
         </DataGrid>
     }
@@ -39,6 +40,9 @@ else
 
     [CascadingParameter]
     public VideoGroup Group { get; set; }
+
+    [Parameter]
+    public EventCallback UsersHasChanged { get; set; }
 
     private StudentDto[] _students;
     private List<StudentDto> _members;
@@ -74,5 +78,6 @@ else
     {
         var videoGroup = await _groupService.GetGroupAsync(Group.Id.ToString());
         _members = _students.Where(s => videoGroup.Users.Contains(s.UserName)).ToList();
+        await UsersHasChanged.InvokeAsync();
     }
 }

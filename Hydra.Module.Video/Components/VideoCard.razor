@@ -37,19 +37,22 @@
                 <CollapseHeader Background="Background.None">
                     <Div Class="text-center d-flex justify-content-between" @onclick="@(() => _playlistsVisible = !_playlistsVisible)" Style="cursor: pointer;">
                         <Div>Details</Div>
-                        <Div>In <span class="font-weight-bold">@Video.PlayLists.Count</span> playlists</Div>
+                        @if (_actionsAllowed)
+                        {
+                            <Div>In <span class="font-weight-bold">@Video.PlayLists.Count</span> playlists</Div>
+                        }
                     </Div>
 
                 </CollapseHeader>
                 <CollapseBody>
                     <Div Class="text-muted">@Video.Description</Div>
-                    <Div>uploader: <Span Class="text-muted">@Video.UploadedBy</Span></Div>
+                    <Div>uploaded by: <Span Class="text-muted">@Video.UploadedBy</Span></Div>
                     <Div>uploaded on: <Span Class="text-muted">@Video.UploadedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</Span> </Div>
-                    <Div Class="bg-light d-flex justify-content-between p-1">
-                        <Div Class="font-weight-bold">Playlists:</Div>
-                        <Div>
-                            @if (_actionsAllowed)
-                            {
+                    @if (_actionsAllowed)
+                    {
+                        <Div Class="bg-light d-flex justify-content-between p-1">
+                            <Div Class="font-weight-bold">Playlists:</Div>
+                            <Div>
                                 <Icon Name="IconName.Add" IconSize="IconSize.ExtraSmall" Clicked="TogglePlaylistsDropDown" Style="cursor: pointer;"></Icon>
                                 <Dropdown @ref="_playlistDropDown" Direction="Direction.Down">
                                     <DropdownMenu>
@@ -59,25 +62,15 @@
                                                 <DropdownItem @key="@context.Id" Value="@context" Clicked="AddVideoToPlaylist" Class="small">@context.Name</DropdownItem>
                                             </Repeater>
                                         }
-                                        else
-                                        {
-                                            <DropdownItem Class="text-muted small" Disabled="true">empty</DropdownItem>
-                                        }
+
                                     </DropdownMenu>
                                 </Dropdown>
-                            }
+                            </Div>
                         </Div>
-                    </Div>
-                    <Repeater Items="Video.PlayLists">
-                        @if (_actionsAllowed)
-                        {
+                        <Repeater Items="Video.PlayLists">
                             <Badge @key="context.Id" Color="Color.Info" Class="mx-1 hydra-badge-close d-inline" Pill="true" CloseClicked="@(() => OnPlaylistRemoved(@context))">@context.Name</Badge>
-                        }
-                        else
-                        {
-                            <Badge @key="context.Id" Color="Color.Info" Class="mx-1 hydra-badge-close d-inline" Pill="true">@context.Name</Badge>
-                        }
-                    </Repeater>
+                        </Repeater>
+                    }
                 </CollapseBody>
             </Collapse>
         </Accordion>
@@ -131,8 +124,8 @@
         if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
         {
             _actionsAllowed = Playlist is not null || Video.UploadedBy == authState.User.Identity?.Name;
+            _availablePlaylists = AllPlaylists.FindAll(p => !Video.PlayLists.Select(v => v.Id).Contains(p.Id));
         }
-        _availablePlaylists = AllPlaylists.FindAll(p => !Video.PlayLists.Select(v => v.Id).Contains(p.Id));
     }
 
     private void RemoveVideoFromPlaylist(object arg)

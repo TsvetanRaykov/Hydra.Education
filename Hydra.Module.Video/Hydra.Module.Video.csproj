@@ -3,12 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <StaticWebassetBasePath>video</StaticWebassetBasePath>
-
+	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\endpoints.json" />
-  </ItemGroup>
 
 	<ItemGroup>
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.9" />
@@ -34,9 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\AccessDenied.razor" />
     <_ContentIncludedByDefault Remove="Components\GroupPlaylists.razor" />
     <_ContentIncludedByDefault Remove="Components\GroupUsers.razor" />
+    <_ContentIncludedByDefault Remove="Components\HydraBreadcrumb.razor" />
     <_ContentIncludedByDefault Remove="Components\ManageComponent.razor" />
+    <_ContentIncludedByDefault Remove="Components\TrainerIndex.razor" />
     <_ContentIncludedByDefault Remove="Components\VideoCard.razor" />
     <_ContentIncludedByDefault Remove="Pages\Class.razor" />
     <_ContentIncludedByDefault Remove="Pages\PlaylistCreate.razor" />
@@ -44,7 +43,7 @@
 
 	<ItemGroup>
 	  <None Include="wwwroot\endpoints.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	  <None Include="wwwroot\js\video-module.js" />
 	</ItemGroup>
@@ -67,6 +66,24 @@
 
 	<ItemGroup>
 	  <UpToDateCheckInput Remove="Components\GroupPlaylists.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Components\TrainerIndex.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Components\AccessDenied.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Components\HydraBreadcrumb.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="libman.json">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>

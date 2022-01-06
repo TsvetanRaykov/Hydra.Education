@@ -47,8 +47,8 @@
         [Route("{id:int}")]
         public async Task<ActionResult<GroupResponseDto>> Get(int id)
         {
-            var videoClass = await _groupService.GetGroupAsync(id);
-            return Ok(videoClass);
+            var videoGroup = await _groupService.GetGroupAsync(id);
+            return Ok(videoGroup);
         }
 
         [HttpPut]
@@ -101,9 +101,21 @@
 
         [HttpPost("{groupId:int}/playlists/{playlistId}")]
         [Authorize(Roles = "Admin, Trainer")]
-        public async Task<ActionResult> SetUsers(int groupId, int playlistId)
+        public async Task<ActionResult> AddPlaylist(int groupId, int playlistId)
         {
             var resultError = await _groupService.AddPlaylist(groupId, playlistId);
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpDelete("{groupId:int}/playlists/{playlistId}")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> RemovePlaylist(int groupId, int playlistId)
+        {
+            var resultError = await _groupService.RemovePlaylist(groupId, playlistId);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

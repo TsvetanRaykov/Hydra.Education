@@ -6,36 +6,45 @@
 
 @if (_videoClass != null)
 {
+    <AuthorizeView Roles="Admin, Trainer">
+        <Authorized>
+            <ManageComponent @ref="_managedComponent" ManagedItem="_videoClass">
+                <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+                    <Div>
+                        <h5>Class</h5>
+                        <Div>@_videoClass.VideoGroups.Count groups</Div>
+                    </Div>
+                    <Div Class="d-flex align-items-baseline">
+                        <Button Color="Color.Primary" Clicked="@UpdateClass" Class="mr-2">Save</Button>
+                        <Button Color="Color.Danger" Clicked="DeleteClass" Class="mr-2">Delete</Button>
+                        <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning">Create Group</Button>
+                    </Div>
+                </Div>
+            </ManageComponent>
 
-    <ManageComponent @ref="_managedComponent" ManagedItem="_videoClass">
-        <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-            <h5>Class</h5>
-            <Div Class="d-flex align-items-baseline">
-                <Button Color="Color.Primary" Clicked="@UpdateClass" Class="mr-2">Save</Button>
-                <Button Color="Color.Danger" Clicked="DeleteClass" Class="mr-2">Delete</Button>
-                <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning">Create Group</Button>
+            <Div class="container-fluid d-flex flex-wrap">
+                <Repeater Items="_videoClass.VideoGroups" Context="videoGroup">
+                    <Div Class="m-4">
+                        <GroupCard @key="@videoGroup.Id" VideoGroup="@videoGroup" />
+                    </Div>
+                </Repeater>
             </Div>
-        </Div>
-    </ManageComponent>
-
-    <Div class="container-fluid d-flex flex-wrap">
-        <Repeater Items="_videoClass.VideoGroups">
-            <Div Class="m-4">
-                <GroupCard @key="@context.Id" VideoGroup="@context" />
-            </Div>
-        </Repeater>
-    </Div>
-    <HydraDialog @ref="_confirmDialog"
-             ButtonNoText="Cancel"
-             ButtonYesText="Ok"
-             OnAccept="ActionAcceptedAsync">
-        @_videoClass.Name Class will be permanently deleted.
-    </HydraDialog>
-    <SnackbarStack @ref="_snackBarStack" Location="SnackbarStackLocation.Right" />
+            <HydraDialog @ref="_confirmDialog"
+                     ButtonNoText="Cancel"
+                     ButtonYesText="Ok"
+                     OnAccept="ActionAcceptedAsync">
+                @_videoClass.Name Class will be permanently deleted.
+            </HydraDialog>
+            <SnackbarStack @ref="_snackBarStack" Location="SnackbarStackLocation.Right" />
+        </Authorized>
+        <NotAuthorized>
+            <Div Class="small text-center w-100"><AccessDenied /></Div>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 else
 {
-    <HydraLoader />
+    <HydraLoader>Loading Class Data ...</HydraLoader>
 }
 
 @code
@@ -53,7 +62,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _videoClass = await _classService.GetClassAsync(Id);
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
+            _videoClass = await _classService.GetClassAsync(Id);
+        else
+            _videoClass = new();
     }
 
     private void UpdateClass()

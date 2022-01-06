@@ -1,4 +1,6 @@
-﻿namespace Hydra.Module.Video.Services
+﻿using System.Text.Json;
+
+namespace Hydra.Module.Video.Services
 {
     using Contracts;
     using Models;
@@ -36,8 +38,12 @@
         {
             var result = await _httpClient.GetAsync($"api/video/groups/{id}");
             result.EnsureSuccessStatusCode();
-            var responseBody = await result.Content.ReadFromJsonAsync<VideoGroup>();
-            return responseBody;
+            var stringBody = await result.Content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(stringBody))
+            {
+                return null;
+            }
+            return JsonSerializer.Deserialize<VideoGroup>(stringBody, new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 
         public async Task<bool> SetUsersAsync(int id, string[] userIds)
@@ -51,6 +57,14 @@
         public async Task<bool> AddPlaylistAsync(int groupId, int playlistId)
         {
             var result = await _httpClient.PostAsync($"api/video/groups/{groupId}/playlists/{playlistId}", null);
+            result.EnsureSuccessStatusCode();
+            var response = await result.Content.ReadFromJsonAsync<bool>();
+            return response;
+        }
+
+        public async Task<bool> RemovePlaylistAsync(int groupId, int playlistId)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/groups/{groupId}/playlists/{playlistId}");
             result.EnsureSuccessStatusCode();
             var response = await result.Content.ReadFromJsonAsync<bool>();
             return response;

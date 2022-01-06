@@ -1,4 +1,5 @@
 ﻿@page "/Group/{GroupId}"
+@using BreadcrumbItem = Hydra.Module.Video.Models.BreadcrumbItem
 
 @inject IGroupService _groupService
 @inject NavigationManager _navigationManager
@@ -6,39 +7,61 @@
 
 @if (_videoGroup != null)
 {
-    <Breadcrumb>
-        <BreadcrumbItem>
-            <BreadcrumbLink To="@($"Class/{_videoGroup.Class.Id}")">@_videoGroup.Class.Name</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbItem Active="true">
-            <BreadcrumbLink To="@($"Group/{GroupId}")">@_videoGroup.Name</BreadcrumbLink>
-        </BreadcrumbItem>
-    </Breadcrumb>
-    <ManageComponent @ref="_managedComponent" ManagedItem="_videoGroup">
-        <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-            <h5>Study Group</h5>
-            <Div Class="d-flex align-items-baseline">
-                <Button Color="Color.Primary" Clicked="@UpdateGroup" Class="mr-2">Save</Button>
-                <Button Color="Color.Danger" Clicked="DeleteGroup">Delete</Button>
-            </Div>
-        </Div>
-    </ManageComponent>
-    <CascadingValue Value="_videoGroup">
-        <Div Class="d-flex flex-wrap">
-            <Div Class="d-flex flex-wrap flex-grow-1 flex-column hydra-group-members-container pr-4">
-                <GroupUsers />
-            </Div>
-            <Div Class="d-flex flex-wrap bg-white flex-grow-1 flex-column">
-                <GroupPlaylists />
-            </Div>
-        </Div>
-    </CascadingValue>
-    <HydraDialog @ref="_confirmDialog"
-             ButtonNoText="Cancel"
-             ButtonYesText="Ok"
-             OnAccept="ActionAcceptedAsync">
-        @_videoGroup.Name Group will be permanently deleted.
-    </HydraDialog>
+
+    <AuthorizeView Roles="Admin, Trainer">
+        <Authorized>
+            <Breadcrumb>
+                <BreadcrumbItem>
+                    <BreadcrumbLink To="@($"Class/{_videoGroup.Class.Id}")">@_videoGroup.Class.Name</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem Active="true">
+                    <BreadcrumbLink To="@($"Group/{GroupId}")">@_videoGroup.Name</BreadcrumbLink>
+                </BreadcrumbItem>
+            </Breadcrumb>
+            <ManageComponent @ref="_managedComponent" ManagedItem="_videoGroup">
+                <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+                    <Div>
+                        <h5>Study Group</h5>
+                        <Div>@_videoGroup.Users.Length members, @_videoGroup.Playlists.Count playlists</Div>
+                    </Div>
+                    <Div Class="d-flex align-items-baseline">
+                        <Button Color="Color.Primary" Clicked="@UpdateGroupAsync" Class="mr-2">Save</Button>
+                        <Button Color="Color.Danger" Clicked="DeleteGroup">Delete</Button>
+                    </Div>
+                </Div>
+            </ManageComponent>
+            <CascadingValue Value="_videoGroup">
+                <Div Class="d-flex flex-wrap">
+                    <Div Class="d-flex flex-wrap flex-grow-1 flex-column hydra-group-members-container pr-4">
+                        <GroupUsers UsersHasChanged="@ReloadGroupData" />
+                    </Div>
+                    <Div Class="d-flex flex-wrap bg-white flex-grow-1 flex-column">
+                        <GroupPlaylists PlaylistsHasChanged="@ReloadGroupData" />
+                    </Div>
+                </Div>
+            </CascadingValue>
+            <HydraDialog @ref="_confirmDialog"
+                     ButtonNoText="Cancel"
+                     ButtonYesText="Ok"
+                     OnAccept="ActionAcceptedAsync">
+                @_videoGroup.Name Group will be permanently deleted.
+            </HydraDialog>
+            <SnackbarStack @ref="_snackBarStack" Location="SnackbarStackLocation.Right" />
+        </Authorized>
+        <NotAuthorized>
+            <HydraBreadcrumb BreadcrumbItems="@_breadcrumbItems" />
+            @if (_videoGroup.Id == 0)
+            {
+                <Div Class="small text-center w-100">Group not found.</Div>
+            }
+            else
+            {
+                <CascadingValue Value="_videoGroup">
+                    <GroupPlaylists />
+                </CascadingValue>
+            }
+        </NotAuthorized>
+    </AuthorizeView>
 }
 else
 {
@@ -51,17 +74,25 @@ else
     public string GroupId { get; set; }
     private VideoGroup _videoGroup;
     private ManageComponent _managedComponent;
+    private SnackbarStack _snackBarStack;
 
     protected override async Task OnInitializedAsync()
     {
         _videoGroup = await _groupService.GetGroupAsync(GroupId);
+        if (_videoGroup == null) _videoGroup = new();
+        else BuildBreadcrumb();
     }
 
-    private void UpdateGroup()
+    private async Task UpdateGroupAsync()
     {
         if (_managedComponent.Validate())
         {
-            _groupService.UpdateGroupAsync(_videoGroup);
+            await _groupService.UpdateGroupAsync(_videoGroup);
+            await _snackBarStack.PushAsync("Changes has been saved.", SnackbarColor.Success, options =>
+            {
+                options.IntervalBeforeClose = 5000;
+                options.ShowCloseButton = false;
+            });
         }
     }
 
@@ -71,6 +102,7 @@ else
     }
 
     private HydraDialog _confirmDialog;
+    private List<BreadcrumbItem> _breadcrumbItems;
 
     private async Task ActionAcceptedAsync()
     {
@@ -78,6 +110,27 @@ else
         {
             await _jsRuntime.InvokeVoidAsync("history.back");
         }
+    }
+    private void BuildBreadcrumb()
+    {
+        _breadcrumbItems = new List<BreadcrumbItem>
+            {
+                new()
+                {
+                    Text = _videoGroup.Class.Name,
+                    Title = _videoGroup.Class.Description,
+                },
+                new()
+                {
+                    Text = _videoGroup.Name,
+                    Title = _videoGroup.Description,
+                }
+            };
+    }
+
+    private async Task ReloadGroupData()
+    {
+        _videoGroup = await _groupService.GetGroupAsync(GroupId);
     }
 
 }

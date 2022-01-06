@@ -19,6 +19,8 @@ namespace Hydra.Module.Video.Models
 
         public List<Video> Videos { get; set; } = new();
 
+        public List<VideoGroup> VideoGroups { get; set; }
+
         public bool Equals(VideoPlaylist other)
         {
             return other != null && Id == other.Id;

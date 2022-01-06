@@ -10,6 +10,7 @@ namespace Hydra.Module.Video.Contracts
         Task<VideoGroup> GetGroupAsync(string id);
         Task<bool> SetUsersAsync(int id, string[] userIds);
         Task<bool> AddPlaylistAsync(int groupId, int playlistId);
+        Task<bool> RemovePlaylistAsync(int groupId, int playlistId);
         Task<bool> DeleteGroupAsync(string id);
     }
 }
