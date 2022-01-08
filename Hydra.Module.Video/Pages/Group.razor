@@ -1,5 +1,6 @@
 ﻿@page "/Group/{GroupId}"
-@using BreadcrumbItem = Hydra.Module.Video.Models.BreadcrumbItem
+
+@attribute [Authorize]
 
 @inject IGroupService _groupService
 @inject NavigationManager _navigationManager
@@ -7,7 +8,6 @@
 
 @if (_videoGroup != null)
 {
-
     <AuthorizeView Roles="Admin, Trainer">
         <Authorized>
             <Breadcrumb>
@@ -102,7 +102,7 @@ else
     }
 
     private HydraDialog _confirmDialog;
-    private List<BreadcrumbItem> _breadcrumbItems;
+    private List<HydraBreadcrumbItem> _breadcrumbItems;
 
     private async Task ActionAcceptedAsync()
     {
@@ -113,7 +113,7 @@ else
     }
     private void BuildBreadcrumb()
     {
-        _breadcrumbItems = new List<BreadcrumbItem>
+        _breadcrumbItems = new List<HydraBreadcrumbItem>
             {
                 new()
                 {

@@ -1,5 +1,6 @@
 ﻿@page "/VideoCreate"
-@using System.IO
+
+@attribute [Authorize(Roles = "Admin, Trainer")]
 
 @inject IPlaylistService _playlistService
 @inject IVideoService _videoService
@@ -237,13 +238,6 @@
         _percent = 0;
         _uploadedBytes = 0;
         _videoDescription = null;
-    }
-
-    private void ValidateFile(ValidatorEventArgs obj)
-    {
-        obj.Status = _selectedVideo == null
-            ? ValidationStatus.Error
-            : ValidationStatus.Success;
     }
 
 }

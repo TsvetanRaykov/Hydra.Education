@@ -1,6 +1,6 @@
 ﻿namespace Hydra.Module.Video.Models;
 
-public class BreadcrumbItem
+public class HydraBreadcrumbItem
 {
     public string Link { get; set; }
     public string Text { get; set; }

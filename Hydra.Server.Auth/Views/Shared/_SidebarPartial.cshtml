@@ -1,10 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Identity
+
 @inject SignInManager<ApplicationUser> _signInManager
 
 @if (_signInManager.IsSignedIn(User))
 {
     <nav id="sidebar" class="active">
-        <h1><a href="/" class="logo"><img src="~/images/bachelor-cap.png" alt="" width="50"></a></h1>
+        <h1 class="logo"><img src="~/images/bachelor-cap.png" alt="" width="50"></h1>
         <ul class="list-unstyled components mb-5">
             <li class="active">
                 <a href="/"><span class="fa fa-home"></span> Home</a>

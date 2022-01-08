@@ -1,4 +1,7 @@
 ﻿@page "/"
+
+@attribute [Authorize]
+
 <AuthorizeView Roles="Admin, Trainer">
     <Authorized>
         <TrainerIndex />

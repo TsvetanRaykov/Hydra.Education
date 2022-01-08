@@ -1,6 +1,8 @@
 ﻿@page "/Playlist/{id}"
 @page "/Playlist/{id}/{GroupId}"
-@using BreadcrumbItem = Hydra.Module.Video.Models.BreadcrumbItem
+
+@attribute [Authorize]
+
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IPlaylistService _playlistService
 @inject IVideoService _videoService
@@ -113,7 +115,7 @@ else
 
     private HydraDialog _confirmDialog;
 
-    private List<BreadcrumbItem> _breadcrumbItems;
+    private List<HydraBreadcrumbItem> _breadcrumbItems;
 
     private SnackbarStack _snackBarStack;
 
@@ -141,7 +143,7 @@ else
     {
         _group = _playlist.VideoGroups.FirstOrDefault(g => g.Id.ToString() == GroupId);
         if (_group != null)
-            _breadcrumbItems = new List<BreadcrumbItem>
+            _breadcrumbItems = new List<HydraBreadcrumbItem>
             {
                 new()
                 {

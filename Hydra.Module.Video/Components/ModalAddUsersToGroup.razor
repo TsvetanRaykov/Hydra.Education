@@ -1,7 +1,7 @@
 ﻿@inject IStudentsService _studentsService
 
 <Modal @ref="_modalUsersToGroup">
-    <ModalContent>
+    <ModalContent Scrollable="true" Size="ModalSize.Large">
         <ModalHeader>Students</ModalHeader>
         <ModalBody>
             @if (_students != null)

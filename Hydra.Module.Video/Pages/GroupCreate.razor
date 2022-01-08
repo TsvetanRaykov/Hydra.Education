@@ -1,7 +1,6 @@
 ﻿@page "/GroupCreate/{classId}"
 
-@using Microsoft.Extensions.Configuration
-@using Hydra.Module.Video.Resources
+@attribute [Authorize(Roles = "Admin, Trainer")]
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IConfiguration _configuration
@@ -10,59 +9,53 @@
 @inject IGroupService _groupService
 
 <hr />
-<AuthorizeView Roles="Admin, Trainer">
-    <Authorized>
-        @if (_videoClass == null)
-        {
-            <HydraLoader />
-        }
-        else
-        {
 
-            <Div Class="d-flex">
+@if (_videoClass == null)
+{
+    <HydraLoader />
+}
+else
+{
+    <Div Class="d-flex">
 
-                <Tooltip Text="Edit that class" Placement="TooltipPlacement.RightStart" Class="mr-4">
-                    <Button Type="@ButtonType.Link" To="@($"Class/{_videoClass.Id}")">
-                        <Div Class="hydra-card">
-                            <Image Source="@_imageUrl"></Image>
-                        </Div>
+        <Tooltip Text="Edit that class" Placement="TooltipPlacement.RightStart" Class="mr-4">
+            <Button Type="@ButtonType.Link" To="@($"Class/{_videoClass.Id}")">
+                <Div Class="hydra-card">
+                    <Image Source="@_imageUrl"></Image>
+                </Div>
+            </Button>
+        </Tooltip>
+        <Div Class="flex-grow-1">
+            <blockquote class="blockquote">
+                <p class="mb-0">@_videoClass.Name</p>
+                <footer class="blockquote-footer"><cite>@_videoClass.Description</cite></footer>
+            </blockquote>
+        </Div>
+
+    </Div>
+    <ManageComponent ManagedItem="@_videoGroup" @ref="_managedComponent">
+        <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+            <h5>Add Study Group to @_videoClass.Name Class</h5>
+            <Button Color="Color.Primary" Clicked="@CreateGroup">Create</Button>
+        </Div>
+    </ManageComponent>
+
+    <Div Class="d-flex flex-wrap">
+        @if (_videoClass?.VideoGroups != null)
+        {
+            <Repeater Context="videoGroup" Items="_videoClass.VideoGroups.OrderByDescending(g => g.Id)">
+                <Div Class="m-4">
+                    <Button Type="@ButtonType.Link" To="@($"Group/{@videoGroup.Id}")">
+                        <GroupCard @key="@videoGroup.Id" VideoGroup="@videoGroup" />
                     </Button>
-                </Tooltip>
-                <Div Class="flex-grow-1">
-                    <blockquote class="blockquote">
-                        <p class="mb-0">@_videoClass.Name</p>
-                        <footer class="blockquote-footer"><cite>@_videoClass.Description</cite></footer>
-                    </blockquote>
                 </Div>
-
-            </Div>
-            <ManageComponent ManagedItem="@_videoGroup" @ref="_managedComponent">
-                <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-                    <h5>Add Study Group to @_videoClass.Name Class</h5>
-                    <Button Color="Color.Primary" Clicked="@CreateGroup">Create</Button>
-                </Div>
-            </ManageComponent>
-
-            <Div Class="d-flex flex-wrap">
-                @if (_videoClass?.VideoGroups != null)
-                {
-                    <Repeater Context="videoGroup" Items="_videoClass.VideoGroups.OrderByDescending(g => g.Id)">
-                        <Div Class="m-4">
-                            <Button Type="@ButtonType.Link" To="@($"Group/{@videoGroup.Id}")">
-                                <GroupCard @key="@videoGroup.Id" VideoGroup="@videoGroup" />
-                            </Button>
-                        </Div>
-                    </Repeater>
-                }
-
-            </Div>
-
+            </Repeater>
         }
-    </Authorized>
-    <NotAuthorized>
-        <NotAuthorized><Div Class="small text-center w-100"><AccessDenied /></Div></NotAuthorized>
-    </NotAuthorized>
-</AuthorizeView>
+
+    </Div>
+
+}
+
 @code {
 
     [Parameter]
@@ -75,18 +68,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
-        {
-
-            _videoClass = await _classService.GetClassAsync(ClassId);
-            _videoGroup = new VideoGroup
-                {
-                    ClassId = _videoClass.Id,
-                    Image = Convert.FromBase64String(ManagedItemDefaultImages.Group)
-                };
-            _imageUrl = $"{_configuration["ApiBaseUrl"]}{_videoClass.ImageUrl}";
-        }
+        _videoClass = await _classService.GetClassAsync(ClassId);
+        _videoGroup = new VideoGroup
+            {
+                ClassId = _videoClass.Id,
+                Image = Convert.FromBase64String(ManagedItemDefaultImages.Group)
+            };
+        _imageUrl = $"{_configuration["ApiBaseUrl"]}{_videoClass.ImageUrl}";
     }
 
     private async Task CreateGroup()

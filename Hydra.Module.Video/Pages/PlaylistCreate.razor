@@ -1,5 +1,6 @@
 ﻿@page "/PlaylistCreate"
-@using Hydra.Module.Video.Resources
+
+@attribute [Authorize(Roles = "Admin, Trainer")]
 
 @inject IPlaylistService _playlistService
 @inject NavigationManager _navigationManager
