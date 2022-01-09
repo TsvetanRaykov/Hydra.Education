@@ -1,4 +1,4 @@
-{
+﻿{
   //"ConnectionString": "Data Source = D:\\Gabrovo\\MasterDegree\\VideoDb.sqlite",
   "ConnectionString": "Data Source = C:\\Home\\Data\\VideoDb.sqlite",
   "ApiSettings": {
@@ -12,14 +12,15 @@
     {
       "ApiKey": "befc07ad-00c4-4507-b450-01601eb417ba",
       "UserName": "tsvetan.raykov@gmail.com",
+      "FullName": "Цветан Райков",
       "Roles": [ "Trainer" ]
     },
     {
       "ApiKey": "225a7081-5e0a-47e3-a401-7a69cfc0a110",
       "UserName": "raykov_lv@abv.bg",
+      "FullName": "Пешо Пешев",
       "Roles": [ "Student" ]
     }
   ]
-
 
 }

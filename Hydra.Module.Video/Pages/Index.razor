@@ -2,13 +2,48 @@
 
 @attribute [Authorize]
 
-<AuthorizeView Roles="Admin, Trainer">
-    <Authorized>
-        <TrainerIndex />
-    </Authorized>
-</AuthorizeView>
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IJSRuntime _jsRuntime
+
 <AuthorizeView Roles="Student">
     <Authorized>
-        <StudentIndex />
+        <p>
+            Welcome to module Video, @(_userFullName ?? context.User.Identity?.Name). Here you will find various videos uploaded by your teachers to help you in your educational process. Before you start using the module, please understand how it is structured.
+        </p>
+        <p>
+            There are three main objects in the architecture of the module - Playlist, Group, and Class.
+            <ul>
+                <li><strong>Playlist</strong>. Videos are organized into playlists. Each playlist should cover a specific topic, at the discretion of your trainer.</li>
+                <li><strong>Group</strong>. The study groups facilitate the logical relation of a group of students to groups of videos (playlist). The main purpose of the Group is to give students access to certain playlists. You will see the Groups to which you have been added on your personal dashboard.</li>
+                <li><strong>Class</strong>. The Class is a wrapper of a number of Groups. It is the root of the hierarchy tree. For example, depending on the context, it could be your specialty or academic faculty, trainers take the decision. The name of the Class to which the Group is assigned is located on the top left corner of each Group container (in the UI).</li>
+            </ul>
+        </p>
+
     </Authorized>
 </AuthorizeView>
+<div class="mermaid">
+    flowchart LR;a1((Class))-->g1[Group 1\n<small>students</small>];a1-->gn[Group N\n<small>students</small>];g1-->p1(Playlist 1\n<small>videos</small>);g1-->p2(Playlist 2\n<small>videos</small>);g1-->p3(Playlist 3\n<small>videos</small>);gn-->pn(Playlist N\n<small>videos</small>);gn-->p2;gn-->p3;
+</div>
+<p class="d-flex flex-column align-items-center">
+    <Button Color="Color.Danger" Type="@ButtonType.Link" To="Dashboard" Style="width: 10vw;">Enter</Button>
+</p>
+
+@code {
+    private string _userFullName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _userFullName = authState.User.FindFirst(ClaimTypes.GivenName)?.Value;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _jsRuntime.InvokeVoidAsync("JsFunctions.MermaidInitialize");
+        }
+        await _jsRuntime.InvokeVoidAsync("JsFunctions.MermaidRender");
+    }
+
+}

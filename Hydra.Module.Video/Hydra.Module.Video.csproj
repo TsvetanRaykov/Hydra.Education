@@ -38,6 +38,7 @@
     <_ContentIncludedByDefault Remove="Components\TrainerIndex.razor" />
     <_ContentIncludedByDefault Remove="Components\VideoCard.razor" />
     <_ContentIncludedByDefault Remove="Pages\Class.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Dashboard.razor" />
     <_ContentIncludedByDefault Remove="Pages\PlaylistCreate.razor" />
   </ItemGroup>
 
@@ -84,6 +85,10 @@
 	  <Content Update="libman.json">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Pages\Dashboard.razor" />
 	</ItemGroup>
 
 </Project>

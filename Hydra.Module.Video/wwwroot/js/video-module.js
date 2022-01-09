@@ -1,8 +1,14 @@
-﻿function HydraTriggerElementClick(cssSelector) {
+﻿var JsFunctions = window.JsFunctions || {};
 
-    const element = document.querySelector(cssSelector);
-    if (element) {
-        element.click();
+JsFunctions = {
+    MermaidInitialize: function () {
+        mermaid.initialize({
+            startOnLoad: true,
+            securityLevel: "loose"
+        });
+    },
+
+    MermaidRender: function () {
+        mermaid.init();
     }
-
-}
+};

@@ -1,5 +1,36 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> _userManager
+@{
     ViewData["Title"] = "Hydra";
+    var user = await _userManager.GetUserAsync(User);
 }
 <h2 class="mb-4">Hydra Education Project</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>Hello <strong>@(user.FullName ?? user.UserName)</strong>, and welcome to the Hydra Educational Platform. As you may already know, this place is designed to support the educational process of both teachers and students. Its purpose is to provide teachers with a convenient way to organize teaching materials and to facilitate students' access to them.  HEP's main idea is to be a secure, modular training system, where each module is an independent stand-alone application that provides specific functionality. For example, a video tutorials module in which students can watch videos of lectures and exercises pre-uploaded and organized by the teacher. Or a test module in which to conduct examinations and tests in various forms. Or even an evaluation AI module.</p>
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        As an <strong>Administrator</strong> of this platform, you have full access to every single part of it. However, your main task is to manage the main authentication module, being responsible for the administration of the users of this system. You can do this in the <a href="/Auth">user management</a> section. Let you know what is the platform expectation regarding user access.<br />
+        There are three levels of access organized in roles:
+    </p>
+    <ul>
+        <li><strong>Administrator</strong> is responsible for user management. This role can add and remove users. Can edit user data. It can lock and unlock access.</li>
+        <li><strong>Trainer</strong> is assigned to the teachers. They are responsible for organizing the teaching materials necessary for the correct operation of the modules. Each module defines the responsibilities of this role separately according to the functionality it covers.</li>
+        <li><strong>Student</strong> is the most important and most used role in HEP. They are basic consumers of the materials available in modules, but they only have access to the owned stuff available in their profile.</li>
+    </ul>
+    <p>Note that all users are managed from here, which means that other plugged-in modules rely on the list of users (and their roles) provided by this authentication module.</p>
+
+}
+
+@if (User.IsInRole("Trainer"))
+{
+    <p>
+        As <strong>Trainer</strong> in this platform, your role is to organize the learning processes, learning materials, and to manage access to them.<br />
+    </p>
+}
+
+@if (User.IsInRole("Student"))
+{
+    <p>
+        You entered here as <strong>Student</strong>, so enjoy and good luck in your journey!<br />
+    </p>
+}

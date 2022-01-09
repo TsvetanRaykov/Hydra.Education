@@ -77,6 +77,7 @@
                 var appUser = _userManager.GetUserAsync(User).GetAwaiter().GetResult();
 
                 claims.Add(new ClaimValue(JwtClaimTypes.Id, appUser.IdentityNumber));
+                claims.Add(new ClaimValue(ClaimTypes.GivenName, appUser.FullName));
 
                 userInfo.Claims = claims;
             }

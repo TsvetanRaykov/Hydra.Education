@@ -50,6 +50,7 @@ namespace Hydra.Module.Video.Backend.Authentication.Services
                 tokenDescriptor.Claims.Add(ClaimTypes.Role, role);
             }
 
+            tokenDescriptor.Claims.Add(ClaimTypes.GivenName, client.FullName);
             tokenDescriptor.Claims.Add(ClaimTypes.Name, client.UserName);
             tokenDescriptor.Claims.Add(ClaimTypes.Email, client.UserName);
 

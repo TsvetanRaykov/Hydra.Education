@@ -1,21 +1,21 @@
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
-using Hydra.Component.Authorization;
-using Hydra.Module.Video.Contracts;
-using Hydra.Module.Video.Services;
-using JWT;
-using JWT.Algorithms;
-using JWT.Serializers;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
 namespace Hydra.Module.Video
 {
+    using Blazorise;
+    using Blazorise.Bootstrap;
+    using Blazorise.Icons.FontAwesome;
+    using Component.Authorization;
+    using Contracts;
+    using JWT;
+    using JWT.Algorithms;
+    using JWT.Serializers;
+    using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Services;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+
     public class Program
     {
         public static async Task Main(string[] args)
@@ -32,14 +32,14 @@ namespace Hydra.Module.Video
                 .AddFontAwesomeIcons();
 
             builder.AddHydraAuthorization();
-          
+
             builder.Services.AddTransient<BearerTokenHandler>();
 
             var httpClient = new HttpClient
             {
                 BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
             };
-            
+
             using var response = await httpClient.GetAsync("endpoints.json");
             await using var stream = await response.Content.ReadAsStreamAsync();
             builder.Configuration.AddJsonStream(stream);
@@ -47,7 +47,6 @@ namespace Hydra.Module.Video
 
             builder.Services.AddHttpClient("authorized", config =>
                 {
-                    //config.BaseAddress = new Uri("https://localhost:5001");
                     config.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
                 })
                 .AddHttpMessageHandler<BearerTokenHandler>();

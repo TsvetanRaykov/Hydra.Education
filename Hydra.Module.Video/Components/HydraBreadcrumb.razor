@@ -1,11 +1,9 @@
-﻿@using BreadcrumbItem = Hydra.Module.Video.Models.HydraBreadcrumbItem
-
-@if (BreadcrumbItems is { Count: > 0 })
+﻿@if (BreadcrumbItems is { Count: > 0 })
 {
     <Div Class="breadcrumb hydra-breadcrumb">
         <ul>
             <li>
-                <Button Color="Color.Primary" Type="@ButtonType.Link" To="/Video">
+                <Button Color="Color.Primary" Type="@ButtonType.Link" To="/Video/Dashboard">
                     <Icon Name="IconName.Dashboard"></Icon>
                 </Button>
             </li>
@@ -38,5 +36,5 @@
 
 @code {
     [Parameter]
-    public List<BreadcrumbItem> BreadcrumbItems { get; set; }
+    public List<HydraBreadcrumbItem> BreadcrumbItems { get; set; }
 }
