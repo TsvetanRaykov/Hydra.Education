@@ -36,9 +36,9 @@ The next important unit is the *Study Group*. It has two main roles. The first i
 
 The last and basic unit is the *Class*. Its aim is to wrap a number of *Study Groups* for better structuring. It could be an academic specialty, faculty, or something. Аs *Study Groups* live in *Class*, to create a *Study Group* the *Trainer* must first create a *Class*. *Groups* are created in the *Class* edit section.
 
-```mermaid
-flowchart LR;a1((Class))-->g1[Group 1\n<small>students</small>];a1-->gn[Group N\n<small>students</small>];g1-->p1(Playlist 1\n<small>videos</small>);g1-->p2(Playlist 2\n<small>videos</small>);g1-->p3(Playlist 3\n<small>videos</small>);gn-->pn(Playlist N\n<small>videos</small>);gn-->p2;gn-->p3;
-```
+
+
+![ModuleVideoDiagram](.\imgreadme\ModuleVideoDiagram.svg)
 
 
 
@@ -68,3 +68,4 @@ micro frontends ...
 
 ## Data Bases
 
+![DbVideoDiagram](.\imgreadme\DbVideoDiagram.svg)
