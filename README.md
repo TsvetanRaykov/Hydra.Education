@@ -38,7 +38,7 @@ The last and basic unit is the *Class*. Its aim is to wrap a number of *Study Gr
 
 
 
-![ModuleVideoDiagram](.\imgreadme\ModuleVideoDiagram.svg)
+![ModuleVideoDiagram](imgreadme/ModuleVideoDiagram.svg)
 
 
 
@@ -68,4 +68,4 @@ micro frontends ...
 
 ## Data Bases
 
-![DbVideoDiagram](.\imgreadme\DbVideoDiagram.svg)
+![DbVideoDiagram](imgreadme/DbVideoDiagram.svg)
