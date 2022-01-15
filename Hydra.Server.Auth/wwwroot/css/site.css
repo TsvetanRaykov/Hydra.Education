@@ -13,6 +13,10 @@
     font-size: 5rem;
 }
 
+.nav-item {
+    white-space: nowrap;
+}
+
 .footer {
     position: absolute;
     bottom: 0;

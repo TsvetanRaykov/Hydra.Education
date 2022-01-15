@@ -5,37 +5,61 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IJSRuntime _jsRuntime
 
-<AuthorizeView Roles="Student">
-    <Authorized>
-        <p>
-            Welcome to module Video, @(_userFullName ?? context.User.Identity?.Name). Here you will find various videos uploaded by your teachers to help you in your educational process. Before you start using the module, please understand how it is structured.
-        </p>
-        <p>
-            There are three main objects in the architecture of the module - Playlist, Group, and Class.
-            <ul>
-                <li><strong>Playlist</strong>. Videos are organized into playlists. Each playlist should cover a specific topic, at the discretion of your trainer.</li>
-                <li><strong>Group</strong>. The study groups facilitate the logical relation of a group of students to groups of videos (playlist). The main purpose of the Group is to give students access to certain playlists. You will see the Groups to which you have been added on your personal dashboard.</li>
-                <li><strong>Class</strong>. The Class is a wrapper of a number of Groups. It is the root of the hierarchy tree. For example, depending on the context, it could be your specialty or academic faculty, trainers take the decision. The name of the Class to which the Group is assigned is located on the top left corner of each Group container (in the UI).</li>
-            </ul>
-        </p>
+<div class="row text-body text-justify">
+    <AuthorizeView Roles="Student">
+        <Authorized>
+            <p>
+                Welcome to module Video, <strong> @(_userFullName ?? context.User.Identity?.Name)</strong>. Here you will find various videos uploaded by your teachers to help you in your educational process. Before you start using the module, please understand how it is structured.
+            </p>
+            <p>
+                There are three main objects in the architecture of the module - Playlist, Group, and Class.
+                <ul>
+                    <li><strong>Playlist</strong>. Videos are organized into playlists. Each playlist should cover a specific topic, at the discretion of your trainer.</li>
+                    <li><strong>Study Group</strong>. The study groups facilitate the logical relation of a group of students to group of videos (playlist). The main purpose of the Group is to give you access to certain playlists. You can find the Groups to which you have been added on your personal dashboard.</li>
+                    <li><strong>Class</strong>. The Class is a wrapper of a number of Groups. It is the root of the hierarchy tree. For example, depending on the context, it could be your specialty or academic faculty, trainers take the decision. The name of the Class to which the Group is assigned is located on the top left corner of each Group container (in the UI).</li>
+                </ul>
+            </p>
+        </Authorized>
+        <NotAuthorized>
+            <div class="col-12 col-lg-6">
+                <p>Hello <strong>@_userFullName</strong>,</p>
+                <p>As <strong>@_adminRole</strong> of this <em>Video sharing</em> module, you are supposed to manage its content. Here you can find useful information about the module organization.</p>
+                <p>The main and most important unit is the <u><em>Video</em></u> file. You can upload <em>Video</em> files in the appropriate section. To make them available to <u><em>Students</em></u>, you need to put them in the <u><em>Playlist</em></u>.</p>
+                <p>The <em>Playlist</em> logically groups your <em>Videos</em>, so make sure they are named and described correctly by topic.</p>
+                <p>
+                    The next important unit is the <u><em>Study Group</em></u>. It has two main roles. The first is the logical grouping of students. When you create a <em>Study Group</em>, you can add <em>Students</em> to it by selecting them from a complete
+                    list managed in the authentication module. The second role of the <em>Study Group</em> is to connect the <em>Students</em> with the <em>Playlists</em>. All videos in <em>Playlists</em> assigned to the same <em>Study Group</em> are available
+                    to its members
+                    <em>(Students)</em>. You can create as many groups as you want, according to your criteria. Keep in mind that the <em>Study Groups</em> and <em>Playlists</em> you create are only available to you and your <em>Students</em>, other
+                    <em>Trainers</em> cannot manage them. But the <em>Videos</em> are shared, they are available to all educators. This way, you can add <em>Videos</em> uploaded by other <em>Trainers</em> to your <em>Playlists</em>.
+                </p>
+                <p>The last and basic unit is the <u><em>Class</em></u>. Its aim is to wrap a number of <em>Study Groups</em> for better structuring. It could be an academic specialty, faculty, or something. Аs <em>Study Groups</em> live in <em>Class</em>, to create a <em>Study Group</em> you must first create a <em>Class</em>. <em>Groups</em> are created in the <em>Class</em> edit section.</p>
 
-    </Authorized>
-</AuthorizeView>
-<div class="mermaid">
-    flowchart LR;a1((Class))-->g1[Group 1\n<small>students</small>];a1-->gn[Group N\n<small>students</small>];g1-->p1(Playlist 1\n<small>videos</small>);g1-->p2(Playlist 2\n<small>videos</small>);g1-->p3(Playlist 3\n<small>videos</small>);gn-->pn(Playlist N\n<small>videos</small>);gn-->p2;gn-->p3;
+            </div>
+            <div class="col-12 mt-5 col-lg-6 mt-lg-0">
+                <div class="text-center mb-4"><strong>Module structure</strong></div>
+                <div class="mermaid text-center">
+                    flowchart LR;a1((Class))-->g1[Group 1\n<small>students</small>];a1-->gn[Group N\n<small>students</small>];g1-->p1(Playlist 1\n<small>videos</small>);g1-->p2(Playlist 2\n<small>videos</small>);g1-->p3(Playlist 3\n<small>videos</small>);gn-->pn(Playlist N\n<small>videos</small>);gn-->p2;gn-->p3;
+                </div>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
-<p class="d-flex flex-column align-items-center">
-    <Button Color="Color.Danger" Type="@ButtonType.Link" To="Dashboard" Style="width: 10vw;">Enter</Button>
-</p>
+<Div Class="d-flex justify-content-center justify-content-lg-start mt-5">
+    <Button Color="Color.Danger" Type="@ButtonType.Link" To="Dashboard" Style="width: 200px;">Enter Module</Button>
+</Div>
 
 @code {
     private string _userFullName;
+    private string _adminRole;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         _userFullName = authState.User.FindFirst(ClaimTypes.GivenName)?.Value;
+        _adminRole = authState.User.IsInRole("Trainer") ? "a Trainer" : "an Administrator";
     }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
