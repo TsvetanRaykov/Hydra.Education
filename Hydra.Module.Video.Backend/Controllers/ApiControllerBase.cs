@@ -32,6 +32,7 @@
 
         protected string BuildImageUrl(string absoluteLocalPath)
         {
+            if (string.IsNullOrEmpty(absoluteLocalPath)) return null;
             var imagePath = absoluteLocalPath.Replace(Configuration.StaticFilesLocation, "");
             return $"/Files/{imagePath}";
         }

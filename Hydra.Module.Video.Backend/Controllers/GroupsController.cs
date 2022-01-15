@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Hydra.Module.Video.Backend.Contracts;
-using Hydra.Module.Video.Backend.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Hydra.Module.Video.Backend.Controllers
+﻿namespace Hydra.Module.Video.Backend.Controllers
 {
+    using Contracts;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Models;
+    using System.Threading.Tasks;
+
     public class GroupsController : ApiControllerBase
     {
 
@@ -49,8 +47,8 @@ namespace Hydra.Module.Video.Backend.Controllers
         [Route("{id:int}")]
         public async Task<ActionResult<GroupResponseDto>> Get(int id)
         {
-            var videoClass = await _groupService.GetGroupAsync(id);
-            return Ok(videoClass);
+            var videoGroup = await _groupService.GetGroupAsync(id);
+            return Ok(videoGroup);
         }
 
         [HttpPut]
@@ -70,6 +68,54 @@ namespace Hydra.Module.Video.Backend.Controllers
 
             var resultError = await _groupService.UpdateGroupAsync(groupUpdate.Id, groupUpdate.Name, groupUpdate.Description,
                 groupUpdate.ImageUrl);
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var error = await _groupService.DeleteGroupAsync(id);
+
+            if (string.IsNullOrWhiteSpace(error))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpPost("{id:int}/users")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> SetUsers(int id, [FromBody] string[] usersIds)
+        {
+            var resultError = await _groupService.SetUsersAsync(id, usersIds);
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpPost("{groupId:int}/playlists/{playlistId}")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> AddPlaylist(int groupId, int playlistId)
+        {
+            var resultError = await _groupService.AddPlaylist(groupId, playlistId);
+
+            if (string.IsNullOrWhiteSpace(resultError))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
+
+        [HttpDelete("{groupId:int}/playlists/{playlistId}")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> RemovePlaylist(int groupId, int playlistId)
+        {
+            var resultError = await _groupService.RemovePlaylist(groupId, playlistId);
 
             if (string.IsNullOrWhiteSpace(resultError))
                 return Ok(true);

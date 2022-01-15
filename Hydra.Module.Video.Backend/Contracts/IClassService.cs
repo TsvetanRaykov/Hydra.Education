@@ -10,5 +10,6 @@
         Task<IEnumerable<ClassResponseDto>> GetClassesAsync(string user);
         Task<ClassResponseDto> GetClassAsync(int id);
         Task<string> UpdateClassAsync(int id, string name, string description, string imageUrl);
+        Task<string> DeleteClassAsync(int id);
     }
 }

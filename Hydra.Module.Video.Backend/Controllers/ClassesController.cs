@@ -32,11 +32,15 @@
         [Authorize(Roles = "Admin, Trainer")]
         public async Task<ActionResult> Post(ClassRequestDto newClassRequest)
         {
-            var imagePath = BuildImagePath(newClassRequest.Name);
-            var fileSaveError = await SaveImage(_fileService, imagePath, newClassRequest.Image);
+            string imagePath = null;
+            if (newClassRequest.Image is { Length: > 0 })
+            {
+                imagePath = BuildImagePath(newClassRequest.Name);
+                var fileSaveError = await SaveImage(_fileService, imagePath, newClassRequest.Image);
 
-            if (!string.IsNullOrWhiteSpace(fileSaveError))
-                return BadRequest(false);
+                if (!string.IsNullOrWhiteSpace(fileSaveError))
+                    return BadRequest(false);
+            }
 
             var resultError = await _classService.CreateClassAsync(newClassRequest.Name, newClassRequest.Description, BuildImageUrl(imagePath), User.Identity?.Name);
 
@@ -78,5 +82,17 @@
             return BadRequest(false);
         }
 
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var error = await _classService.DeleteClassAsync(id);
+
+            if (string.IsNullOrWhiteSpace(error))
+                return Ok(true);
+
+            return BadRequest(false);
+        }
     }
 }

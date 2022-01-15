@@ -1,22 +1,47 @@
 ﻿@page "/PlaylistCreate"
 
+@attribute [Authorize(Roles = "Admin, Trainer")]
+
 @inject IPlaylistService _playlistService
 @inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authenticationStateProvider
 
 <ManageComponent ManagedItem="_playlist" @ref="_manageComponent">
     <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-        <h5>Create a new playlist to group videos within.</h5>
+        <h5>Playlist</h5>
         <Button Color="Color.Primary" Clicked="@CreatePlaylist">Create</Button>
     </Div>
 </ManageComponent>
-
+<Div Class="d-flex flex-wrap">
+    @if (_playlists != null)
+    {
+        <Repeater Items="_playlists">
+            <Div Class="m-4">
+                <Button Type="@ButtonType.Link" To="@($"Playlist/{context.Id}")">
+                    <PlaylistCard @key="@context.Id" Playlist="context" />
+                </Button>
+            </Div>
+        </Repeater>
+    }
+</Div>
 
 @code {
 
-
-    private readonly VideoPlaylist _playlist = new();
+    private readonly VideoPlaylist _playlist = new() { Image = Convert.FromBase64String(ManagedItemDefaultImages.Playlist) };
 
     private ManageComponent _manageComponent;
+
+    private IEnumerable<VideoPlaylist> _playlists;
+
+    private string _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _user = authState.User.Identity?.Name;
+        _playlists = await _playlistService.GetPlayListsAsync(_user);
+
+    }
 
     private async Task CreatePlaylist()
     {
@@ -26,7 +51,7 @@
 
             if (await _playlistService.CreatePlaylistAsync(_playlist))
             {
-                _navigationManager.NavigateTo("/Video");
+                _playlists = await _playlistService.GetPlayListsAsync(_user);
             }
         }
     }

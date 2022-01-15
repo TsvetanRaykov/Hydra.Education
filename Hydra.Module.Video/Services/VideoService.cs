@@ -43,6 +43,22 @@
             return responseBody;
         }
 
+        public async Task<IEnumerable<Video>> GetAllVideosAsync()
+        {
+            var result = await _httpClient.GetAsync($"api/video/videos");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadFromJsonAsync<List<Video>>();
+            return responseBody;
+        }
+
+        public async Task<bool> DeleteVideoAsync(string id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/videos/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
+        }
+
         public async Task<Video> GetVideoAsync(int id)
         {
             var result = await _httpClient.GetAsync($"api/video/videos/{id}");

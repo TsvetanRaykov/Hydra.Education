@@ -6,7 +6,7 @@
 
 @attribute [Authorize(AuthenticationSchemes = "Identity.Application")]
 
-<AuthorizeView Roles="Admin" >
+<AuthorizeView Roles="Admin">
     <Authorized Context="_">
         <Div Flex="Flex.JustifyContent.Between">
             <h5>Users</h5>
@@ -71,7 +71,7 @@
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.IdentityNumber)" Caption="Identity" Sortable="true" />
-                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Roles)" Caption="Roles" Sortable="true">
+                <DataGridColumn TItem="ApplicationUser" Field="@nameof(ApplicationUser.Roles)" Caption="Roles" Sortable="false" Filterable="true">
                     <DisplayTemplate>
                         @string.Join(", ", @context.Roles.Select(r => _roles[r.RoleId]))
                     </DisplayTemplate>
@@ -136,7 +136,8 @@
         return
             model.FullName?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
             || model.Email?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
-            || model.IdentityNumber?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
+            || model.IdentityNumber?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
+            || model.Roles.Any(role => _roles[role.RoleId].Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase));
     }
 
     private async Task UpdateGrid(string error)

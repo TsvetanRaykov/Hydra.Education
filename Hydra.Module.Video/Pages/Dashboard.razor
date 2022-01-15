@@ -1,0 +1,14 @@
+﻿@page "/Dashboard"
+
+@attribute [Authorize]
+
+<AuthorizeView Roles="Admin, Trainer">
+    <Authorized>
+        <TrainerIndex />
+    </Authorized>
+</AuthorizeView>
+<AuthorizeView Roles="Student">
+    <Authorized>
+        <StudentIndex />
+    </Authorized>
+</AuthorizeView>

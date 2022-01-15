@@ -49,6 +49,28 @@
             return responseBody;
         }
 
+        public async Task<bool> DeletePlaylistAsync(string id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/playlists/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
+        }
 
+        public async Task<bool> AddVideoAsync(string playlistId, string videoId)
+        {
+            var result = await _httpClient.PostAsync($"api/video/playlists/{playlistId}/video/{videoId}", null);
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
+        }
+
+        public async Task<bool> RemoveVideoAsync(string playlistId, string videoId)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/playlists/{playlistId}/video/{videoId}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
+        }
     }
 }

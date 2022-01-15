@@ -38,6 +38,7 @@ a, .btn-link {
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
+    box-shadow: 0 -1px 2px #000000;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     display: none;
     left: 0;
@@ -54,16 +55,24 @@ a, .btn-link {
         top: 0.5rem;
     }
 
+.navbar {
+    margin-bottom: 0 !important;
+}
+
+.nav-item {
+    white-space: nowrap;
+}
+
 .hydra-card {
     border-radius: 4px;
     background: #fff;
     box-shadow: 0 6px 10px #000000, 0 0 6px #000000;
     box-shadow: 0 6px 10px rgba(0, 0, 0, .08), 0 0 6px rgba(0, 0, 0, .05);
     transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
-    cursor: pointer;
     display: flex;
     flex-direction: column;
     width: 150px;
+    position: relative;
 }
 
     .hydra-card > header {
@@ -75,13 +84,21 @@ a, .btn-link {
         height: 150px;
         width: 150px;
         border: none !important;
-        background: transparent !important
+        background: transparent !important;
+        cursor: pointer;
     }
 
     .hydra-card:hover {
         transform: scale(1.05);
         box-shadow: 0 10px 20px #000000, 0 4px 8px #000000;
         box-shadow: 0 10px 20px rgba(0, 0, 0, .12), 0 4px 8px rgba(0, 0, 0, .06);
+    }
+
+    .hydra-card .playlist-badge {
+        background-color: transparent;
+        position: absolute;
+        top: -1.6em;
+        font-size: smaller;
     }
 
 .hydra-card-circle {
@@ -110,6 +127,30 @@ a, .btn-link {
         overflow-y: auto;
         line-height: 1.1;
         height: 48px;
+    }
+
+.hydra-card-video {
+    width: 350px;
+    position: relative;
+}
+
+    .hydra-card-video .accordion {
+        margin-right: 30px;
+    }
+
+        .hydra-card-video .accordion .card-header {
+            padding: 0;
+            background-color: inherit;
+        }
+
+    .hydra-card-video::after {
+        content: "";
+        background: #dee2e6;
+        position: absolute;
+        top: 15px;
+        right: 0;
+        width: 1px;
+        height: 70%;
     }
 
 .hydra-validation-message {
@@ -144,4 +185,34 @@ a, .btn-link {
     font-size: large;
     margin-left: 10px;
     border-radius: 50%;
+}
+
+.hydra-group-members-container .table-fixed-header {
+    height: auto !important;
+}
+
+.hydra-menu-more-icon {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+
+    .hydra-menu-more-icon:hover {
+        background-color: #E9ECEF;
+        color: #0069D9;
+    }
+
+.hydra-video-details {
+    overflow: inherit !important;
+}
+
+.hydra-breadcrumb ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hydra-breadcrumb li {
+    display: inline-block;
+    margin-right: 10px;
 }

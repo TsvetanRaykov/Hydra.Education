@@ -1,12 +1,12 @@
-﻿using System;
-using System.Net.Http.Json;
-using Hydra.Module.Video.Contracts;
+﻿using System.Text.Json;
 
 namespace Hydra.Module.Video.Services
 {
+    using Contracts;
     using Models;
-    using System.Collections.Generic;
+    using System;
     using System.Net.Http;
+    using System.Net.Http.Json;
     using System.Threading.Tasks;
 
     public class GroupService : IGroupService
@@ -34,27 +34,48 @@ namespace Hydra.Module.Video.Services
             return Convert.ToBoolean(responseBody);
         }
 
-        public Task<List<VideoGroup>> GetUserGroupsAsync(string userId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<List<VideoGroup>> GetClassGroupsAsync(string classId)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public async Task<VideoGroup> GetGroupAsync(string id)
         {
             var result = await _httpClient.GetAsync($"api/video/groups/{id}");
             result.EnsureSuccessStatusCode();
-            var responseBody = await result.Content.ReadFromJsonAsync<VideoGroup>();
-            return responseBody;
+            var stringBody = await result.Content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(stringBody))
+            {
+                return null;
+            }
+            return JsonSerializer.Deserialize<VideoGroup>(stringBody, new JsonSerializerOptions(JsonSerializerDefaults.Web));
         }
 
-        public Task<bool> DeleteGroupAsync(string id)
+        public async Task<bool> SetUsersAsync(int id, string[] userIds)
         {
-            throw new System.NotImplementedException();
+            var result = await _httpClient.PostAsJsonAsync($"api/video/groups/{id}/users", userIds);
+            result.EnsureSuccessStatusCode();
+            var response = await result.Content.ReadFromJsonAsync<bool>();
+            return response;
+        }
+
+        public async Task<bool> AddPlaylistAsync(int groupId, int playlistId)
+        {
+            var result = await _httpClient.PostAsync($"api/video/groups/{groupId}/playlists/{playlistId}", null);
+            result.EnsureSuccessStatusCode();
+            var response = await result.Content.ReadFromJsonAsync<bool>();
+            return response;
+        }
+
+        public async Task<bool> RemovePlaylistAsync(int groupId, int playlistId)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/groups/{groupId}/playlists/{playlistId}");
+            result.EnsureSuccessStatusCode();
+            var response = await result.Content.ReadFromJsonAsync<bool>();
+            return response;
+        }
+
+        public async Task<bool> DeleteGroupAsync(string id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/groups/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
         }
     }
 }

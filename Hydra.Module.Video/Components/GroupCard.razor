@@ -1,11 +1,41 @@
 ﻿@using Microsoft.Extensions.Configuration
 @inject IConfiguration _configuration
 
-<Div Class="hydra-card hydra-card-group flex-row">
-    <Image Source="@_imageUrl" Class="rounded-circle"></Image>
-    <Div Class="mx-4 d-flex flex-column">
-        <h5>@VideoGroup.Name</h5>
-        <p>@VideoGroup.Description</p>
+<Div>
+    <AuthorizeView Roles="Admin, Trainer">
+        <Authorized>
+            <Div Class="ml-3 text-info h6 d-flex">
+                <Tooltip Text="Edit Class">
+                    <Link To="@($"Class/{VideoGroup.Class.Id}")">
+                    @VideoGroup.Class.Name
+                    </Link>
+                </Tooltip>
+            </Div>
+        </Authorized>
+        <NotAuthorized>
+            <Tooltip Text="@VideoGroup.Class.Description">
+                @VideoGroup.Class.Name
+            </Tooltip>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    <Button Type="@ButtonType.Link" To="@($"Group/{VideoGroup.Id}")">
+        <Div Class="hydra-card hydra-card-group flex-row">
+            <Image Source="@_imageUrl" Class="rounded-circle"></Image>
+            <Div Class="mx-4 d-flex flex-column">
+                <h5>@VideoGroup.Name</h5>
+                <p>@VideoGroup.Description</p>
+            </Div>
+        </Div>
+    </Button>
+    <Div Class="flex-row ml-3">
+        <AuthorizeView Roles="Admin, Trainer">
+            <Authorized>
+                <Div Class="d-inline ml-1 text-muted">members <Badge Pill="true" Color="Color.Primary">@VideoGroup.Users.Length</Badge></Div>
+            </Authorized>
+        </AuthorizeView>
+        <Div Class="d-inline ml-1 text-muted">playlists <Badge Pill="true" Color="Color.Info">@VideoGroup.Playlists.Count</Badge></Div>
+        <Div Class="d-inline ml-1 text-muted">videos <Badge Pill="true" Color="Color.Danger">@VideoGroup.Playlists.SelectMany(p => p.Videos).Count()</Badge></Div>
     </Div>
 </Div>
 

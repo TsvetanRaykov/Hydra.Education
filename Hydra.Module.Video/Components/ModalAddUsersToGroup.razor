@@ -1,0 +1,90 @@
+﻿@inject IStudentsService _studentsService
+
+<Modal @ref="_modalUsersToGroup">
+    <ModalContent Scrollable="true" Size="ModalSize.Large">
+        <ModalHeader>Students</ModalHeader>
+        <ModalBody>
+            @if (_students != null)
+            {
+                <Div Flex="Flex.JustifyContent.End">
+                    <Field Horizontal="true" Width="Width.Is75" Class="mr-3">
+                        <TextEdit @bind-Text="@_customFilterValue" Placeholder="search..." Role="@TextRole.Search" />
+                    </Field>
+                </Div>
+                <DataGrid TItem="StudentDto"
+                      Data="_students"
+                      SelectionMode="DataGridSelectionMode.Multiple"
+                      TotalItems="@_students.Length"
+                      PageSize="10"
+                      ShowPager="true"
+                      FixedHeader="true"
+                      @bind-SelectedRows="_selectedStudents"
+                      CustomFilter="@OnCustomFilter"
+                      Responsive>
+                    <DataGridMultiSelectColumn TItem="StudentDto" Width="30px"></DataGridMultiSelectColumn>
+                    <DataGridCommandColumn TItem="StudentDto"></DataGridCommandColumn>
+                    <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.FullName)" Caption="Name" Sortable="true" />
+                    <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.UserName)" Caption="Email" Sortable="true" />
+                    <DataGridColumn TItem="StudentDto" Field="@nameof(StudentDto.IdentityNumber)" Caption="#" Sortable="true" />
+                </DataGrid>
+            }
+            else
+            {
+                <HydraLoader />
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
+            <Button Color="Color.Primary" Clicked="@OnSubmit">Set</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public EventCallback<List<StudentDto>> OnFormSubmit { get; set; }
+
+    private Modal _modalUsersToGroup;
+
+    private StudentDto[] _students;
+
+    private List<StudentDto> _selectedStudents;
+
+    private string _customFilterValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _students = await _studentsService.GetStudentsAsync();
+    }
+
+    public void ShowModal(string[] members)
+    {
+        _selectedStudents = _students.Where(s => members.Contains(s.UserName)).ToList();
+        _modalUsersToGroup.Show();
+    }
+
+    private void HideModal()
+    {
+        _modalUsersToGroup.Hide();
+    }
+
+    private void OnSubmit()
+    {
+        _modalUsersToGroup.Hide();
+        OnFormSubmit.InvokeAsync(_selectedStudents);
+    }
+    
+
+    private bool OnCustomFilter(StudentDto model)
+    {
+        if (string.IsNullOrEmpty(_customFilterValue))
+        {
+            return true;
+        }
+
+        return
+            model.FullName?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true
+            || model.IdentityNumber?.Contains(_customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
+    }
+}

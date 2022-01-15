@@ -18,7 +18,7 @@ namespace Hydra.Module.Video.Backend.Data
 
         public string ImageUrl { get; set; }
 
-        public List<VideoGroup> VideoGroups { get; set; }
+        public ICollection<VideoGroup> VideoGroups { get; set; }
 
     }
 }

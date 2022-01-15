@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Hydra.Module.Video.Contracts;
 
 namespace Hydra.Module.Video.Models
@@ -20,5 +21,11 @@ namespace Hydra.Module.Video.Models
         public string ImageUrl { get; set; }
 
         public int ClassId { get; set; }
+
+        public VideoClass Class { get; set; }
+
+        public string[] Users { get; set; }
+        
+        public List<VideoPlaylist> Playlists { get; set; }
     }
 }

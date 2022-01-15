@@ -1,10 +1,27 @@
 ﻿@using Microsoft.Extensions.Configuration
+@using System.Diagnostics.CodeAnalysis
 @inject IConfiguration _configuration
 
 <Div Class="hydra-card">
-    <header>@Playlist.Name</header>
-    <Image Source="@_imageUrl"></Image>
-    <footer>@Playlist.Description</footer>
+    <Div Class="d-inline ml-1 text-muted playlist-badge"><Badge Pill="true" Color="Color.Info">@Playlist.Videos.Count</Badge> videos</Div>
+    <AuthorizeView Roles="Admin, Trainer">
+        <Authorized>
+            @if (OnCloseClick.HasDelegate)
+            {
+                <Tooltip Text="Remove from this group" Placement="TooltipPlacement.Right">
+                    <Icon Name="IconName.TimesCircle" TextColor="TextColor.Danger"
+                      Class="position-absolute"
+                      Style="top: -1em; right: 0.2em; cursor: pointer;"
+                      Clicked="@CloseClicked" />
+                </Tooltip>
+            }
+        </Authorized>
+    </AuthorizeView>
+    <Button Class="p-0" Type="@ButtonType.Link" To="@($"Playlist/{@Playlist.Id}/{GroupId}")">
+        <header>@Playlist.Name</header>
+        <Image Source="@_imageUrl"></Image>
+        <footer>@Playlist.Description</footer>
+    </Button>
 </Div>
 
 @code {
@@ -12,11 +29,19 @@
     [Parameter]
     public VideoPlaylist Playlist { get; set; }
 
+    [Parameter]
+    public EventCallback OnCloseClick { get; set; }
+
+    [Parameter]
+    public int GroupId { get; set; }
+
     private string _imageUrl;
 
     protected override void OnInitialized()
     {
         _imageUrl = $"{_configuration["ApiBaseUrl"]}{Playlist.ImageUrl}";
     }
+
+    private void CloseClicked() => OnCloseClick.InvokeAsync(Playlist.Id);
 
 }

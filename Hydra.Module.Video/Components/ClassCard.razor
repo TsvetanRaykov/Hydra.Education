@@ -1,14 +1,16 @@
-﻿@using Hydra.Module.Video.Models
-@using Microsoft.Extensions.Configuration
-@using System.IO
-@using System.Text.Json
+﻿@using Microsoft.Extensions.Configuration
 
 @inject IConfiguration _configuration
 
-<Div Class="hydra-card">
-    <header>@VideoClass.Name</header>
-    <Image Source="@_imageUrl"></Image>
-    <footer>@VideoClass.Description</footer>
+<Div Class="hydra-card hydra-card-class">
+    <header class="align-self-start p-1">@VideoClass.Name</header>
+    <Div Class="d-flex" Style="width: 400px;">
+        <Image Source="@_imageUrl"></Image>
+        <Div Class="ml-3 text-black-50 text-left">@VideoClass.Description</Div>
+    </Div>
+    <footer class="align-self-start p-1">
+        <Div Class="d-inline ml-1 text-muted">groups <Badge Pill="true" Color="Color.Secondary">@VideoClass.VideoGroups.Count</Badge></Div>
+    </footer>
 </Div>
 
 @code {

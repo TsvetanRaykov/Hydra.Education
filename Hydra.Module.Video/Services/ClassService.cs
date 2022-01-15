@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Hydra.Module.Video.Contracts;
+using Hydra.Module.Video.Models;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading;
 using System.Threading.Tasks;
-using Hydra.Module.Video.Contracts;
-using Hydra.Module.Video.Models;
 
 namespace Hydra.Module.Video.Services
 {
@@ -31,6 +30,13 @@ namespace Hydra.Module.Video.Services
             result.EnsureSuccessStatusCode();
             var responseBody = await result.Content.ReadFromJsonAsync<VideoClass>();
             return responseBody;
+        }
+        public async Task<bool> DeleteClassAsync(string id)
+        {
+            var result = await _httpClient.DeleteAsync($"api/video/classes/{id}");
+            result.EnsureSuccessStatusCode();
+            var responseBody = await result.Content.ReadAsStringAsync();
+            return Convert.ToBoolean(responseBody);
         }
 
         public async Task<List<VideoClass>> GetClassesAsync(string user)

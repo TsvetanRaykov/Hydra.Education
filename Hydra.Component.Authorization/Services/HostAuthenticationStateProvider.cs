@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Hydra.Component.Authorization.Models;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.Logging;
-
-namespace Hydra.Component.Authorization.Services
+﻿namespace Hydra.Component.Authorization.Services
 {
-    using IdentityModel;
+    using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
+    using Microsoft.Extensions.Logging;
+    using Models;
+    using System;
+    using System.Net.Http;
+    using System.Net.Http.Json;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
 
     //[tr]: 2021-10-26
     public class HostAuthenticationStateProvider : AuthenticationStateProvider
@@ -25,29 +22,33 @@ namespace Hydra.Component.Authorization.Services
         private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
         private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
-       // private readonly TempUser _tempUser;
+        private readonly Task<AuthOptions> _authOptions;
 
-        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger)
+        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger, Task<AuthOptions> authOptions)
         {
             _navigation = navigation;
             _client = client;
             _logger = logger;
-         //   _tempUser = tempUser;
+            _authOptions = authOptions;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new AuthenticationState(await GetUser(useCache: true));
 
-        public void SignIn(string customReturnUrl = null)
+        public async void SignIn(string customReturnUrl = null)
         {
+            var options = await _authOptions;
             var returnUrl = customReturnUrl != null ? _navigation.ToAbsoluteUri(customReturnUrl).ToString() : null;
             var encodedReturnUrl = Uri.EscapeDataString(returnUrl ?? _navigation.Uri);
-            var logInUrl = _navigation.ToAbsoluteUri($"{Endpoints.SignIn}?returnUrl={encodedReturnUrl}");
-            _navigation.NavigateTo(logInUrl.ToString(), true);
+            // var logInUrl = _navigation.ToAbsoluteUri($"{_authOptions.Endpoints.SignIn}?returnUrl={encodedReturnUrl}");
+            var logInUrl = $"{options.ApiBaseUrl.OriginalString}/{options.Endpoints.SignIn}?returnUrl={encodedReturnUrl}";
+            _navigation.NavigateTo(logInUrl, true);
         }
 
-        public void SignOut()
+        public async void SignOut()
         {
-            _navigation.NavigateTo(_navigation.ToAbsoluteUri(Endpoints.SignOut).ToString(), true);
+            var options = await _authOptions;
+            // _navigation.NavigateTo(_navigation.ToAbsoluteUri(Endpoints.SignOut).ToString(), true);
+            _navigation.NavigateTo($"{options.ApiBaseUrl.OriginalString}/{options.Endpoints.SignOut}", true);
         }
 
         private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
@@ -59,26 +60,6 @@ namespace Hydra.Component.Authorization.Services
                 return _cachedUser;
             }
 
-            //if (_tempUser != null)
-            //{
-            //    _logger.LogDebug("Taking TempUser for development");
-            //    var userInfo = new UserInfo
-            //    {
-            //        IsAuthenticated = true,
-            //        NameClaimType = JwtClaimTypes.Name,
-            //        RoleClaimType = JwtClaimTypes.Role,
-            //        Claims = new List<ClaimValue>()
-            //    };
-            //    userInfo.Claims.Add(new ClaimValue(userInfo.NameClaimType, _tempUser.Name));
-            //    foreach (var role in _tempUser.Roles)
-            //    {
-            //        userInfo.Claims.Add(new ClaimValue(userInfo.RoleClaimType, role));
-            //    }
-
-            //    _cachedUser = BuildClaimsPrincipal(userInfo);
-            //    return _cachedUser;
-            //}
-
             _logger.LogDebug("Fetching user");
             _cachedUser = await FetchUser();
             _userLastCheck = now;
@@ -88,11 +69,13 @@ namespace Hydra.Component.Authorization.Services
 
         private async Task<ClaimsPrincipal> FetchUser()
         {
+            var options = await _authOptions;
             UserInfo user = null;
 
             try
             {
-                user = await _client.GetFromJsonAsync<UserInfo>(Endpoints.User);
+                //user = await _client.GetFromJsonAsync<UserInfo>(Endpoints.User);
+                user = await _client.GetFromJsonAsync<UserInfo>($"{options.ApiBaseUrl.OriginalString}/{options.Endpoints.User}");
             }
             catch (Exception exc)
             {

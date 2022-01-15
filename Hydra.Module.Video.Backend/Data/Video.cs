@@ -11,6 +11,6 @@ namespace Hydra.Module.Video.Backend.Data
         public DateTime UploadedOn { get; set; }
         public string UploadedBy { get; set; }
         public string Url { get; set; }
-        public List<VideoToPlaylist> Playlists { get; set; }
+        public ICollection<VideoToPlaylist> Playlists { get; set; }
     }
 }

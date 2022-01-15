@@ -1,0 +1,40 @@
+﻿@if (BreadcrumbItems is { Count: > 0 })
+{
+    <Div Class="breadcrumb hydra-breadcrumb">
+        <ul>
+            <li>
+                <Button Color="Color.Primary" Type="@ButtonType.Link" To="/Video/Dashboard">
+                    <Icon Name="IconName.Dashboard"></Icon>
+                </Button>
+            </li>
+            <li>/</li>
+            @for (var i = 0; i < BreadcrumbItems.Count; i++)
+            {
+                var item = BreadcrumbItems[i];
+                <li>
+                    @if (!string.IsNullOrWhiteSpace(item.Link))
+                    {
+                        <Tooltip Text="@item.Title">
+                            <a href="@item.Link">@item.Text</a>
+                        </Tooltip>
+                    }
+                    else
+                    {
+                        <Tooltip Text="@item.Title">
+                            @item.Text
+                        </Tooltip>
+                    }
+                </li>
+                if (i < BreadcrumbItems.Count - 1)
+                {
+                    <li>/</li>
+                }
+            }
+        </ul>
+    </Div>
+}
+
+@code {
+    [Parameter]
+    public List<HydraBreadcrumbItem> BreadcrumbItems { get; set; }
+}

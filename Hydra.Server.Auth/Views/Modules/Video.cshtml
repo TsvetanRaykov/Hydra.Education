@@ -1,7 +1,13 @@
-﻿<div id="app" class="h-100">
-    <div class="text-center">
+﻿@{
+    ViewData["Title"] = "Hydra - Video";
+    ViewData["ModuleTitle"] = "Video Share";
+}
+
+
+<div id="app" class="h-100">
+    <div class="text-center m-5">
         <div class="spinner-border"></div>
-        <div class="text-muted">Loading module ...</div>
+        <div class="text-muted">Loading Video module ...</div>
     </div>
 </div>
 
@@ -13,6 +19,7 @@
         `/${module}/css/app.css`,
         "/_content/Blazorise.Bootstrap/blazorise.bootstrap.css",
         "/_content/Blazorise/blazorise.css",
+        "/_content/Blazorise.Snackbar/blazorise.snackbar.css",
         `/${module}/lib/font-awesome/css/all.min.css`,
         `/${module}/lib/bootstrap/css/bootstrap.min.css`
     ];
@@ -49,6 +56,7 @@
 <script src="/Video/lib/jquery/dist/jquery.min.js"></script>
 <script src="/Video/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/Video/lib/popper.js/umd/popper.min.js"></script>
+<script src="/Video/js/mermaid.min.js"></script>
 <script src="/Video/js/video-module.js"></script>
 <script src="/_content/Blazorise/blazorise.js"></script>
 <script src="/_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>

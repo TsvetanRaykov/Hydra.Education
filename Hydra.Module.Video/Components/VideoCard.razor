@@ -1,21 +1,197 @@
 ﻿@using Microsoft.Extensions.Configuration
+@using System.Diagnostics.CodeAnalysis
+@using System.Collections
 @inject IConfiguration _configuration
+@inject IPlaylistService _playlistService
+@inject IVideoService _videoService
+@inject AuthenticationStateProvider _authenticationStateProvider
 
-<video preload="metadata" width="320" height="240" controls>
-    <source src="@_imageUrl" type="video/mp4">
-</video>
+<Div Class="hydra-card-video">
+    <Div Class="align-items-start d-flex">
+        <video preload="metadata" width="320" height="240" controls>
+            <source src="@_imageUrl" type="video/mp4">
+        </video>
+        @if (_actionsAllowed)
+        {
+            <Div @onclick="ShowActions"
+             Class="align-items-center border d-flex justify-content-center rounded-circle hydra-menu-more-icon">
+
+                <Dropdown @ref="_actionDropDown" Direction="Direction.Left">
+                    <DropdownMenu>
+                        @if (Playlist is not null)
+                        {
+                            <DropdownItem Value="Video" Clicked="RemoveVideoFromPlaylist">Remove</DropdownItem>
+                        }
+                        <DropdownItem Value="Video" Clicked="DeleteVideo">Delete</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+                <Icon Name="IconName.MoreHorizontal"></Icon>
+            </Div>
+        }
+    </Div>
+    <Div Class="small">
+        <Div Class="font-weight-bold">@Video.Name</Div>
+
+        <Accordion>
+            <Collapse Visible="@_playlistsVisible" Class="hydra-video-details">
+                <CollapseHeader Background="Background.None">
+                    <Div Class="text-center d-flex justify-content-between" @onclick="@(() => _playlistsVisible = !_playlistsVisible)" Style="cursor: pointer;">
+                        <Div>Details</Div>
+                        @if (_actionsAllowed)
+                        {
+                            <Div>In <span class="font-weight-bold">@Video.PlayLists.Count</span> playlists</Div>
+                        }
+                    </Div>
+
+                </CollapseHeader>
+                <CollapseBody>
+                    <Div Class="text-muted">@Video.Description</Div>
+                    <Div>uploaded by: <Span Class="text-muted">@Video.UploadedBy</Span></Div>
+                    <Div>uploaded on: <Span Class="text-muted">@Video.UploadedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</Span> </Div>
+                    @if (_actionsAllowed)
+                    {
+                        <Div Class="bg-light d-flex justify-content-between p-1">
+                            <Div Class="font-weight-bold">Playlists:</Div>
+                            <Div>
+                                <Icon Name="IconName.Add" IconSize="IconSize.ExtraSmall" Clicked="TogglePlaylistsDropDown" Style="cursor: pointer;"></Icon>
+                                <Dropdown @ref="_playlistDropDown" Direction="Direction.Down">
+                                    <DropdownMenu>
+                                        @if (_availablePlaylists is { Count: > 0 })
+                                        {
+                                            <Repeater Items="_availablePlaylists">
+                                                <DropdownItem @key="@context.Id" Value="@context" Clicked="AddVideoToPlaylist" Class="small">@context.Name</DropdownItem>
+                                            </Repeater>
+                                        }
+
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </Div>
+                        </Div>
+                        <Repeater Items="Video.PlayLists">
+                            <Badge @key="context.Id" Color="Color.Info" Class="mx-1 hydra-badge-close d-inline" Pill="true" CloseClicked="@(() => OnPlaylistRemoved(@context))">@context.Name</Badge>
+                        </Repeater>
+                    }
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+
+    </Div>
+</Div>
+<HydraDialog @ref="_confirmDialog"
+             ButtonNoText="Cancel"
+             ButtonYesText="Ok"
+             Argument="@_dialogActionArgument"
+             OnAccept="ActionAcceptedAsync">
+    @_confirmationText
+</HydraDialog>
 
 @code {
 
     [Parameter]
     public Video Video { get; set; }
 
+    [Parameter, AllowNull]
+    public VideoPlaylist Playlist { get; set; }
+
+    [Parameter]
+    public EventCallback VideoRemoved { get; set; }
+
+    [Parameter, AllowNull]
+    public List<VideoPlaylist> AllPlaylists { get; set; } = new();
+
     private string _imageUrl;
 
-    protected override void OnInitialized()
+    private bool _actionsAllowed;
+
+    private Dropdown _actionDropDown;
+
+    private Dropdown _playlistDropDown;
+
+    private string _confirmationText;
+
+    private HydraDialog _confirmDialog;
+
+    private DialogActionArgument _dialogActionArgument;
+
+    private List<VideoPlaylist> _availablePlaylists = new();
+
+    private bool _playlistsVisible;
+
+    protected override async Task OnInitializedAsync()
     {
         _imageUrl = $"{_configuration["ApiBaseUrl"]}/{Video.Url}";
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
+        {
+            _actionsAllowed = Playlist is not null || Video.UploadedBy == authState.User.Identity?.Name;
+            _availablePlaylists = AllPlaylists.FindAll(p => !Video.PlayLists.Select(v => v.Id).Contains(p.Id));
+        }
     }
 
+    private void RemoveVideoFromPlaylist(object arg)
+    {
+        _dialogActionArgument = new DialogActionArgument { EventId = 1 };
+        _confirmationText = $"{Video.Name} will be removed from playlist {Playlist.Name}.";
+        _confirmDialog.Show();
+    }
+
+    private void DeleteVideo(object obj)
+    {
+        _dialogActionArgument = new DialogActionArgument { EventId = 2 };
+        _confirmationText = $"{Video.Name} will be permanently deleted from the storage.";
+        _confirmDialog.Show();
+    }
+
+    private void ShowActions()
+    {
+        _actionDropDown.Toggle();
+    }
+
+    private async Task ActionAcceptedAsync(DialogActionArgument argument)
+    {
+        switch (argument.EventId)
+        {
+            case 1:
+                await _playlistService.RemoveVideoAsync(Playlist.Id.ToString(), Video.Id.ToString());
+                await VideoRemovedFromPlaylist();
+                break;
+            case 2:
+                await _videoService.DeleteVideoAsync(Video.Id.ToString());
+                await VideoRemovedFromPlaylist();
+                break;
+            case 3:
+                var playlist = (VideoPlaylist)argument.Argument;
+                await _playlistService.RemoveVideoAsync(playlist.Id.ToString(), Video.Id.ToString());
+                await VideoRemovedFromPlaylist();
+                break;
+        }
+    }
+
+    private async Task VideoRemovedFromPlaylist()
+    {
+        await VideoRemoved.InvokeAsync();
+        _availablePlaylists = AllPlaylists.FindAll(p => !Video.PlayLists.Select(v => v.Id).Contains(p.Id));
+    }
+
+    private void OnPlaylistRemoved(VideoPlaylist playlist)
+    {
+        _dialogActionArgument = new DialogActionArgument { EventId = 3, Argument = playlist };
+        _confirmationText = $"{Video.Name} will be removed from playlist {playlist.Name}.";
+        _confirmDialog.Show();
+    }
+
+    private async Task AddVideoToPlaylist(object args)
+    {
+        var playlist = (VideoPlaylist)args;
+        await _playlistService.AddVideoAsync(playlist.Id.ToString(), Video.Id.ToString());
+        Video = await _videoService.GetVideoAsync(Video.Id);
+        _availablePlaylists = AllPlaylists.FindAll(p => !Video.PlayLists.Select(v => v.Id).Contains(p.Id));
+    }
+
+    private async Task TogglePlaylistsDropDown()
+    {
+        _playlistDropDown.Toggle();
+        await VideoRemoved.InvokeAsync();
+    }
 
 }

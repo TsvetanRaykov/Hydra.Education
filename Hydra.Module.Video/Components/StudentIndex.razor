@@ -1,0 +1,35 @@
+﻿@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IStudentsService _studentsService
+
+<Div Class="container-fluid d-flex flex-wrap">
+    @if (_videoGroups != null)
+    {
+        <Repeater Items="@_videoGroups.OrderBy(g=>g.Class.Name)">
+            <Div Class="m-4">
+                <GroupCard @key="@context.Id" VideoGroup="@context" />
+            </Div>
+        </Repeater>
+    }
+    else
+    {
+        <Div Class="small text-center w-100">
+            <HydraLoader>Loading content ...</HydraLoader>
+        </Div>
+    }
+</Div>
+@code {
+
+    private VideoGroup[] _videoGroups;
+
+    protected override async void OnInitialized()
+    {
+        await LoadData();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadData()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _videoGroups = await _studentsService.GetStudentGroups(authState.User.Identity?.Name);
+    }
+}

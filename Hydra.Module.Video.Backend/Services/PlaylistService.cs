@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hydra.Module.Video.Backend.Contracts;
-using Hydra.Module.Video.Backend.Data;
-using Hydra.Module.Video.Backend.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
-namespace Hydra.Module.Video.Backend.Services
+﻿namespace Hydra.Module.Video.Backend.Services
 {
+    using Contracts;
+    using Data;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class PlaylistService : ServiceBase, IPlaylistService
     {
         private readonly VideoDbContext _dbContext;
@@ -38,9 +38,13 @@ namespace Hydra.Module.Video.Backend.Services
                 .Playlists
                 .Where(c => c.TrainerId.Equals(user))
                 .Include(c => c.VideoGroups)
-                .ThenInclude(g => g.VideoGroup)
+                .ThenInclude(g => g.Group)
+                .ThenInclude(v => v.VideoClass)
                 .Include(p => p.Videos)
                 .ThenInclude(p => p.Video)
+                .Include(p => p.VideoGroups)
+                .ThenInclude(g => g.Group)
+                .ThenInclude(g => g.Users)
                 .ToListAsync();
 
             return playlist.Select(p => new PlaylistResponseDto
@@ -58,11 +62,19 @@ namespace Hydra.Module.Video.Backend.Services
                 }).ToList(),
                 VideoGroups = p.VideoGroups.Select(g => new GroupResponseDto
                 {
-                    Name = g.VideoGroup.Name,
-                    Description = g.VideoGroup.Description,
+                    Name = g.Group.Name,
+                    Description = g.Group.Description,
                     Id = g.GroupId,
-                    ImageUrl = g.VideoGroup.ImageUrl,
-                    Class = g.VideoGroup.VideoClass
+                    ImageUrl = g.Group.ImageUrl,
+                    Class = new ClassResponseDto()
+                    {
+                        Name = g.Group.VideoClass.Name,
+                        Id = g.Group.VideoClass.Id,
+                        ImageUrl = g.Group.VideoClass.ImageUrl,
+                        Description = g.Group.VideoClass.Description,
+                        TrainerId = g.Group.VideoClass.TrainerId
+                    },
+                    Users = g.Group.Users.Select(u => u.UserId).ToList()
                 }).ToList()
 
             }).ToList();
@@ -73,7 +85,15 @@ namespace Hydra.Module.Video.Backend.Services
             var playlist = await _dbContext
                 .Playlists
                 .Include(c => c.VideoGroups)
+                .ThenInclude(g => g.Group)
+                .ThenInclude(v => v.VideoClass)
+                .Include(p => p.VideoGroups)
+                .ThenInclude(g => g.Group)
+                .ThenInclude(g => g.Users)
                 .Include(p => p.Videos)
+                .ThenInclude(p => p.Video)
+                .ThenInclude(v => v.Playlists)
+                .ThenInclude(p => p.Playlist)
                 .FirstAsync(p => p.Id.Equals(id));
 
             return new PlaylistResponseDto
@@ -85,11 +105,34 @@ namespace Hydra.Module.Video.Backend.Services
                 VideoGroups = playlist.VideoGroups.Select(g => new GroupResponseDto
                 {
                     Id = g.GroupId,
-                    Name = g.VideoGroup.Name,
-                    ImageUrl = g.VideoGroup.ImageUrl,
-                    Description = g.VideoGroup.Description,
-                    Class = g.VideoGroup.VideoClass,
-                    Users = g.VideoGroup.Users.Select(u => u.UserId).ToList(),
+                    Name = g.Group.Name,
+                    ImageUrl = g.Group.ImageUrl,
+                    Description = g.Group.Description,
+                    Class = new ClassResponseDto()
+                    {
+                        Name = g.Group.VideoClass.Name,
+                        Id = g.Group.VideoClass.Id,
+                        ImageUrl = g.Group.VideoClass.ImageUrl,
+                        Description = g.Group.VideoClass.Description,
+                        TrainerId = g.Group.VideoClass.TrainerId
+                    },
+                    Users = g.Group.Users.Select(u => u.UserId).ToList(),
+                }).ToList(),
+                Videos = playlist.Videos.Select(v => new VideoResponseDto
+                {
+                    Id = v.Video.Id,
+                    Description = v.Video.Description,
+                    Name = v.Video.Name,
+                    UploadedBy = v.Video.UploadedBy,
+                    Url = v.Video.Url,
+                    UploadedOn = v.Video.UploadedOn,
+                    PlayLists = v.Video.Playlists.Select(p => new PlaylistResponseDto
+                    {
+                        Id = p.Playlist.Id,
+                        Description = p.Playlist.Description,
+                        Name = p.Playlist.Name,
+                        ImageUrl = p.Playlist.ImageUrl
+                    }).ToList()
                 }).ToList()
             };
         }
@@ -97,6 +140,9 @@ namespace Hydra.Module.Video.Backend.Services
         public async Task<string> UpdatePlaylistAsync(int id, string name, string description, string imageUrl)
         {
             var playlist = await _dbContext.FindAsync<Playlist>(id);
+
+            if (playlist == null) return "Playlist not found.";
+
             var toUpdate = false;
             if (playlist.Name != name)
             {
@@ -120,6 +166,55 @@ namespace Hydra.Module.Video.Backend.Services
             }
 
             return null;
+        }
+
+        public async Task<string> DeletePlaylistAsync(int id)
+        {
+            var playlist = _dbContext.Playlists
+                .Include(p => p.VideoGroups)
+                .Include(p => p.Videos)
+                .FirstOrDefault(g => g.Id == id);
+
+            if (playlist == null) return "Playlist not found.";
+
+           _dbContext.Remove(playlist);
+
+            return await UpdateDbAsync(_dbContext);
+        }
+
+        public async Task<string> AddVideo(int id, int videoId)
+        {
+            var playlist = await _dbContext.Playlists
+                .Include(p => p.Videos)
+                .ThenInclude(v => v.Video)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (playlist == null) return "Playlist not found.";
+
+            var exist = playlist.Videos.FirstOrDefault(v => v.Video.Id == videoId);
+            if (exist != null) return null;
+
+            playlist.Videos.Add(new VideoToPlaylist
+            {
+                VideoId = videoId
+            });
+
+            return await UpdateDbAsync(_dbContext);
+        }
+
+        public async Task<string> RemoveVideo(int id, int videoId)
+        {
+            var playlist = await _dbContext.Playlists
+                .Include(p => p.Videos)
+                .ThenInclude(v => v.Video)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (playlist == null) return "Playlist not found.";
+            var video = playlist.Videos.FirstOrDefault(v => v.Video.Id == videoId);
+            if (video == null) return null;
+
+            playlist.Videos.Remove(video);
+
+            return await UpdateDbAsync(_dbContext);
         }
     }
 }

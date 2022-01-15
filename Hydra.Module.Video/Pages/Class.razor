@@ -1,33 +1,37 @@
 ﻿@page "/Class/{id}"
 
+@attribute [Authorize(Roles = "Admin, Trainer")]
+
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IClassService _classService
+@inject IJSRuntime _jsRuntime
 
 @if (_videoClass != null)
 {
-
     <ManageComponent @ref="_managedComponent" ManagedItem="_videoClass">
         <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-            <h5>Edit class</h5>
+            <h5>Class</h5>
             <Div Class="d-flex align-items-baseline">
                 <Button Color="Color.Primary" Clicked="@UpdateClass" Class="mr-2">Save</Button>
-                <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning" Class="ml-2">Create Group</Button>
+                <Button Color="Color.Danger" Clicked="DeleteClass" Class="mr-2">Delete</Button>
+                <Button Type="@ButtonType.Link" To="@($"GroupCreate/{Id}")" Color="Color.Warning">Create Group</Button>
             </Div>
         </Div>
     </ManageComponent>
-
     <Div class="container-fluid d-flex flex-wrap">
-        @foreach (var @group in _videoClass.VideoGroups)
-        {
+        <Repeater Context="videoGroup" Items="_videoClass.VideoGroups">
             <Div Class="m-4">
-                <Button Type="@ButtonType.Link" To="@($"Group/{@group.Id}")">
-
-                    <GroupCard VideoGroup="@group"></GroupCard>
-                </Button>
+                <GroupCard @key="@videoGroup.Id" VideoGroup="@videoGroup" />
             </Div>
-        }
+        </Repeater>
     </Div>
-
+    <HydraDialog @ref="_confirmDialog"
+             ButtonNoText="Cancel"
+             ButtonYesText="Ok"
+             OnAccept="ActionAcceptedAsync">
+        @_videoClass.Name Class will be permanently deleted.
+    </HydraDialog>
+    <SnackbarStack @ref="_snackBarStack" Location="SnackbarStackLocation.Right" />
 }
 else
 {
@@ -43,6 +47,10 @@ else
 
     private ManageComponent _managedComponent;
 
+    private HydraDialog _confirmDialog;
+
+    private SnackbarStack _snackBarStack;
+
     protected override async Task OnInitializedAsync()
     {
         _videoClass = await _classService.GetClassAsync(Id);
@@ -52,7 +60,30 @@ else
     {
         if (_managedComponent.Validate())
         {
-            _classService.UpdateClassAsync(_videoClass);
+            _classService.UpdateClassAsync(_videoClass).ContinueWith(async updateTask =>
+           {
+               if (await updateTask)
+               {
+                   await _snackBarStack.PushAsync("Changes has been saved.", SnackbarColor.Success, options =>
+                   {
+                       options.IntervalBeforeClose = 5000;
+                       options.ShowCloseButton = false;
+                   });
+               }
+           });
+        }
+    }
+
+    private void DeleteClass()
+    {
+        _confirmDialog.Show();
+    }
+
+    private async Task ActionAcceptedAsync()
+    {
+        if (await _classService.DeleteClassAsync(_videoClass.Id.ToString()))
+        {
+            await _jsRuntime.InvokeVoidAsync("history.back");
         }
     }
 

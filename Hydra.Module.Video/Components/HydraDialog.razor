@@ -1,0 +1,54 @@
+﻿<Modal @ref="_modal">
+    <ModalContent Centered="true">
+        <ModalBody>
+            @ChildContent
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@DialogClose">@ButtonNoText</Button>
+            <Button Color="Color.Primary" Clicked="@DialogAccepted">@ButtonYesText</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    private Modal _modal;
+
+    [Parameter]
+    public DialogActionArgument Argument { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<DialogActionArgument> OnAccept { get; set; }
+
+    [Parameter]
+    public EventCallback OnDecline { get; set; }
+
+    [Parameter]
+    public string ButtonNoText { get; set; }
+
+    [Parameter]
+    public string ButtonYesText { get; set; }
+
+    public void Show()
+    {
+        _modal.Show();
+    }
+
+    private void DialogClose()
+    {
+        _modal.Hide();
+        OnDecline.InvokeAsync();
+    }
+
+    private void DialogAccepted()
+    {
+        _modal.Hide();
+        OnAccept.InvokeAsync(Argument);
+    }
+}

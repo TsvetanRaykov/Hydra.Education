@@ -1,47 +1,212 @@
 ﻿@page "/Playlist/{id}"
+@page "/Playlist/{id}/{GroupId}"
+
+@attribute [Authorize]
+
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IPlaylistService _playlistService
+@inject IVideoService _videoService
+@inject NavigationManager _navigationManager
 
 @if (_playlist != null)
 {
-
-    <ManageComponent @ref="_managedComponent" ManagedItem="_playlist">
-        <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
-            <h5>Edit Playlist</h5>
-            <Div Class="d-flex align-items-baseline">
-                <Button Color="Color.Primary" Clicked="@UpdatePlaylist" Class="mr-2">Save</Button>
+    <AuthorizeView Roles="Admin, Trainer">
+        <Authorized>
+            @if (_group != null)
+            {
+                <Breadcrumb>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink To="@($"Class/{_group.Class.Id}")"><Tooltip Text="@_group.Class.Description">@_group.Class.Name</Tooltip></BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink To="@($"Group/{GroupId}")"><Tooltip Text="@_group.Description">@_group.Name</Tooltip></BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbItem Active="true">
+                        <BreadcrumbLink To="@($"Playlist/{Id}")">@_playlist.Name</BreadcrumbLink>
+                    </BreadcrumbItem>
+                </Breadcrumb>
+            }
+            <ManageComponent @ref="_managedComponent" ManagedItem="_playlist">
+                <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
+                    <Div>
+                        <h5>Playlist</h5>
+                        <Div>@_playlist.Videos.Count videos</Div>
+                    </Div>
+                    <Div Class="d-flex align-items-baseline">
+                        <Button Color="Color.Primary" Clicked="@UpdatePlaylistAsync" Class="mr-2">Save</Button>
+                        <Dropdown Direction="Direction.Down" Class="mr-2">
+                            <DropdownToggle Color="Color.Warning">
+                                Add Video
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (_availableVideos is { Count: > 0 })
+                                {
+                                    <Repeater Items="_availableVideos" Context="video">
+                                        <DropdownItem @key="@video.Id" Value="video" Clicked="AddVideoToPlaylist">@video.Name</DropdownItem>
+                                    </Repeater>
+                                }
+                                else
+                                {
+                                    <DropdownItem Class="text-muted small"><a href="VideoCreate">upload</a></DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                        <Button Color="Color.Danger" Clicked="PlaylistDelete">Delete</Button>
+                    </Div>
+                </Div>
+            </ManageComponent>
+            @if (_group != null)
+            {
+                <HydraBreadcrumb BreadcrumbItems="_breadcrumbItems" />
+            }
+            <Div class="container-fluid d-flex flex-wrap">
+                <Repeater Items="_playlist.Videos" Context="video">
+                    <Div Class="m-4">
+                        <VideoCard @key="@video.Id" Video="@video" Playlist="_playlist" AllPlaylists="_allPlaylists" VideoRemoved="OnVideoRemoved" />
+                    </Div>
+                </Repeater>
             </Div>
-        </Div>
-    </ManageComponent>
-
-    <Div class="container-fluid d-flex flex-wrap">
-
-    </Div>
-
+            <HydraDialog @ref="_confirmDialog"
+                     ButtonNoText="Cancel"
+                     ButtonYesText="Ok"
+                     OnAccept="ActionAcceptedAsync">
+                @_playlist.Name playlist will be permanently removed.
+            </HydraDialog>
+            <SnackbarStack @ref="_snackBarStack" Location="SnackbarStackLocation.Right" />
+        </Authorized>
+        <NotAuthorized>
+            @if (_group != null)
+            {
+                <HydraBreadcrumb BreadcrumbItems="_breadcrumbItems" />
+            }
+            <Div class="container-fluid d-flex flex-wrap">
+                <Repeater Items="_playlist.Videos" Context="video">
+                    <Div Class="m-4">
+                        <VideoCard @key="@video.Id" Video="@video" Playlist="_playlist" AllPlaylists="_allPlaylists" VideoRemoved="OnVideoRemoved" />
+                    </Div>
+                </Repeater>
+            </Div>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 else
 {
-    <HydraLoader />
+    <HydraLoader>Loading Playlist ...</HydraLoader>
 }
 
 @code {
     [Parameter]
     public string Id { get; set; }
 
+    [Parameter]
+    public string GroupId { get; set; }
+
+    private VideoGroup _group;
+
     private VideoPlaylist _playlist;
 
     private ManageComponent _managedComponent;
 
+    private IEnumerable<Video> _allVideos;
+
+    private List<Video> _availableVideos;
+
+    private List<VideoPlaylist> _allPlaylists;
+
+    private HydraDialog _confirmDialog;
+
+    private List<HydraBreadcrumbItem> _breadcrumbItems;
+
+    private SnackbarStack _snackBarStack;
+
     protected override async Task OnInitializedAsync()
     {
-        _playlist = await _playlistService.GetPlaylistAsync(Id);
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
+        {
+            _allPlaylists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
+            await LoadData();
+        }
+        else
+        {
+            _playlist = await _playlistService.GetPlaylistAsync(Id);
+        }
+
+        if (GroupId != null && _playlist != null)
+        {
+            BuildBreadcrumb();
+        }
     }
 
-    private void UpdatePlaylist()
+    private void BuildBreadcrumb()
+    {
+        _group = _playlist.VideoGroups.FirstOrDefault(g => g.Id.ToString() == GroupId);
+        if (_group != null)
+            _breadcrumbItems = new List<HydraBreadcrumbItem>
+            {
+                new()
+                {
+                    Text = _group.Class.Name,
+                    Title = _group.Class.Description,
+                },
+                new()
+                {
+                    Text = _group.Name,
+                    Title = _group.Description,
+                    Link = $"Group/{_group.Id}"
+                },
+                new()
+                {
+                    Text = _playlist.Name,
+                    Title = _playlist.Description,
+                }
+            };
+    }
+
+    private async Task UpdatePlaylistAsync()
     {
         if (_managedComponent.Validate())
         {
-            _playlistService.UpdatePlaylistAsync(_playlist);
+            await _playlistService.UpdatePlaylistAsync(_playlist);
+            await _snackBarStack.PushAsync("Changes has been saved.", SnackbarColor.Success, options =>
+            {
+                options.IntervalBeforeClose = 5000;
+                options.ShowCloseButton = false;
+            });
         }
     }
+
+    private async Task AddVideoToPlaylist(object obj)
+    {
+        var video = (Video)obj;
+        if (await _playlistService.AddVideoAsync(Id, video.Id.ToString()))
+            await LoadData();
+    }
+
+    private async Task OnVideoRemoved()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _playlist = await _playlistService.GetPlaylistAsync(Id);
+        _allVideos = await _videoService.GetAllVideosAsync();
+        _availableVideos = _allVideos.ToList().FindAll(x => !_playlist.Videos.Select(v => v.Id).Contains(x.Id));
+    }
+
+    private void PlaylistDelete()
+    {
+        _confirmDialog.Show();
+    }
+
+    private async Task ActionAcceptedAsync()
+    {
+        if (await _playlistService.DeletePlaylistAsync(_playlist.Id.ToString()))
+        {
+            _navigationManager.NavigateTo("");
+        }
+    }
+
 }

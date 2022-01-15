@@ -40,6 +40,7 @@
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IPlaylistService, PlaylistService>();
             services.AddScoped<IVideoService, VideoService>();
+            services.AddScoped<IStudentService, StudentService>();
 
             services.AddSingleton(settings);
             services.AddSingleton<IJwtTokenManager, JwtTokenManager>();

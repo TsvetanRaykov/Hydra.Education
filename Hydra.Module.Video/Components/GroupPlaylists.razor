@@ -1,0 +1,106 @@
+﻿@using Microsoft.AspNetCore.Components
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IPlaylistService _playlistService
+@inject IGroupService _groupService
+
+<Div Class="h5 ml-3">
+    Playlists
+    <AuthorizeView Roles="Admin, Trainer">
+        <Authorized>
+            <Dropdown Direction="Direction.Right" Class="d-inline-block">
+                <DropdownToggle Class="border-0 btn-outline-info">
+                    <Icon Name="IconName.Add" IconSize="IconSize.Small"></Icon>
+                </DropdownToggle>
+                <DropdownMenu>
+                    @if (_availablePlaylists is { Count: > 0 })
+                    {
+                        <Repeater Items="_availablePlaylists" Context="playlist">
+                            <DropdownItem @key="playlist.Id" Value="@playlist" Clicked="AddPlaylistAsync">@playlist.Name</DropdownItem>
+                        </Repeater>
+                    }
+                    else
+                    {
+                        <DropdownItem Class="text-muted small">
+                            <a href="PlaylistCreate">create</a>
+                        </DropdownItem>
+                    }
+                </DropdownMenu>
+            </Dropdown>
+        </Authorized>
+    </AuthorizeView>
+</Div>
+<Div Class="d-flex flex-wrap">
+    @if (_loadingPlaylists)
+    {
+        <HydraLoader>Loading playlists ...</HydraLoader>
+    }
+    else
+    {
+        @if (_groupPlaylists is { Count: > 0 })
+        {
+            <Repeater Items="_groupPlaylists" Context="playlist">
+                <Div Class="m-4">
+                    <PlaylistCard @key="@playlist.Id" Playlist="@playlist" OnCloseClick="@RemovePlaylistAsync" GroupId="Group.Id" />
+                </Div>
+            </Repeater>
+        }
+        else
+        {
+            <Div Class="small text-center text-muted w-100">Empty</Div>
+        }
+    }
+</Div>
+@code {
+
+    [CascadingParameter]
+    public VideoGroup Group { get; set; }
+
+    [Parameter]
+    public EventCallback PlaylistsHasChanged { get; set; }
+
+    private List<VideoPlaylist> _allPlaylists;
+    private List<VideoPlaylist> _availablePlaylists;
+    private List<VideoPlaylist> _groupPlaylists;
+
+    private bool _loadingPlaylists = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _allPlaylists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
+        _groupPlaylists = Group.Playlists;
+        _availablePlaylists = _allPlaylists.FindAll(p => !_groupPlaylists.Select(g => g.Id).Contains(p.Id));
+        _loadingPlaylists = false;
+
+    }
+
+    private async Task ReloadPlaylistsAsync()
+    {
+        var videoGroup = await _groupService.GetGroupAsync(Group.Id.ToString());
+        _groupPlaylists = videoGroup.Playlists;
+        _availablePlaylists = _allPlaylists.FindAll(p => !_groupPlaylists.Select(g => g.Id).Contains(p.Id));
+        await PlaylistsHasChanged.InvokeAsync();
+    }
+
+    private async Task AddPlaylistAsync(object playlistObj)
+    {
+        _loadingPlaylists = true;
+        var playlist = (VideoPlaylist)playlistObj;
+        if (await _groupService.AddPlaylistAsync(Group.Id, playlist.Id))
+        {
+            await ReloadPlaylistsAsync();
+        }
+        _loadingPlaylists = false;
+    }
+
+    private async Task RemovePlaylistAsync(object playlistId)
+    {
+        _loadingPlaylists = true;
+        if (await _groupService.RemovePlaylistAsync(Group.Id, (int)playlistId))
+        {
+            await ReloadPlaylistsAsync();
+        }
+        _loadingPlaylists = false;
+    }
+
+}

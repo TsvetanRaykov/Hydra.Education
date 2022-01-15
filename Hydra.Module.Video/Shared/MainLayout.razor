@@ -1,20 +1,33 @@
 @inherits LayoutComponentBase
+@inject NavigationManager _navigationManager
 
 <Layout Class="d-flex flex-column">
-    <LayoutHeader>
-        <AuthorizeView Roles="Admin, Trainer">
-            <Authorized>
-                @*@context.User.Identity?.Name*@
-                <Button Color="Color.Warning" Type="@ButtonType.Link" To="ClassCreate">Create Class</Button>
-                <Button Color="Color.Info" Type="@ButtonType.Link" To="PlaylistCreate">Create Playlist</Button>
-                <Button Color="Color.Danger" Type="@ButtonType.Link" To="VideoCreate">Upload Video</Button>
-            </Authorized>
-        </AuthorizeView>
-    </LayoutHeader>
+    @if (!_navigationManager.Uri.EndsWith("/Video"))
+    {
+        <LayoutHeader Class="my-4">
+            <AuthorizeView Roles="Admin, Trainer">
+                <Authorized>
+                    @*@context.User.Identity?.Name*@
+                    <Tooltip Text="Dashboard">
+                        <Button Color="Color.Primary" Type="@ButtonType.Link" To="Dashboard">
+                            <Icon Name="IconName.Dashboard" />
+                        </Button>
+                    </Tooltip>
+                    <Button Color="Color.Warning" Type="@ButtonType.Link" To="ClassCreate">Create Class</Button>
+                    <Button Color="Color.Info" Type="@ButtonType.Link" To="PlaylistCreate">Create Playlist</Button>
+                    <Button Color="Color.Danger" Type="@ButtonType.Link" To="VideoCreate">Upload Video</Button>
+                </Authorized>
+            </AuthorizeView>
+        </LayoutHeader>
+    }
     <LayoutContent Class="flex-grow-1">
-        @Body
+        <Container Fluid="true" Class="mt-3">
+            @Body
+        </Container>
     </LayoutContent>
     <LayoutFooter>
-        Hydra Education Project (HEP) - Video Module (VM) Ver.1.0.1.12 &copy;TU Gabrovo 2022 EE21805006
+        <Div Class="container-fluid mt-4">
+            Hydra Education Project (HEP) - Video Module (VM) Ver.1.0.6.11 &copy;TU Gabrovo 2022 EE21805006
+        </Div>
     </LayoutFooter>
 </Layout>

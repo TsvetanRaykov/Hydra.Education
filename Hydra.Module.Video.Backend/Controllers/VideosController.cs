@@ -53,6 +53,34 @@
 
         }
 
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteVideo(int id)
+        {
+            var video = await _videoService.GetVideoAsync(id);
+
+            if (video == null) return BadRequest("Video not found");
+
+            var fullFilePath = Path.Combine(Configuration.StaticFilesLocation,
+                Path.GetFileName(video.Url) ?? string.Empty);
+
+            if (System.IO.File.Exists(fullFilePath))
+            {
+                try
+                {
+                    System.IO.File.Delete(fullFilePath);
+                }
+                catch (IOException e)
+                {
+                    return BadRequest(e.Message);
+                }
+            }
+
+            var error = await _videoService.DeleteVideoAsync(id);
+            if (string.IsNullOrWhiteSpace(error)) return Ok(true);
+
+            return BadRequest(error);
+        }
+
         [HttpPost("in")]
         public async Task<IEnumerable<VideoResponseDto>> GetVideos([FromBody] int[] playlists)
         {
@@ -69,6 +97,13 @@
         public async Task<IEnumerable<VideoResponseDto>> GetVideosOfTrainer(string id)
         {
             return await _videoService.GetVideosByUploader(id);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Trainer")]
+        public async Task<IEnumerable<VideoResponseDto>> GetAllVideos()
+        {
+            return await _videoService.GetAllVideosAsync();
         }
     }
 }

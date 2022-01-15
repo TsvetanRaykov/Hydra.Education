@@ -9,6 +9,8 @@
         Task<string> CreateVideoAsync(VideoRequestDto video, string uploaderId, string fullFilePath);
         Task<IEnumerable<VideoResponseDto>> GetVideosInPlayListsAsync(int[] playlists);
         Task<IEnumerable<VideoResponseDto>> GetVideosByUploader(string uploaderId);
+        Task<IEnumerable<VideoResponseDto>> GetAllVideosAsync();
         Task<VideoResponseDto> GetVideoAsync(int id);
+        Task<string> DeleteVideoAsync(int id);
     }
 }
