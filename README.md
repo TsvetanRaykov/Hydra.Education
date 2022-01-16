@@ -106,18 +106,5 @@ Videos sharing module is a fully functional stand-alone Single Page Application,
 
 ## Request a demo
 
-The platform is deployed for tests in Azure cloud. If you interested in it, please contact me to continue discussion, and you may receive a link to enter the playgroud.
-
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScIJQleCyW864G4HAwUuqUBSvisya-kh92AV-wkUl8BxbdvpA/viewform?embedded=true" width="640" height="709" frameborder="0" marginheight="0" marginwidth="0">Зарежда се…</iframe>
-
-
-
-
-
-
-
-
-
-
+The platform is deployed for tests in Azure cloud. If you interested in it, please [contact me](https://forms.office.com/r/tHPsQ4yHH1), and you may receive a link to enter the playgroud.
 
