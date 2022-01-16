@@ -1,5 +1,3 @@
-[toc]
-
 # Hydra Educational Platform
 
 Hello visitor, and welcome to my masters' degree project. 
@@ -54,18 +52,72 @@ Users are only required to provide the most basic registration information, a va
 
 Administrators can add users via Authentication module in user management section. They also can edit user data of already registered users, add/remove roles, manually confirm emails, etc.
 
-
-
 ## Technology Stack
 
-Blazor, .NET 6, Azure
+The platform is built over the Microsoft [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0, "https://dotnet.microsoft.com/en-us/download/dotnet/6.0") Framework. The following technologies are used.
+
+1. [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor, "https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor") - both [WASM and SS](https://docs.microsoft.com/en-us/aspnet/core/blazor/hosting-models?view=aspnetcore-6.0, "https://docs.microsoft.com/en-us/aspnet/core/blazor/hosting-models?view=aspnetcore-6.0")
+2. [Blazorise](https://blazorise.com/, "https://blazorise.com")/[Bootstrap](https://bootstrapdemo.blazorise.com/, "https://bootstrapdemo.blazorise.com") component library
+3. [MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc, "https://dotnet.microsoft.com/en-us/apps/aspnet/mvc") and [Razor](https://aspnetcore.readthedocs.io/en/latest/mvc/views/razor.html#, "https://aspnetcore.readthedocs.io/en/latest/mvc/views/razor.html")
+4. [Microsoft Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/, "https://docs.microsoft.com/en-us/ef/core") 
+5. [SQLite](https://www.sqlite.org, "https://www.sqlite.org")
+6. [Azure](https://azure.microsoft.com/, "https://azure.microsoft.com")
+7. [SendInBlue](https://www.sendinblue.com/, "https://www.sendinblue.com") API to send emails
+7. Vanilla JavaScript and CSS, a little :)
 
 ## Architecture
 
-micro frontends ...
+### Overview
 
-### APIs
+The architecture is inspired by the concept of [Micfrontends](https://microfrontends.com/, "https://microfrontends.com"), and its [application in the world of .NET](https://www.codeproject.com/Articles/5287009/Blazor-Hydra-Hosting-Multiple-Blazor-SPAs-on-a-sin). 
+
+<img src="imgreadme/microfrontends-arch1.png" style="zoom:150%;" title="Source: Florian Rappl — DotNet Conf 2020" />
+
+This basically means that each module in the platform is a fully functional standalone web application. This gives the project flexibility and scalability, as each module has its own life and can be developed separately by a different team using different technologies.
+
+Here is the overall structure of the application.
+
+
+
+<img src="imgreadme/HEP.drawio.svg" style="zoom:120%;" />
+
+
+
+The Authentication module is an integral part of the Application because It manages users and provides user data to all other plugged-in modules.
+Videos sharing module is a fully functional stand-alone Single Page Application, which Front-End and Back-End are pluggable to HEP.
+
+### Authentication module API
+
+![](imgreadme/auth-api.png)
+
+### Video module API
+
+![](imgreadme/video-api.png)
 
 ## Data Bases
 
+### Authentication module DB
+
+![](D:\Gabrovo\MasterDegree\Hydra.Education\imgreadme\DbAuthDiagram.svg)
+
+### Video module DB
+
 ![DbVideoDiagram](imgreadme/DbVideoDiagram.svg)
+
+## Request a demo
+
+The platform is deployed for tests in Azure cloud. If you interested in it, please contact me to continue discussion, and you may receive a link to enter the playgroud.
+
+
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScIJQleCyW864G4HAwUuqUBSvisya-kh92AV-wkUl8BxbdvpA/viewform?embedded=true" width="640" height="709" frameborder="0" marginheight="0" marginwidth="0">Зарежда се…</iframe>
+
+
+
+
+
+
+
+
+
+
+

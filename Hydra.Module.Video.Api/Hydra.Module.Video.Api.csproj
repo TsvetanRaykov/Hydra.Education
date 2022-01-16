@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Tsvetan03\Hydra.Education\Hydra.Module.Video.Backend\Hydra.Module.Video.Backend.csproj" />
+    <ProjectReference Include="..\Hydra.Module.Video.Backend\Hydra.Module.Video.Backend.csproj" />
   </ItemGroup>
 
 </Project>
