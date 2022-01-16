@@ -98,7 +98,7 @@ Videos sharing module is a fully functional stand-alone Single Page Application,
 
 ### Authentication module DB
 
-![](D:\Gabrovo\MasterDegree\Hydra.Education\imgreadme\DbAuthDiagram.svg)
+![](imgreadme/DbAuthDiagram.svg)
 
 ### Video module DB
 
