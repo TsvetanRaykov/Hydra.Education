@@ -1,4 +1,6 @@
-﻿namespace Hydra.Module.Video.Backend.Controllers
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace Hydra.Module.Video.Backend.Controllers
 {
     using Contracts;
     using Extensions;
@@ -33,7 +35,8 @@
             }
 
             var fullFilePath = Path.Combine(Configuration.StaticFilesLocation,
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(uploadVideo.FileChunk.FileNameNoPath)));
+                Base64UrlEncoder.Encode(uploadVideo.FileChunk.FileNameNoPath));
+
 
             fullFilePath += Path.GetExtension(uploadVideo.FileChunk.FileNameNoPath);
 
@@ -54,6 +57,7 @@
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin, Trainer")]
         public async Task<ActionResult> DeleteVideo(int id)
         {
             var video = await _videoService.GetVideoAsync(id);

@@ -1,13 +1,10 @@
-﻿using System.IO;
+﻿using Hydra.Server.Auth.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Hydra.Server.Auth.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using NuGet.Protocol;
 
 namespace Hydra.Server.Auth.Data
 {
@@ -51,41 +48,7 @@ namespace Hydra.Server.Auth.Data
                     await userManager.ConfirmEmailAsync(adminUser, token);
                 }
             }
-
-            if (null == (await userManager.FindByNameAsync("dpalmer0@remlapnitsud.biz")))
-            {
-                var usersJson = File.OpenRead(
-                    @"D:\Gabrovo\MasterDegree\Tsvetan03\Hydra.Education\Hydra.Server.Auth\Data\bg_users.json");
-
-                var usersDto = await JsonSerializer.DeserializeAsync<UserDto[]>(usersJson);
-
-                foreach (var userDto in usersDto)
-                {
-                    var appUser = new ApplicationUser
-                    {
-                        Email = userDto.UserName,
-                        UserName = userDto.UserName,
-                        FullName = userDto.FullName,
-                        IdentityNumber = userDto.IdentityNumber
-                    };
-
-                    var result = await userManager.CreateAsync(appUser, "1234");
-                    if (result.Succeeded)
-                    {
-                        await userManager.AddToRoleAsync(appUser, GlobalConstants.Role.StudentRoleName);
-                        await userManager.AddClaimAsync(appUser, new Claim(ClaimTypes.Name, appUser.FullName));
-                        var token = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
-                        await userManager.ConfirmEmailAsync(appUser, token);
-                    }
-                }
-            }
         }
     }
-
-    public class UserDto
-    {
-        public string FullName { get; set; }
-        public string IdentityNumber { get; set; }
-        public string UserName { get; set; }
-    }
+    
 }

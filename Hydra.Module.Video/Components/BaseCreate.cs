@@ -39,7 +39,6 @@
             var buffer = new byte[resizedImageFile.Size];
             await resizedImageFile.OpenReadStream().ReadAsync(buffer);
 
-            // ImageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
             ManagedItem.Image = buffer;
         }
     }

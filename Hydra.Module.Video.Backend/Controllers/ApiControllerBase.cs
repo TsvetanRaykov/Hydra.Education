@@ -1,4 +1,7 @@
-﻿namespace Hydra.Module.Video.Backend.Controllers
+﻿using System.Buffers.Text;
+using Microsoft.IdentityModel.Tokens;
+
+namespace Hydra.Module.Video.Backend.Controllers
 {
     using Contracts;
     using Microsoft.AspNetCore.Authorization;
@@ -23,8 +26,7 @@
 
         protected string BuildImagePath(string imageName)
         {
-            var newName = Convert.ToBase64String(Encoding.UTF8.GetBytes(imageName));
-
+            var newName = Base64UrlEncoder.Encode(imageName);
             var imagePath = Path.Combine(Configuration.StaticFilesLocation, $"{newName}.png");
 
             return imagePath;

@@ -36,7 +36,6 @@
 
             services.AddScoped<IClassService, ClassService>();
             services.AddScoped<IGroupService, GroupService>();
-            services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IPlaylistService, PlaylistService>();
             services.AddScoped<IVideoService, VideoService>();
