@@ -3,19 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hydra.Module.Video.Backend.Data
 {
-    public class VideoGroup
+    public class VideoGroup : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
-        [Required]
-        public string Name { get; set; }
-        public string Description { get; set; }
         public string ImageUrl { get; set; }
 
         [Required]
         public int VideoClassId { get; set; }
-        
+
         public VideoClass VideoClass { get; set; }
 
         public ICollection<UserToGroup> Users { get; set; }
