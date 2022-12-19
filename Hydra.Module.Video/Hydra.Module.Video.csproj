@@ -1,94 +1,97 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <StaticWebassetBasePath>video</StaticWebassetBasePath>
-	  <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<StaticWebassetBasePath>Video</StaticWebassetBasePath>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	</PropertyGroup>
 
 	<ItemGroup>
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.9" />
-    <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.9" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.9" />
-    <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.9" />
-    <PackageReference Include="JWT" Version="8.8.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.1" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
-    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Hydra.Component.Authorization\Hydra.Component.Authorization.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\Class.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\AccessDenied.razor" />
-    <_ContentIncludedByDefault Remove="Components\GroupPlaylists.razor" />
-    <_ContentIncludedByDefault Remove="Components\GroupUsers.razor" />
-    <_ContentIncludedByDefault Remove="Components\HydraBreadcrumb.razor" />
-    <_ContentIncludedByDefault Remove="Components\ManageComponent.razor" />
-    <_ContentIncludedByDefault Remove="Components\TrainerIndex.razor" />
-    <_ContentIncludedByDefault Remove="Components\VideoCard.razor" />
-    <_ContentIncludedByDefault Remove="Pages\Class.razor" />
-    <_ContentIncludedByDefault Remove="Pages\Dashboard.razor" />
-    <_ContentIncludedByDefault Remove="Pages\PlaylistCreate.razor" />
-  </ItemGroup>
-
-	<ItemGroup>
-	  <None Include="wwwroot\endpoints.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Include="wwwroot\js\video-module.js" />
+		<PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.9" />
+		<PackageReference Include="Blazorise.DataGrid" Version="0.9.4.9" />
+		<PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.9" />
+		<PackageReference Include="Blazorise.Snackbar" Version="0.9.4.9" />
+		<PackageReference Include="JWT" Version="8.8.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.1" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
+		<PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Pages\PlaylistCreate.razor" />
+		<ProjectReference Include="..\Hydra.Component.Authorization\Hydra.Component.Authorization.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\ManageComponent.razor" />
+		<UpToDateCheckInput Remove="Pages\Class.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\VideoCard.razor" />
+		<_ContentIncludedByDefault Remove="Components\AccessDenied.razor" />
+		<_ContentIncludedByDefault Remove="Components\GroupPlaylists.razor" />
+		<_ContentIncludedByDefault Remove="Components\GroupUsers.razor" />
+		<_ContentIncludedByDefault Remove="Components\HydraBreadcrumb.razor" />
+		<_ContentIncludedByDefault Remove="Components\ManageComponent.razor" />
+		<_ContentIncludedByDefault Remove="Components\TrainerIndex.razor" />
+		<_ContentIncludedByDefault Remove="Components\VideoCard.razor" />
+		<_ContentIncludedByDefault Remove="Pages\Class.razor" />
+		<_ContentIncludedByDefault Remove="Pages\Dashboard.razor" />
+		<_ContentIncludedByDefault Remove="Pages\PlaylistCreate.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\GroupUsers.razor" />
+		<None Include="wwwroot\endpoints.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="wwwroot\js\video-module.js" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\GroupPlaylists.razor" />
+		<UpToDateCheckInput Remove="Pages\PlaylistCreate.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\TrainerIndex.razor" />
+		<UpToDateCheckInput Remove="Components\ManageComponent.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\AccessDenied.razor" />
+		<UpToDateCheckInput Remove="Components\VideoCard.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\HydraBreadcrumb.razor" />
+		<UpToDateCheckInput Remove="Components\GroupUsers.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Update="libman.json">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </Content>
+		<UpToDateCheckInput Remove="Components\GroupPlaylists.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <UpToDateCheckInput Remove="Pages\Dashboard.razor" />
+		<UpToDateCheckInput Remove="Components\TrainerIndex.razor" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Components\AccessDenied.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Components\HydraBreadcrumb.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="libman.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Pages\Dashboard.razor" />
+	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DebugType>None</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
 </Project>
