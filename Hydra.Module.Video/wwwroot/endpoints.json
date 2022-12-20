@@ -1,5 +1,5 @@
 {
-  "ApiBaseUrl": "http://localhost:5000",
+  "ApiBaseUrl": "https://localhost:5001",
   "Endpoints": {
     "SignIn": "Account/Login",
     "SignOut": "Account/Logout",
