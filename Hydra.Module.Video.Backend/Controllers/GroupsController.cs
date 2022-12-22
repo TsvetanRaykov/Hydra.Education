@@ -3,6 +3,7 @@
     using Contracts;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Models;
     using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@
 
         private readonly IGroupService _groupService;
         private readonly IFileService _fileService;
-        public GroupsController(IGroupService groupService, IFileService fileService, ModuleVideoSettings config) : base(config)
+        public GroupsController(IGroupService groupService, IFileService fileService, IOptions<ModuleVideoSettings> config) : base(config)
         {
             _groupService = groupService;
             _fileService = fileService;

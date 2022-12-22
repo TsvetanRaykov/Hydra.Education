@@ -1,16 +1,14 @@
-﻿using Microsoft.IdentityModel.Tokens;
-
-namespace Hydra.Module.Video.Backend.Controllers
+﻿namespace Hydra.Module.Video.Backend.Controllers
 {
     using Contracts;
     using Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
+    using Microsoft.IdentityModel.Tokens;
     using Models;
-    using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
     using System.Threading.Tasks;
 
     public class VideosController : ApiControllerBase
@@ -18,7 +16,7 @@ namespace Hydra.Module.Video.Backend.Controllers
         private readonly IFileService _fileService;
         private readonly IVideoService _videoService;
 
-        public VideosController(IFileService fileService, IVideoService videoService, ModuleVideoSettings config) : base(config)
+        public VideosController(IFileService fileService, IVideoService videoService, IOptions<ModuleVideoSettings> config) : base(config)
         {
             _fileService = fileService;
             _videoService = videoService;

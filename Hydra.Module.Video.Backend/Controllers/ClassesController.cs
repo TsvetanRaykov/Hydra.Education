@@ -1,4 +1,6 @@
-﻿namespace Hydra.Module.Video.Backend.Controllers
+﻿using Microsoft.Extensions.Options;
+
+namespace Hydra.Module.Video.Backend.Controllers
 {
     using Contracts;
     using Microsoft.AspNetCore.Authorization;
@@ -12,7 +14,7 @@
         private readonly IClassService _classService;
         private readonly IFileService _fileService;
 
-        public ClassesController(IClassService classService, IFileService fileService, ModuleVideoSettings config) : base(config)
+        public ClassesController(IClassService classService, IFileService fileService, IOptions<ModuleVideoSettings> config) : base(config)
         {
             _classService = classService;
             _fileService = fileService;

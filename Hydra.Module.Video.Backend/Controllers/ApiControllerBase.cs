@@ -1,15 +1,12 @@
-﻿using System.Buffers.Text;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Hydra.Module.Video.Backend.Controllers
+﻿namespace Hydra.Module.Video.Backend.Controllers
 {
     using Contracts;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
+    using Microsoft.IdentityModel.Tokens;
     using Models;
-    using System;
     using System.IO;
-    using System.Text;
     using System.Threading.Tasks;
 
     [ApiController]
@@ -19,9 +16,9 @@ namespace Hydra.Module.Video.Backend.Controllers
     {
         protected readonly ModuleVideoSettings Configuration;
 
-        protected ApiControllerBase(ModuleVideoSettings configuration)
+        protected ApiControllerBase(IOptions<ModuleVideoSettings> configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration.Value;
         }
 
         protected string BuildImagePath(string imageName)

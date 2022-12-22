@@ -1,4 +1,6 @@
-﻿namespace Hydra.Module.Video.Backend.Controllers;
+﻿using Microsoft.Extensions.Options;
+
+namespace Hydra.Module.Video.Backend.Controllers;
 
 using System.Threading.Tasks;
 using Contracts;
@@ -8,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 public class StudentsController : ApiControllerBase
 {
     private readonly IStudentService _studentService;
-    public StudentsController(ModuleVideoSettings configuration, IStudentService studentService) : base(configuration)
+    public StudentsController(IOptions<ModuleVideoSettings> configuration, IStudentService studentService) : base(configuration)
     {
         _studentService = studentService;
     }

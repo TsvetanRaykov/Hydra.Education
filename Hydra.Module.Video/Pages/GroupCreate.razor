@@ -2,9 +2,7 @@
 
 @attribute [Authorize(Roles = "Admin, Trainer")]
 
-@inject AuthenticationStateProvider _authenticationStateProvider
 @inject IConfiguration _configuration
-@inject NavigationManager _navigationManager
 @inject IClassService _classService
 @inject IGroupService _groupService
 

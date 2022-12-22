@@ -66,7 +66,10 @@ namespace Hydra.Server.Auth
             services.AddTransient<IEmailSender, SendInBlueEmailSender>();
 
             // *** ADD MODULES
-            services.AddHydraModuleVideo();
+            services.AddHydraModuleVideo(options =>
+            {
+                Configuration.GetSection("Modules:Video").Bind(options);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

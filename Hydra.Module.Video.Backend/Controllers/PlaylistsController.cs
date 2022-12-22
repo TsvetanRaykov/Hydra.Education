@@ -3,6 +3,7 @@
     using Contracts;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Models;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -11,7 +12,7 @@
         private readonly IFileService _fileService;
         private readonly IPlaylistService _playlistService;
 
-        public PlaylistsController(IFileService fileService, IPlaylistService playlistService, ModuleVideoSettings config) : base(config)
+        public PlaylistsController(IFileService fileService, IPlaylistService playlistService, IOptions<ModuleVideoSettings> config) : base(config)
         {
             _fileService = fileService;
             _playlistService = playlistService;

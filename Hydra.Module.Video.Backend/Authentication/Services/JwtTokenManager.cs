@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-
-namespace Hydra.Module.Video.Backend.Authentication.Services
+﻿namespace Hydra.Module.Video.Backend.Authentication.Services
 {
     using Contracts;
+    using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
     using System;
+    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
     using System.Text;
 
     public class JwtTokenManager : IJwtTokenManager
     {
         private readonly ModuleVideoSettings _configuration;
 
-        public JwtTokenManager(ModuleVideoSettings configuration)
+        public JwtTokenManager(IOptions<ModuleVideoSettings> configuration)
         {
-            _configuration = configuration;
+            _configuration = configuration.Value;
         }
 
         public string Authenticate(string apiKey)
