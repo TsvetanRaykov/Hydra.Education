@@ -1,65 +1,15 @@
 ﻿@{
+    const string module = "Video";
+
     ViewData["Title"] = "Hydra - Video";
     ViewData["ModuleTitle"] = "Video Share";
 }
 
-
 <div id="app" class="h-100">
     <div class="text-center m-5">
         <div class="spinner-border"></div>
-        <div class="text-muted">Loading Video module ...</div>
+        <div class="text-muted">Loading @module module ...</div>
     </div>
 </div>
 
-<script type="text/javascript">
-
-    const module = "Video";
-    const styles = [
-        `${module}/Hydra.Module.Video.styles.css`,
-        `/${module}/css/app.css`,
-        "/_content/Blazorise.Bootstrap/blazorise.bootstrap.css",
-        "/_content/Blazorise/blazorise.css",
-        "/_content/Blazorise.Snackbar/blazorise.snackbar.css",
-        `/${module}/lib/font-awesome/css/all.min.css`,
-        `/${module}/lib/bootstrap/css/bootstrap.min.css`
-    ];
-
-    for (const style of styles) {
-        loadStyle(style, () => console.log(`loaded: ${style}`));
-    }
-
-    function loadStyle(href, callback) {
-        for (let i = 0; i < document.styleSheets.length; i++) {
-            if (document.styleSheets[i].href === href) {
-                return;
-            }
-        }
-        const head = document.getElementsByTagName('head')[0];
-
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = href;
-        if (callback) { link.onload = function () { callback() } }
-
-        head.insertBefore(link, head.childNodes[0]);
-
-    }
-
-    let base = document.getElementsByTagName("base")[0];
-    if (!!!base) {
-        base = document.createElement("base");
-        document.getElementsByTagName('head')[0].appendChild(base);
-    }
-    base.href = `/${module}/`;
-</script>
-<script src="/Video/lib/jquery/dist/jquery.min.js"></script>
-<script src="/Video/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/Video/lib/popper.js/umd/popper.min.js"></script>
-<script src="/Video/js/mermaid.min.js"></script>
-<script src="/Video/js/video-module.js"></script>
-<script src="/_content/Blazorise/blazorise.js"></script>
-<script src="/_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
-
-<script src="/Video/_framework/blazor.webassembly.js"></script>
-
+<script src="/@module/index.js" id="index--script" data-module="@module"></script>
