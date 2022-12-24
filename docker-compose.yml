@@ -4,8 +4,11 @@ version: '3.4'
 
 services:
   hydra:
-    image: hydra:2.0.1
+    image: hydra
     container_name: hydra-video
-
+    environment:
+      - AdminUser=tsvetan.raykov@gmail.com
+      - AdminPass=123456
+      - SendInBlueApiKey=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
     ports:
       - 5000:5000

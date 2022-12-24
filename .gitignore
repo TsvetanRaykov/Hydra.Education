@@ -39,7 +39,7 @@ bld/
 #wwwroot/
 
 # Visual Studio 2017 auto generated files
-Generated\ Files/
+#Generated\ Files/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -298,7 +298,7 @@ node_modules/
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
 **/*.DesktopClient/ModelManifest.xml
-Files
+#Files
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
