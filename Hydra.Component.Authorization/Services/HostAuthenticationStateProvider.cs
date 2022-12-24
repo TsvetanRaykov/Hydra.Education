@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Models;
     using System;
     using System.Net.Http;
@@ -22,33 +23,31 @@
         private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
         private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
-        private readonly Task<AuthOptions> _authOptions;
+        private readonly AuthOptions _authOptions;
 
-        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger, Task<AuthOptions> authOptions)
+        public HostAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<HostAuthenticationStateProvider> logger, IOptions<AuthOptions> authOptions)
         {
             _navigation = navigation;
             _client = client;
             _logger = logger;
-            _authOptions = authOptions;
+            _authOptions = authOptions.Value;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new AuthenticationState(await GetUser(useCache: true));
 
         public async void SignIn(string customReturnUrl = null)
         {
-            var options = await _authOptions;
             var returnUrl = customReturnUrl != null ? _navigation.ToAbsoluteUri(customReturnUrl).ToString() : null;
             var encodedReturnUrl = Uri.EscapeDataString(returnUrl ?? _navigation.Uri);
             // var logInUrl = _navigation.ToAbsoluteUri($"{_authOptions.Endpoints.SignIn}?returnUrl={encodedReturnUrl}");
-            var logInUrl = $"{options.ApiBaseUrl.OriginalString}/{options.Endpoints.SignIn}?returnUrl={encodedReturnUrl}";
+            var logInUrl = $"{_authOptions.ApiBaseUrl.OriginalString}/{_authOptions.Endpoints.SignIn}?returnUrl={encodedReturnUrl}";
             _navigation.NavigateTo(logInUrl, true);
         }
 
         public async void SignOut()
         {
-            var options = await _authOptions;
             // _navigation.NavigateTo(_navigation.ToAbsoluteUri(Endpoints.SignOut).ToString(), true);
-            _navigation.NavigateTo($"{options.ApiBaseUrl.OriginalString}/{options.Endpoints.SignOut}", true);
+            _navigation.NavigateTo($"{_authOptions.ApiBaseUrl.OriginalString}/{_authOptions.Endpoints.SignOut}", true);
         }
 
         private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
@@ -69,13 +68,12 @@
 
         private async Task<ClaimsPrincipal> FetchUser()
         {
-            var options = await _authOptions;
             UserInfo user = null;
 
             try
             {
                 //user = await _client.GetFromJsonAsync<UserInfo>(Endpoints.User);
-                user = await _client.GetFromJsonAsync<UserInfo>($"{options.ApiBaseUrl.OriginalString}/{options.Endpoints.User}");
+                user = await _client.GetFromJsonAsync<UserInfo>($"{_authOptions.ApiBaseUrl.OriginalString}/{_authOptions.Endpoints.User}");
             }
             catch (Exception exc)
             {

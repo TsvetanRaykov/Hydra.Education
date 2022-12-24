@@ -31,19 +31,12 @@ namespace Hydra.Module.Video
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
 
-            builder.AddHydraAuthorization();
+            builder.AddHydraAuthorization(options =>
+            {
+                builder.Configuration.Bind(options);
+            });
 
             builder.Services.AddTransient<BearerTokenHandler>();
-
-            //var httpClient = new HttpClient
-            //{
-            //    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-            //};
-
-            //using var response = await httpClient.GetAsync("endpoints.json");
-            //await using var stream = await response.Content.ReadAsStreamAsync();
-            //builder.Configuration.AddJsonStream(stream);
-
 
             builder.Services.AddHttpClient("authorized", config =>
                 {
