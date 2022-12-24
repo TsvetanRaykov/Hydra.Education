@@ -2,19 +2,25 @@
 @inject IStudentsService _studentsService
 
 <Div Class="container-fluid d-flex flex-wrap">
-    @if (_videoGroups != null)
+    @if (_videoGroups == null)
+    {
+        <Div Class="small text-center w-100">
+            <HydraLoader>Loading content ...</HydraLoader>
+        </Div>
+    }
+    else if (_videoGroups.Length == 0)
+    {
+        <p>
+            No content has been shared by your trainers yet. Please be patient.
+        </p>
+    }
+    else
     {
         <Repeater Items="@_videoGroups.OrderBy(g=>g.Class.Name)">
             <Div Class="m-4">
                 <GroupCard @key="@context.Id" VideoGroup="@context" />
             </Div>
         </Repeater>
-    }
-    else
-    {
-        <Div Class="small text-center w-100">
-            <HydraLoader>Loading content ...</HydraLoader>
-        </Div>
     }
 </Div>
 @code {

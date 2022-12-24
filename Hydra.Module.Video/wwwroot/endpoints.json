@@ -1,9 +1,0 @@
-{
-  "ApiBaseUrl": "http://localhost:5000",
-  "Endpoints": {
-    "SignIn": "Account/Login",
-    "SignOut": "Account/Logout",
-    "User": "User",
-    "Users": "User/Students"
-  }
-}

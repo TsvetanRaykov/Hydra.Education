@@ -35,14 +35,14 @@ namespace Hydra.Module.Video
 
             builder.Services.AddTransient<BearerTokenHandler>();
 
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-            };
+            //var httpClient = new HttpClient
+            //{
+            //    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+            //};
 
-            using var response = await httpClient.GetAsync("endpoints.json");
-            await using var stream = await response.Content.ReadAsStreamAsync();
-            builder.Configuration.AddJsonStream(stream);
+            //using var response = await httpClient.GetAsync("endpoints.json");
+            //await using var stream = await response.Content.ReadAsStreamAsync();
+            //builder.Configuration.AddJsonStream(stream);
 
 
             builder.Services.AddHttpClient("authorized", config =>

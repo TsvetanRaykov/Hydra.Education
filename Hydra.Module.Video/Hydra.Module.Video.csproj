@@ -43,9 +43,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="wwwroot\endpoints.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 		<None Include="wwwroot\js\video-module.js" />
 	</ItemGroup>
 
