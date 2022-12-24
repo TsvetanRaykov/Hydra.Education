@@ -1,4 +1,7 @@
-﻿namespace Hydra.Module.Video.Backend
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace Hydra.Module.Video.Backend
 {
     using Contracts;
     using Data;
@@ -19,9 +22,9 @@
             this IServiceCollection services, Action<ModuleVideoSettings> options)
         {
             var settings = ModuleVideoSettings.Validate(options);
-            
+
             services.Configure(options);
-            
+
             var callingAssembly = Assembly.GetCallingAssembly();
 
             services.AddDbContext<VideoDbContext>(builder =>
@@ -50,13 +53,17 @@
             using var dbContext = scope.ServiceProvider.GetRequiredService<VideoDbContext>();
             var config = scope.ServiceProvider.GetService<ModuleVideoSettings>();
 
-            dbContext.Database.EnsureCreated();
+            // Initialize the database only if it does not exist
+            if (!dbContext.Database.GetService<IRelationalDatabaseCreator>().Exists())
+            {
+                dbContext.Database.Migrate();
+            }
 
             var moduleConfig = new ModuleArguments();
             configAction?.Invoke(moduleConfig);
 
-            var filesPath = moduleConfig.StaticFilesLocation ?? Path.Combine(Directory.GetCurrentDirectory(), "Files");
-            //var filesPath = Path.Combine(staticFilesPath, "ModuleVideo");
+            var filesPath = moduleConfig.StaticFilesLocation ??
+                            Path.Combine(Directory.GetCurrentDirectory(), "Files");
 
             if (!Directory.Exists(filesPath))
             {

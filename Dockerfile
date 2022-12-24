@@ -19,5 +19,7 @@ RUN dotnet publish "Hydra.Server.Auth.csproj" -c Release -o /app/publish /p:UseA
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY storage /app/storage
+#COPY storage /app/storage
+RUN mkdir -p storage/sql
+RUN mkdir -p storage/files
 ENTRYPOINT ["dotnet", "Hydra.Server.Auth.dll"]

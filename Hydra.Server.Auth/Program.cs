@@ -5,10 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hydra.Server.Auth
 {
     using Data;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.EntityFrameworkCore.Storage;
     using Models;
 
     public static class Program
@@ -22,10 +25,18 @@ namespace Hydra.Server.Auth
                 var serviceProvider = scope.ServiceProvider;
                 try
                 {
-                    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                    var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-                    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-                    ApplicationDataInitialization.SeedAsync(userManager, roleManager, configuration).GetAwaiter().GetResult();
+                    var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+                    // Initialize the database only if it does not exist
+                    if (!dbContext.Database.GetService<IRelationalDatabaseCreator>().Exists())
+                    {
+                        dbContext.Database.Migrate();
+                        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                        var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+                        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+                        ApplicationDataInitialization.SeedAsync(userManager, roleManager, configuration).GetAwaiter().GetResult();
+                    }
+
                 }
                 catch (Exception e)
                 {
