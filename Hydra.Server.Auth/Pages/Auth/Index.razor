@@ -11,7 +11,14 @@
         <Div Flex="Flex.JustifyContent.Between">
             <h5>Users</h5>
             <Field Horizontal="true" Width="Width.Is25">
-                <TextEdit @bind-Text="@_customFilterValue" Placeholder="search..." Role="@TextRole.Search" />
+                @*<TextEdit @bind-Text="@_customFilterValue" Placeholder="search..." Role="@TextRole.Search" />*@
+                <input type="search" class="form-control" 
+                       
+                       @bind="_customFilterValue" 
+                       placeholder="seach..." 
+                       autocomplete="new-password"
+                       onblur="this.setAttribute('readonly', 'readonly');"
+                       onfocus="this.removeAttribute('readonly');" readonly />
             </Field>
         </Div>
 
