@@ -1,0 +1,11 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.4'
+
+services:
+  hydra:
+    image: hydra:2.0.1
+    container_name: hydra-video
+
+    ports:
+      - 5000:5000

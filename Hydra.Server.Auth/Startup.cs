@@ -82,9 +82,9 @@ namespace Hydra.Server.Auth
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
+                // app.UseHsts();
             }
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -95,7 +95,7 @@ namespace Hydra.Server.Auth
             // *** USE MODULES
             app.UseHydraModuleVideo(opt =>
             {
-                opt.StaticFilesLocation = Configuration["FileStoragePath"];
+                opt.StaticFilesLocation = Configuration["Modules:Video:StaticFilesLocation"];
             });
 
             app.MapWhen(c => c.Request.Path.StartsWithSegments("/Video"), app1 =>

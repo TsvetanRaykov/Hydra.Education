@@ -55,8 +55,8 @@
             var moduleConfig = new ModuleArguments();
             configAction?.Invoke(moduleConfig);
 
-            var staticFilesPath = moduleConfig.StaticFilesLocation ?? Path.Combine(Directory.GetCurrentDirectory(), "Files");
-            var filesPath = Path.Combine(staticFilesPath, "ModuleVideo");
+            var filesPath = moduleConfig.StaticFilesLocation ?? Path.Combine(Directory.GetCurrentDirectory(), "Files");
+            //var filesPath = Path.Combine(staticFilesPath, "ModuleVideo");
 
             if (!Directory.Exists(filesPath))
             {
