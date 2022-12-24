@@ -2,9 +2,9 @@
 
 @attribute [Authorize(Roles = "Admin, Trainer")]
 
-@inject IConfiguration _configuration
-@inject IClassService _classService
-@inject IGroupService _groupService
+@inject IConfiguration Configuration
+@inject IClassService ClassService
+@inject IGroupService GroupService
 
 <hr />
 
@@ -66,22 +66,22 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _videoClass = await _classService.GetClassAsync(ClassId);
+        _videoClass = await ClassService.GetClassAsync(ClassId);
         _videoGroup = new VideoGroup
             {
                 ClassId = _videoClass.Id,
                 Image = Convert.FromBase64String(ManagedItemDefaultImages.Group)
             };
-        _imageUrl = $"{_configuration["ApiBaseUrl"]}{_videoClass.ImageUrl}";
+        _imageUrl = $"{Configuration["ApiBaseUrl"]}{_videoClass.ImageUrl}";
     }
 
     private async Task CreateGroup()
     {
         if (_managedComponent.Validate())
         {
-            if (await _groupService.CreateGroupAsync(_videoGroup))
+            if (await GroupService.CreateGroupAsync(_videoGroup))
             {
-                _videoClass = await _classService.GetClassAsync(ClassId);
+                _videoClass = await ClassService.GetClassAsync(ClassId);
             }
         }
     }

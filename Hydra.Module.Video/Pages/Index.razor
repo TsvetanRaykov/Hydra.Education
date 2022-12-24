@@ -2,8 +2,8 @@
 
 @attribute [Authorize]
 
-@inject AuthenticationStateProvider _authenticationStateProvider
-@inject IJSRuntime _jsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JsRuntime
 
 <div class="row text-body text-justify">
     <AuthorizeView Roles="Student">
@@ -55,7 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         _userFullName = authState.User.FindFirst(ClaimTypes.GivenName)?.Value;
         _adminRole = authState.User.IsInRole("Trainer") ? "a Trainer" : "an Administrator";
     }
@@ -65,9 +65,9 @@
     {
         if (firstRender)
         {
-            await _jsRuntime.InvokeVoidAsync("JsFunctions.MermaidInitialize");
+            await JsRuntime.InvokeVoidAsync("JsFunctions.MermaidInitialize");
         }
-        await _jsRuntime.InvokeVoidAsync("JsFunctions.MermaidRender");
+        await JsRuntime.InvokeVoidAsync("JsFunctions.MermaidRender");
     }
 
 }

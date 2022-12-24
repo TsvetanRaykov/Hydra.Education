@@ -2,7 +2,7 @@
 @using Hydra.Module.Video.Resources
 @using Microsoft.Extensions.Configuration
 
-@inject IConfiguration _configuration
+@inject IConfiguration Configuration
 
 @inherits BaseCreate
 
@@ -42,7 +42,7 @@ else
     [Parameter]
     public override IManagedItem ManagedItem { get; set; }
 
-    public override string ApiBaseUrl => _configuration["ApiBaseUrl"];
+    public override string ApiBaseUrl => Configuration["ApiBaseUrl"];
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }

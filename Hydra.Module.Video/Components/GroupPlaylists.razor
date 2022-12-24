@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components
-@inject AuthenticationStateProvider _authenticationStateProvider
-@inject IPlaylistService _playlistService
-@inject IGroupService _groupService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IPlaylistService PlaylistService
+@inject IGroupService GroupService
 
 <Div Class="h5 ml-3">
     Playlists
@@ -66,8 +66,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        _allPlaylists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _allPlaylists = await PlaylistService.GetPlayListsAsync(authState.User.Identity?.Name);
         _groupPlaylists = Group.Playlists;
         _availablePlaylists = _allPlaylists.FindAll(p => !_groupPlaylists.Select(g => g.Id).Contains(p.Id));
         _loadingPlaylists = false;
@@ -76,7 +76,7 @@
 
     private async Task ReloadPlaylistsAsync()
     {
-        var videoGroup = await _groupService.GetGroupAsync(Group.Id.ToString());
+        var videoGroup = await GroupService.GetGroupAsync(Group.Id.ToString());
         _groupPlaylists = videoGroup.Playlists;
         _availablePlaylists = _allPlaylists.FindAll(p => !_groupPlaylists.Select(g => g.Id).Contains(p.Id));
         await PlaylistsHasChanged.InvokeAsync();
@@ -86,7 +86,7 @@
     {
         _loadingPlaylists = true;
         var playlist = (VideoPlaylist)playlistObj;
-        if (await _groupService.AddPlaylistAsync(Group.Id, playlist.Id))
+        if (await GroupService.AddPlaylistAsync(Group.Id, playlist.Id))
         {
             await ReloadPlaylistsAsync();
         }
@@ -96,7 +96,7 @@
     private async Task RemovePlaylistAsync(object playlistId)
     {
         _loadingPlaylists = true;
-        if (await _groupService.RemovePlaylistAsync(Group.Id, (int)playlistId))
+        if (await GroupService.RemovePlaylistAsync(Group.Id, (int)playlistId))
         {
             await ReloadPlaylistsAsync();
         }

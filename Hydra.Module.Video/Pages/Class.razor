@@ -2,9 +2,8 @@
 
 @attribute [Authorize(Roles = "Admin, Trainer")]
 
-@inject AuthenticationStateProvider _authenticationStateProvider
-@inject IClassService _classService
-@inject IJSRuntime _jsRuntime
+@inject IClassService ClassService
+@inject IJSRuntime JsRuntime
 
 @if (_videoClass != null)
 {
@@ -53,14 +52,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _videoClass = await _classService.GetClassAsync(Id);
+        _videoClass = await ClassService.GetClassAsync(Id);
     }
 
     private void UpdateClass()
     {
         if (_managedComponent.Validate())
         {
-            _classService.UpdateClassAsync(_videoClass).ContinueWith(async updateTask =>
+            ClassService.UpdateClassAsync(_videoClass).ContinueWith(async updateTask =>
            {
                if (await updateTask)
                {
@@ -81,9 +80,9 @@ else
 
     private async Task ActionAcceptedAsync()
     {
-        if (await _classService.DeleteClassAsync(_videoClass.Id.ToString()))
+        if (await ClassService.DeleteClassAsync(_videoClass.Id.ToString()))
         {
-            await _jsRuntime.InvokeVoidAsync("history.back");
+            await JsRuntime.InvokeVoidAsync("history.back");
         }
     }
 

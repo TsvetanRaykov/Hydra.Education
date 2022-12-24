@@ -1,4 +1,4 @@
-﻿@inject IStudentsService _studentsService
+﻿@inject IStudentsService StudentsService
 
 <Modal @ref="_modalUsersToGroup">
     <ModalContent Scrollable="true" Size="ModalSize.Large">
@@ -55,7 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _students = await _studentsService.GetStudentsAsync();
+        _students = await StudentsService.GetStudentsAsync();
     }
 
     public void ShowModal(string[] members)

@@ -2,9 +2,9 @@
 
 @attribute [Authorize(Roles = "Admin, Trainer")]
 
-@inject IPlaylistService _playlistService
-@inject IVideoService _videoService
-@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IPlaylistService PlaylistService
+@inject IVideoService VideoService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <Div Class="justify-content-center mt-5 row col-12">
     <Div Class="col-lg-5 col-md-7 col-sm-11 col-xl-3 d-flex flex-column position-relative">
@@ -110,17 +110,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         _user = authenticationState.User;
 
-        _playlistAll = await _playlistService.GetPlayListsAsync(_user?.Identity?.Name);
+        _playlistAll = await PlaylistService.GetPlayListsAsync(_user?.Identity?.Name);
 
         await LoadVideosAsync();
     }
 
     private async Task LoadVideosAsync()
     {
-        _videos = await _videoService.GetOwnedVideosAsync(_user?.Identity?.Name);
+        _videos = await VideoService.GetOwnedVideosAsync(_user?.Identity?.Name);
     }
 
     private void OnFileSelected(InputFileChangeEventArgs arg)
@@ -170,7 +170,7 @@
                         FullSize = _totalBytes
                     };
 
-                await _videoService.UploadVideoAsync(uploadRequest);
+                await VideoService.UploadVideoAsync(uploadRequest);
 
                 firstChunk = false;
 
@@ -194,7 +194,7 @@
                         FullSize = _totalBytes
                     };
 
-                await _videoService.UploadVideoAsync(uploadRequest);
+                await VideoService.UploadVideoAsync(uploadRequest);
 
                 _uploadedBytes += remainder;
                 _percent = _uploadedBytes * 100 / _totalBytes;

@@ -2,9 +2,9 @@
 
 @attribute [Authorize]
 
-@inject IGroupService _groupService
-@inject NavigationManager _navigationManager
-@inject IJSRuntime _jsRuntime
+@inject IGroupService GroupService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
 
 @if (_videoGroup != null)
 {
@@ -78,7 +78,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _videoGroup = await _groupService.GetGroupAsync(GroupId);
+        _videoGroup = await GroupService.GetGroupAsync(GroupId);
         if (_videoGroup == null) _videoGroup = new();
         else BuildBreadcrumb();
     }
@@ -87,7 +87,7 @@ else
     {
         if (_managedComponent.Validate())
         {
-            await _groupService.UpdateGroupAsync(_videoGroup);
+            await GroupService.UpdateGroupAsync(_videoGroup);
             await _snackBarStack.PushAsync("Changes has been saved.", SnackbarColor.Success, options =>
             {
                 options.IntervalBeforeClose = 5000;
@@ -106,9 +106,9 @@ else
 
     private async Task ActionAcceptedAsync()
     {
-        if (await _groupService.DeleteGroupAsync(_videoGroup.Id.ToString()))
+        if (await GroupService.DeleteGroupAsync(_videoGroup.Id.ToString()))
         {
-            await _jsRuntime.InvokeVoidAsync("history.back");
+            await JsRuntime.InvokeVoidAsync("history.back");
         }
     }
     private void BuildBreadcrumb()
@@ -130,7 +130,7 @@ else
 
     private async Task ReloadGroupData()
     {
-        _videoGroup = await _groupService.GetGroupAsync(GroupId);
+        _videoGroup = await GroupService.GetGroupAsync(GroupId);
     }
 
 }

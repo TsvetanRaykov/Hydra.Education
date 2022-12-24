@@ -1,7 +1,7 @@
-﻿@inject AuthenticationStateProvider _authenticationStateProvider
-@inject IClassService _classService
-@inject IPlaylistService _playlistService
-@inject IVideoService _videoService
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IClassService ClassService
+@inject IPlaylistService PlaylistService
+@inject IVideoService VideoService
 
 <Accordion>
     <Collapse Visible="@_classesVisible">
@@ -118,10 +118,10 @@
 
     private async Task LoadData()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        _videoClasses = await _classService.GetClassesAsync(authState.User.Identity?.Name);
-        _playlists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
-        _videos = await _videoService.GetAllVideosAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _videoClasses = await ClassService.GetClassesAsync(authState.User.Identity?.Name);
+        _playlists = await PlaylistService.GetPlayListsAsync(authState.User.Identity?.Name);
+        _videos = await VideoService.GetAllVideosAsync();
     }
 
     private async Task OnVideoRemoved()

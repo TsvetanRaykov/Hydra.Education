@@ -1,5 +1,5 @@
-﻿@inject IGroupService _groupService
-@inject IStudentsService _studentsService
+﻿@inject IGroupService GroupService
+@inject IStudentsService StudentsService
 
 <Div Flex="Flex.JustifyContent.Between">
     <Div Class="h5 ml-3">
@@ -51,7 +51,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _students = await _studentsService.GetStudentsAsync();
+        _students = await StudentsService.GetStudentsAsync();
         _members = _students.Where(s => Group.Users.Contains(s.UserName)).ToList();
     }
 
@@ -70,13 +70,13 @@ else
     private async Task AddMembersToGroup(List<StudentDto> students)
     {
         _members = null;
-        await _groupService.SetUsersAsync(Group.Id, students.Select(s => s.UserName).ToArray());
+        await GroupService.SetUsersAsync(Group.Id, students.Select(s => s.UserName).ToArray());
         await LoadMembers();
     }
 
     private async Task LoadMembers()
     {
-        var videoGroup = await _groupService.GetGroupAsync(Group.Id.ToString());
+        var videoGroup = await GroupService.GetGroupAsync(Group.Id.ToString());
         _members = _students.Where(s => videoGroup.Users.Contains(s.UserName)).ToList();
         await UsersHasChanged.InvokeAsync();
     }

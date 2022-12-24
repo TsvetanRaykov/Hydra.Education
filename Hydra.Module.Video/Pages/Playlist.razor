@@ -3,10 +3,10 @@
 
 @attribute [Authorize]
 
-@inject AuthenticationStateProvider _authenticationStateProvider
-@inject IPlaylistService _playlistService
-@inject IVideoService _videoService
-@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IPlaylistService PlaylistService
+@inject IVideoService VideoService
+@inject NavigationManager NavigationManager
 
 @if (_playlist != null)
 {
@@ -121,16 +121,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
         if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
         {
-            _allPlaylists = await _playlistService.GetPlayListsAsync(authState.User.Identity?.Name);
+            _allPlaylists = await PlaylistService.GetPlayListsAsync(authState.User.Identity?.Name);
             await LoadData();
         }
         else
         {
-            _playlist = await _playlistService.GetPlaylistAsync(Id);
+            _playlist = await PlaylistService.GetPlaylistAsync(Id);
         }
 
         if (GroupId != null && _playlist != null)
@@ -168,7 +168,7 @@ else
     {
         if (_managedComponent.Validate())
         {
-            await _playlistService.UpdatePlaylistAsync(_playlist);
+            await PlaylistService.UpdatePlaylistAsync(_playlist);
             await _snackBarStack.PushAsync("Changes has been saved.", SnackbarColor.Success, options =>
             {
                 options.IntervalBeforeClose = 5000;
@@ -180,7 +180,7 @@ else
     private async Task AddVideoToPlaylist(object obj)
     {
         var video = (Video)obj;
-        if (await _playlistService.AddVideoAsync(Id, video.Id.ToString()))
+        if (await PlaylistService.AddVideoAsync(Id, video.Id.ToString()))
             await LoadData();
     }
 
@@ -191,8 +191,8 @@ else
 
     private async Task LoadData()
     {
-        _playlist = await _playlistService.GetPlaylistAsync(Id);
-        _allVideos = await _videoService.GetAllVideosAsync();
+        _playlist = await PlaylistService.GetPlaylistAsync(Id);
+        _allVideos = await VideoService.GetAllVideosAsync();
         _availableVideos = _allVideos.ToList().FindAll(x => !_playlist.Videos.Select(v => v.Id).Contains(x.Id));
     }
 
@@ -203,9 +203,9 @@ else
 
     private async Task ActionAcceptedAsync()
     {
-        if (await _playlistService.DeletePlaylistAsync(_playlist.Id.ToString()))
+        if (await PlaylistService.DeletePlaylistAsync(_playlist.Id.ToString()))
         {
-            _navigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("");
         }
     }
 

@@ -2,9 +2,9 @@
 
 @attribute [Authorize(Roles = "Admin, Trainer")]
 
-@inject IPlaylistService _playlistService
-@inject NavigationManager _navigationManager
-@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IPlaylistService PlaylistService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <ManageComponent ManagedItem="_playlist" @ref="_manageComponent">
     <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
@@ -37,9 +37,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         _user = authState.User.Identity?.Name;
-        _playlists = await _playlistService.GetPlayListsAsync(_user);
+        _playlists = await PlaylistService.GetPlayListsAsync(_user);
 
     }
 
@@ -49,9 +49,9 @@
         if (_manageComponent.Validate())
         {
 
-            if (await _playlistService.CreatePlaylistAsync(_playlist))
+            if (await PlaylistService.CreatePlaylistAsync(_playlist))
             {
-                _playlists = await _playlistService.GetPlayListsAsync(_user);
+                _playlists = await PlaylistService.GetPlayListsAsync(_user);
             }
         }
     }

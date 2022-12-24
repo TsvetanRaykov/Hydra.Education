@@ -1,10 +1,10 @@
 ﻿@using Microsoft.Extensions.Configuration
 @using System.Diagnostics.CodeAnalysis
 @using System.Collections
-@inject IConfiguration _configuration
-@inject IPlaylistService _playlistService
-@inject IVideoService _videoService
-@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IConfiguration Configuration
+@inject IPlaylistService PlaylistService
+@inject IVideoService VideoService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <Div Class="hydra-card-video">
     <Div Class="align-items-start d-flex">
@@ -119,8 +119,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _imageUrl = $"{_configuration["ApiBaseUrl"]}/{Video.Url}";
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        _imageUrl = $"{Configuration["ApiBaseUrl"]}/{Video.Url}";
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Trainer"))
         {
             _actionsAllowed = Playlist is not null || Video.UploadedBy == authState.User.Identity?.Name;
@@ -152,16 +152,16 @@
         switch (argument.EventId)
         {
             case 1:
-                await _playlistService.RemoveVideoAsync(Playlist.Id.ToString(), Video.Id.ToString());
+                await PlaylistService.RemoveVideoAsync(Playlist.Id.ToString(), Video.Id.ToString());
                 await VideoRemovedFromPlaylist();
                 break;
             case 2:
-                await _videoService.DeleteVideoAsync(Video.Id.ToString());
+                await VideoService.DeleteVideoAsync(Video.Id.ToString());
                 await VideoRemovedFromPlaylist();
                 break;
             case 3:
                 var playlist = (VideoPlaylist)argument.Argument;
-                await _playlistService.RemoveVideoAsync(playlist.Id.ToString(), Video.Id.ToString());
+                await PlaylistService.RemoveVideoAsync(playlist.Id.ToString(), Video.Id.ToString());
                 await VideoRemovedFromPlaylist();
                 break;
         }
@@ -183,8 +183,8 @@
     private async Task AddVideoToPlaylist(object args)
     {
         var playlist = (VideoPlaylist)args;
-        await _playlistService.AddVideoAsync(playlist.Id.ToString(), Video.Id.ToString());
-        Video = await _videoService.GetVideoAsync(Video.Id);
+        await PlaylistService.AddVideoAsync(playlist.Id.ToString(), Video.Id.ToString());
+        Video = await VideoService.GetVideoAsync(Video.Id);
         _availablePlaylists = AllPlaylists.FindAll(p => !Video.PlayLists.Select(v => v.Id).Contains(p.Id));
     }
 

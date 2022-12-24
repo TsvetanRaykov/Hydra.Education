@@ -1,5 +1,5 @@
 ﻿@using Microsoft.Extensions.Configuration
-@inject IConfiguration _configuration
+@inject IConfiguration Configuration
 
 <Div>
     <AuthorizeView Roles="Admin, Trainer">
@@ -48,6 +48,6 @@
 
     protected override void OnInitialized()
     {
-        _imageUrl = $"{_configuration["ApiBaseUrl"]}{VideoGroup.ImageUrl}";
+        _imageUrl = $"{Configuration["ApiBaseUrl"]}{VideoGroup.ImageUrl}";
     }
 }

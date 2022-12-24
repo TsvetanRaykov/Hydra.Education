@@ -2,9 +2,9 @@
 
 @attribute [Authorize(Roles = "Admin, Trainer")]
 
-@inject NavigationManager _navigationManager
-@inject AuthenticationStateProvider _authenticationStateProvider
-@inject IClassService _classService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IClassService ClassService
 
 <ManageComponent @ref="_manageComponent" ManagedItem="_videoClass">
     <Div Class="align-items-baseline d-flex flex-column h-100 justify-content-between">
@@ -43,9 +43,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         _user = authState.User.Identity?.Name;
-        _videoClasses = await _classService.GetClassesAsync(_user);
+        _videoClasses = await ClassService.GetClassesAsync(_user);
     }
 
     private async Task CreateClass()
@@ -53,9 +53,9 @@
         if (_manageComponent.Validate())
         {
 
-            if (await _classService.CreateClassAsync(_videoClass))
+            if (await ClassService.CreateClassAsync(_videoClass))
             {
-                _videoClasses = await _classService.GetClassesAsync(_user);
+                _videoClasses = await ClassService.GetClassesAsync(_user);
             }
         }
     }

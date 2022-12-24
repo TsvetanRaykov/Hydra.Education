@@ -1,5 +1,5 @@
-﻿@inject AuthenticationStateProvider _authenticationStateProvider
-@inject IStudentsService _studentsService
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IStudentsService StudentsService
 
 <Div Class="container-fluid d-flex flex-wrap">
     @if (_videoGroups == null)
@@ -35,7 +35,7 @@
 
     private async Task LoadData()
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        _videoGroups = await _studentsService.GetStudentGroups(authState.User.Identity?.Name);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _videoGroups = await StudentsService.GetStudentGroups(authState.User.Identity?.Name);
     }
 }

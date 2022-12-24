@@ -1,6 +1,6 @@
 ﻿@using Microsoft.Extensions.Configuration
 @using System.Diagnostics.CodeAnalysis
-@inject IConfiguration _configuration
+@inject IConfiguration Configuration
 
 <Div Class="hydra-card">
     <Div Class="d-inline ml-1 text-muted playlist-badge"><Badge Pill="true" Color="Color.Info">@Playlist.Videos.Count</Badge> videos</Div>
@@ -39,7 +39,7 @@
 
     protected override void OnInitialized()
     {
-        _imageUrl = $"{_configuration["ApiBaseUrl"]}{Playlist.ImageUrl}";
+        _imageUrl = $"{Configuration["ApiBaseUrl"]}{Playlist.ImageUrl}";
     }
 
     private void CloseClicked() => OnCloseClick.InvokeAsync(Playlist.Id);
