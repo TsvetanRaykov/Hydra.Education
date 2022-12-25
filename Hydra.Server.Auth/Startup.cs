@@ -33,6 +33,15 @@ namespace Hydra.Server.Auth
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                    builder.SetIsOriginAllowed(_ => true)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
+
             services.AddDefaultIdentity<ApplicationUser>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = true;
@@ -49,7 +58,7 @@ namespace Hydra.Server.Auth
             services.AddControllersWithViews();
             services.AddHttpClient();
             services.AddRazorPages();
-
+            
             services.AddServerSideBlazor()
                 .AddCircuitOptions(options =>
                 {
@@ -89,6 +98,8 @@ namespace Hydra.Server.Auth
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

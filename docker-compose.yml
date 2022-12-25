@@ -1,15 +1,35 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
-
 version: '3.4'
 
 services:
+  nginx:
+    image: nginx
+    container_name: nginx-proxy
+    networks:
+      - hydra-net
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    volumes:
+      - C:\home\data\tmp\nginx\nginx.conf:/etc/nginx/nginx.conf
+      - C:\home\data\tmp\nginx\error.log:/etc/nginx/error_log.log
+      - C:\home\data\tmp\nginx\cache\:/etc/nginx/cache
+      - C:\home\data\tmp\nginx\ssl\:/etc/nginx/ssl
+
   hydra:
     image: hydra
     container_name: hydra-video
     env_file:
       - .env
-    ports:
-      - 5000:5000
+    restart: unless-stopped
+    networks:
+      - hydra-net
+    expose:
+      - "5000"
     volumes:
+      - C:\home\data\tmp\config\endpoints.json:/app/wwwroot/Video/appsettings.json:ro
       - C:\home\data\tmp\sql:/app/storage/sql
       - C:\home\data\tmp\files:/app/storage/files
+
+networks:
+  hydra-net: {}

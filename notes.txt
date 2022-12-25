@@ -1,0 +1,24 @@
+docker build -t hydra .
+
+docker login
+
+docker tag hydra raykov/hydra
+
+docker push raykov/hydra
+
+docker images -q | xargs docker rmi
+
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout hydra-selfsigned.key -out hydra-selfsigned.crt
+
+// Diffie-Hellman
+openssl dhparam -out dhparam.pem 4096
+
+------------------------
+		nginx.conf
+			|
+			| -- server_name <IP_ADDR>
+		
+		endpoints.json
+			|
+			| -- "Url": "https://<IP_ADDR>/api/video/Token",
+			| -- "ApiBaseUrl": "https://<IP_ADDR>",			
