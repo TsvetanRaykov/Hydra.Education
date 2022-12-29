@@ -40,7 +40,7 @@ namespace Hydra.Module.Video
 
             builder.Services.AddHttpClient("authorized", config =>
                 {
-                    config.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+                    config.BaseAddress = new Uri(builder.Configuration["Endpoints:BaseUrl"]!);
                 })
                 .AddHttpMessageHandler<BearerTokenHandler>();
 

@@ -39,15 +39,13 @@
         {
             var returnUrl = customReturnUrl != null ? _navigation.ToAbsoluteUri(customReturnUrl).ToString() : null;
             var encodedReturnUrl = Uri.EscapeDataString(returnUrl ?? _navigation.Uri);
-            // var logInUrl = _navigation.ToAbsoluteUri($"{_authOptions.Endpoints.SignIn}?returnUrl={encodedReturnUrl}");
-            var logInUrl = $"{_authOptions.ApiBaseUrl.OriginalString}/{_authOptions.Endpoints.SignIn}?returnUrl={encodedReturnUrl}";
+            var logInUrl = $"{_authOptions.Endpoints.BaseUrl.OriginalString}/{_authOptions.Endpoints.SignIn}?returnUrl={encodedReturnUrl}";
             _navigation.NavigateTo(logInUrl, true);
         }
 
         public async void SignOut()
         {
-            // _navigation.NavigateTo(_navigation.ToAbsoluteUri(Endpoints.SignOut).ToString(), true);
-            _navigation.NavigateTo($"{_authOptions.ApiBaseUrl.OriginalString}/{_authOptions.Endpoints.SignOut}", true);
+            _navigation.NavigateTo($"{_authOptions.Endpoints.BaseUrl.OriginalString}/{_authOptions.Endpoints.SignOut}", true);
         }
 
         private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
@@ -72,8 +70,7 @@
 
             try
             {
-                //user = await _client.GetFromJsonAsync<UserInfo>(Endpoints.User);
-                user = await _client.GetFromJsonAsync<UserInfo>($"{_authOptions.ApiBaseUrl.OriginalString}/{_authOptions.Endpoints.User}");
+                user = await _client.GetFromJsonAsync<UserInfo>($"{_authOptions.Endpoints.BaseUrl.OriginalString}/{_authOptions.Endpoints.User}");
             }
             catch (Exception exc)
             {

@@ -13,14 +13,22 @@
     public class JwtTokenManager : IJwtTokenManager
     {
         private readonly ModuleVideoSettings _configuration;
+        private string _tokenGeneratorKey;
 
         public JwtTokenManager(IOptions<ModuleVideoSettings> configuration)
         {
             _configuration = configuration.Value;
+            _tokenGeneratorKey = _configuration.JwtConfig?.Key;
         }
 
         public string Authenticate(string apiKey)
         {
+
+            if (string.IsNullOrWhiteSpace(_tokenGeneratorKey))
+            {
+                _tokenGeneratorKey = "--- hydra-token-joke ---";
+                return CreateToken(new ApiClient());
+            }
 
             var client = _configuration.ApiClients.FirstOrDefault(c => c.ApiKey.Equals(apiKey));
 
@@ -34,9 +42,10 @@
 
         private string CreateToken(ApiClient client)
         {
-            var key = Encoding.ASCII.GetBytes(_configuration.JwtConfig.Key);
 
             var tokenHandler = new JwtSecurityTokenHandler();
+
+            var key = Encoding.ASCII.GetBytes(_tokenGeneratorKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor()
             {

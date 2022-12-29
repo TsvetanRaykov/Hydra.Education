@@ -13,14 +13,16 @@ namespace Hydra.Module.Video.Services
 
     public class TokenService : ITokenService
     {
-        private readonly TokenEndpointConfig _config;
         private readonly HttpClient _httpClient;
         private readonly ICacheService _cache;
-
+        private readonly IConfiguration _configuration;
         private readonly IJsonSerializer _serializer;
         private readonly IDateTimeProvider _provider;
         private readonly IBase64UrlEncoder _urlEncoder;
         private readonly IJwtAlgorithm _algorithm;
+
+        private readonly string _tokenEndpoint;
+        private readonly string _apiKey;
 
         public TokenService(
             IConfiguration configuration,
@@ -36,8 +38,11 @@ namespace Hydra.Module.Video.Services
             _provider = provider;
             _urlEncoder = urlEncoder;
             _algorithm = algorithm;
-            _config = configuration.GetSection("TokenEndpoint").Get<TokenEndpointConfig>();
+            _configuration = configuration;
             _httpClient = httpClientFactory.CreateClient();
+
+            _tokenEndpoint = $"{_configuration["Endpoints:BaseUrl"]}/{_configuration["Endpoints:Token"]}";
+            _apiKey = _configuration["ApiKey"] ?? "--- hydra-joke-key ---";
         }
 
         public async Task<string> GetTokenAsync()
@@ -51,8 +56,8 @@ namespace Hydra.Module.Video.Services
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                Headers = { { "ApiKey", _config.ApiKey } },
-                RequestUri = new Uri(_config.Url)
+                Headers = { { "ApiKey", _apiKey } },
+                RequestUri = new Uri(_tokenEndpoint)
             };
 
             var response = await _httpClient.SendAsync(request);

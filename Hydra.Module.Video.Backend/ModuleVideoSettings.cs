@@ -1,17 +1,16 @@
-﻿using System;
-using System.Text;
-using Hydra.Module.Video.Backend.Contracts;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-
-namespace Hydra.Module.Video.Backend
+﻿namespace Hydra.Module.Video.Backend
 {
+    using Contracts;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.IdentityModel.Tokens;
+    using System;
+    using System.Text;
+
     public class ModuleVideoSettings
     {
         public string ConnectionString { get; set; }
         public string StaticFilesLocation { get; set; }
-     //   public ApiSettings ApiSettings { get; set; }
         public JwtConfig JwtConfig { get; set; }
         public ApiClient[] ApiClients { get; set; } = Array.Empty<ApiClient>();
 
@@ -19,6 +18,7 @@ namespace Hydra.Module.Video.Backend
 
         public void AddHydraModuleJwtTokenAuthentication(IServiceCollection services)
         {
+            ValidateAuthConfiguration();
 
             services.AddAuthentication(options =>
                 {
@@ -54,13 +54,6 @@ namespace Hydra.Module.Video.Backend
                 throw new ArgumentNullException(nameof(ConnectionString), $"{nameof(ConnectionString)} is required.");
             if (string.IsNullOrWhiteSpace(StaticFilesLocation))
                 throw new ArgumentNullException(nameof(StaticFilesLocation), $"{nameof(StaticFilesLocation)} is required.");
-
-            ValidateAuthConfiguration();
-
-            //if (ApiSettings == null)
-            //    throw new ArgumentNullException(nameof(ApiSettings), $"{nameof(ApiSettings)} object is required.");
-            //ApiSettings.Validate();
-
         }
 
         private void ValidateAuthConfiguration()
@@ -107,17 +100,6 @@ namespace Hydra.Module.Video.Backend
             }
         }
     }
-
-    //public class ApiSettings
-    //{
-    //    public string BaseUrl { get; set; }
-    //    internal void Validate()
-    //    {
-    //        if (string.IsNullOrWhiteSpace(BaseUrl))
-    //            throw new ArgumentNullException(nameof(BaseUrl), $"{nameof(ApiSettings)}.{nameof(BaseUrl)} is required.");
-
-    //    }
-    //}
 
     public class JwtConfig
     {
