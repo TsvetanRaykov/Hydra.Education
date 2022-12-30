@@ -35,7 +35,7 @@
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new AuthenticationState(await GetUser(useCache: true));
 
-        public async void SignIn(string customReturnUrl = null)
+        public void SignIn(string customReturnUrl = null)
         {
             var returnUrl = customReturnUrl != null ? _navigation.ToAbsoluteUri(customReturnUrl).ToString() : null;
             var encodedReturnUrl = Uri.EscapeDataString(returnUrl ?? _navigation.Uri);
@@ -43,7 +43,7 @@
             _navigation.NavigateTo(logInUrl, true);
         }
 
-        public async void SignOut()
+        public void SignOut()
         {
             _navigation.NavigateTo($"{_authOptions.Endpoints.BaseUrl.OriginalString}/{_authOptions.Endpoints.SignOut}", true);
         }
