@@ -1,0 +1,463 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<link href='https://raw.githubusercontent.com/slashfoo/lmweb/master/style/latinmodern-mono-light.css' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+thead, tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+svg { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; padding-bottom: 0px !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.reversefootnote { font-family: ui-monospace, sans-serif; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+mjx-container { break-inside: avoid; }
+
+
+:root {
+    --side-bar-bg-color: white;
+    --window-border: none;
+    --search-select-bg-color: #575c61;
+    --active-file-bg-color: #f1f4f5;
+    --item-hover-bg-color: #f1f4f5;
+    --item-hover-text-color: black;
+    --control-text-color: #555;
+}
+
+@include-when-export url(https://raw.githubusercontent.com/slashfoo/lmweb/master/style/latinmodern-mono-light.css);
+
+html {
+    font-size: 12pt;
+}
+
+#write {
+    font-family: "STIX2Text", "Times New Roman", "serif";
+    line-height: 1.5em;
+    padding: 10%;
+    padding-top: 5%;
+}
+
+.file-list-item-summary {
+    height: 36px;
+}
+
+.file-list-item {
+    padding-top: 18px !important;
+    padding-bottom: 18px;
+}
+
+#sidebar-loading-template.file-list-item {
+    padding-top: 0 !important;
+}
+
+a, a:visited {
+    color: #a00;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+    line-height: 1.5em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+h1  {
+    font-size: 2.4em;
+}
+
+#write h1  {
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.8em;
+}
+
+h3 {
+    font-size: 1.4em;
+}
+
+h4 {
+    font-size: 1.2em;
+}
+
+h5  {
+    font-size: 1.1em;
+}
+
+h6 {
+    font-size: 1em;
+}
+
+p {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    text-align: justify;
+}
+
+pre, code {
+    font-family: 'Latin Modern Mono Light', "Latin Modern Mono", monospace !important;
+}
+
+.footnotes {
+    display: list-item;
+    margin-left: 1em;
+}
+
+.md-fences {
+    border: 1px solid;
+}
+
+.md-fences.md-fences-with-lineno {
+    border: none;
+}
+
+.CodeMirror-linenumber {
+    color: #333;
+}
+
+*.in-text-selection,
+::selection,
+.CodeMirror-selected {
+    background: var(--search-select-bg-color);
+    color: var(--search-select-text-color) !important;
+    text-shadow: none;
+}
+
+a.md-toc-inner {
+    color: var(--text-color);
+}
+
+.cm-s-typora-default .cm-link {
+    color: #a00;
+    text-decoration: underline;
+}
+
+.cm-s-typora-default .cm-header, .cm-s-typora-default .cm-property {
+    color: black;
+}
+
+#typora-source .CodeMirror-lines {
+    -webkit-font-smoothing: auto;
+    max-width: 1000px;
+}
+
+.md-def-name:before,
+.md-def-name:after {
+    color: #2d2d2d;
+}
+
+sup.md-footnote {
+    background-color: initial;
+    color: inherit;
+}
+
+mark {
+    background: #fff387;
+}
+
+td, th {
+    border: 1px solid;
+    padding-left: 1ch;
+    padding-right: 1ch;
+}
+
+/*table tr[cid]:first-child > td {
+    border-top: 3px double;
+}*/
+
+th {
+    border-bottom: 0;
+    padding-top: 2px;
+    background: #575c61;
+    border-color: #333;
+    color: #f3f3f3;
+}
+
+pre.md-meta-block {
+    border: 1px solid #a2a9b1;
+    background-color: #f8f9fa;
+    padding: 5px;
+    margin-bottom: 1em;
+}
+
+.task-list-item input:before {
+    content: '\221A';
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.6rem;
+    vertical-align: middle;
+    text-align: center;
+    color: #bbb;
+    background-color: inherit;
+}
+
+.task-list-item input:checked:before,
+.task-list-item input[checked]:before{
+    color: inherit;
+}
+
+.md-task-list-item > input {
+    top: auto;
+    margin-left: -1.1em;
+    font-size: 1.3em;
+    margin-top: 0px;
+    -webkit-appearance: none;
+}
+
+.md-task-list-item input:before {
+    content: '\2610';
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.6rem;
+    vertical-align: middle;
+    text-align: center;
+    color: #bbb;
+    background-color: inherit;
+}
+
+.md-task-list-item input:checked:before,
+.md-task-list-item input[checked]:before{
+    color: inherit;
+    content: '\2611';
+}
+
+.task-list-item {
+    padding-left: 1.5em;
+}
+
+blockquote {
+    font-style: italic;
+    padding: 0.25em 24px;
+    position: relative;
+    color: #383838;
+    border-left: 2px solid;
+    
+}
+
+#write > blockquote {
+    padding: 0.25em 30px;
+    margin-left: -32px;
+    width: calc(100% + 32px);
+}
+
+#write >  .md-fences-with-lineno {
+    margin-left: -33px;
+    color: black;
+}
+
+.CodeMirror-linenumber {
+    min-width: 25px;
+}
+
+.md-header {
+    font-size: inherit !important;
+}
+
+/*blockquote:before {
+    display: block;
+    content: "\201C";
+    font-size: 80px;
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    color: #7a7a7a;
+}*/
+
+
+
+</style><title>README</title>
+</head>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><h1 id='hydra-educational-platform'><span>Hydra Educational Platform</span></h1><p><span>Hello visitor, and welcome to my masters&#39; degree project. </span></p><p><span>Тhe original assignment was &quot;Design and Develop a </span><strong><span>Video Lectures Application</span></strong><span>&quot;, and this is the solution.</span></p><h2 id='description'><span>Description</span></h2><p><span>Hydra Educational Platform (HEP) platform is designed to support the educational process of both teachers and students. Its purpose is to provide teachers with a convenient way to organize teaching materials and to facilitate students&#39; access to them.  HEP&#39;s main idea is to be a secure, modular training system, where each module is an independent stand-alone application that provides specific functionality. For example, a video tutorials module in which students can watch videos of lectures and exercises pre-uploaded and organized by the teacher. Or a contest  module in which to conduct examinations and tests in various forms. Or even an evaluation AI module. </span></p><p><span>The current implementation includes two basic modules. </span><em><span>Authentication module</span></em><span> which is supposed for user management, and </span><em><span>module for Videos sharing</span></em><span>, where trainers can upload their video courses and share them with the students.</span></p><h3 id='authentication-module'><span>Authentication module</span></h3><p><span>The authentication module dictates access to the system. This module is an integral part of the basic system. In addition to managing users, it&#39;s also responsible for their authentication. This means that all other modules rely on it to authenticate its users, as well as to retrieve the complete user list.  </span></p><p><span>There are three levels of access defined as user roles.</span></p><ul><li><strong><span>Administrator</span></strong><span>. Has full access to the base system and authentication module. It&#39;s main purpose is to manage users. </span></li><li><strong><span>Trainer</span></strong><span>. The purpose of that role is to manage content. Has no access to authentication module. </span></li><li><strong><span>Student</span></strong><span>. Can enter the system and manage his personal data. Its access to the content is managed by Trainer.</span></li></ul><p><span>Multiple roles can be assigned to a user.</span></p><h3 id='video-sharing-module'><span>Video Sharing module</span></h3><p><span>This module is a place where teachers can upload and manage their video lectures, as well as a place where students can watch them. Here is how the module is structured.</span></p><p><span>The main and most important unit is the </span><em><span>Video</span></em><span> file. The </span><em><span>Trainer</span></em><span> can upload </span><em><span>Video</span></em><span> files in the appropriate section. To make them available to </span><em><span>Students</span></em><span>, he need to put them in the </span><em><span>Playlist</span></em><span>.</span></p><p><span>The </span><em><span>Playlist</span></em><span> logically groups </span><em><span>Videos</span></em><span>, so the Trainer have to ensure that they are named and described correctly according to the topic.</span></p><p><span>The next important unit is the </span><em><span>Study Group</span></em><span>. It has two main roles. The first is the logical grouping of </span><em><span>Students</span></em><span>. When a </span><em><span>Trainer</span></em><span> create a </span><em><span>Study Group</span></em><span>, he can add </span><em><span>Students</span></em><span> to it by selecting them from a complete list managed in the authentication module. The second role of the </span><em><span>Study Group</span></em><span> is to connect the </span><em><span>Students</span></em><span> with the </span><em><span>Playlists</span></em><span>. All </span><em><span>Videos</span></em><span> in </span><em><span>Playlists</span></em><span> assigned to the same </span><em><span>Study Group</span></em><span> are available to its members </span><em><span>(Students)</span></em><span>. The </span><em><span>Trainer</span></em><span> can create as many groups as he want, according to his criteria. But have to keep in mind that the </span><em><span>Study Groups</span></em><span> and </span><em><span>Playlists</span></em><span> he create are only available to hem and his </span><em><span>Students</span></em><span>, other </span><em><span>Trainers</span></em><span> cannot manage them. But the </span><em><span>Videos</span></em><span> are shared, they are available to all </span><em><span>Trainers</span></em><span>. This way, the </span><em><span>Trainer</span></em><span> can add </span><em><span>Videos</span></em><span> uploaded by other </span><em><span>Trainers</span></em><span> to his </span><em><span>Playlists</span></em><span>.</span></p><p><span>The last and basic unit is the </span><em><span>Class</span></em><span>. Its aim is to wrap a number of </span><em><span>Study Groups</span></em><span> for better structuring. It could be an academic specialty, faculty, or something. Аs </span><em><span>Study Groups</span></em><span> live in </span><em><span>Class</span></em><span>, to create a </span><em><span>Study Group</span></em><span> the </span><em><span>Trainer</span></em><span> must first create a </span><em><span>Class</span></em><span>. </span><em><span>Groups</span></em><span> are created in the </span><em><span>Class</span></em><span> edit section.</span></p><p>&nbsp;</p><p><img src="imgreadme/ModuleVideoDiagram.svg" referrerpolicy="no-referrer" alt="ModuleVideoDiagram"></p><p>&nbsp;</p><h2 id='user-registration'><span>User registration</span></h2><p><span>There are two ways to add users to the platform.</span></p><h3 id='registration-form'><span>Registration form. </span></h3><p><span>Users are only required to provide the most basic registration information, a valid email, and a password. Once the email address is validated, the user automatically gets the role of Student and can log in. As more data on the user are required for the correct functioning of some modules, he can be asked to provide it after logging in, such as Name, Faculty Number, etc. </span></p><h3 id='user-management-section'><span>User management section</span></h3><p><span>Administrators can add users via Authentication module in user management section. They also can edit user data of already registered users, add/remove roles, manually confirm emails, etc.</span></p><h2 id='technology-stack'><span>Technology Stack</span></h2><p><span>The platform is built over the Microsoft </span><a href='https://dotnet.microsoft.com/en-us/download/dotnet/6.0,' title='https://dotnet.microsoft.com/en-us/download/dotnet/6.0'><span>.NET 6</span></a><span> Framework. The following technologies are used.</span></p><ol start='' ><li><a href='https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor,' title='https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor'><span>Blazor</span></a><span> - both </span><a href='https://docs.microsoft.com/en-us/aspnet/core/blazor/hosting-models?view=aspnetcore-6.0,' title='https://docs.microsoft.com/en-us/aspnet/core/blazor/hosting-models?view=aspnetcore-6.0'><span>WASM and SS</span></a></li><li><a href='https://blazorise.com/,' title='https://blazorise.com'><span>Blazorise</span></a><span>/</span><a href='https://bootstrapdemo.blazorise.com/,' title='https://bootstrapdemo.blazorise.com'><span>Bootstrap</span></a><span> component library</span></li><li><a href='https://dotnet.microsoft.com/en-us/apps/aspnet/mvc,' title='https://dotnet.microsoft.com/en-us/apps/aspnet/mvc'><span>MVC</span></a><span> and </span><a href='https://aspnetcore.readthedocs.io/en/latest/mvc/views/razor.html#,' title='https://aspnetcore.readthedocs.io/en/latest/mvc/views/razor.html'><span>Razor</span></a></li><li><a href='https://docs.microsoft.com/en-us/ef/core/,' title='https://docs.microsoft.com/en-us/ef/core'><span>Microsoft Entity Framework Core</span></a><span> </span></li><li><a href='https://www.sqlite.org,' title='https://www.sqlite.org'><span>SQLite</span></a></li><li><a href='https://azure.microsoft.com/,' title='https://azure.microsoft.com'><span>Azure</span></a></li><li><a href='https://www.sendinblue.com/,' title='https://www.sendinblue.com'><span>SendInBlue</span></a><span> API to send emails</span></li><li><span>Vanilla JavaScript and CSS, a little :)</span></li></ol><h2 id='architecture'><span>Architecture</span></h2><h3 id='overview'><span>Overview</span></h3><p><span>The architecture is inspired by the concept of </span><a href='https://microfrontends.com/,' title='https://microfrontends.com'><span>Micfrontends</span></a><span>, and its </span><a href='https://www.codeproject.com/Articles/5287009/Blazor-Hydra-Hosting-Multiple-Blazor-SPAs-on-a-sin'><span>application in the world of .NET</span></a><span>. </span></p><p><img src="imgreadme/microfrontends-arch1.png" style="zoom:150%;" title="Source: Florian Rappl — DotNet Conf 2020" /></p><p><span>This basically means that each module in the platform is a fully functional standalone web application. This gives the project flexibility and scalability, as each module has its own life and can be developed separately by a different team using different technologies.</span></p><p><span>Here is the overall structure of the application.</span></p><p>&nbsp;</p><p><img src="imgreadme/HEP.drawio.svg" style="zoom:120%;" /></p><p>&nbsp;</p><p><span>The Authentication module is an integral part of the Application because It manages users and provides user data to all other plugged-in modules.</span>
+<span>Videos sharing module is a fully functional stand-alone Single Page Application, which Front-End and Back-End are pluggable to HEP.</span></p><h3 id='authentication-module-api'><span>Authentication module API</span></h3><p><img src="imgreadme/auth-api.png" referrerpolicy="no-referrer"></p><h3 id='video-module-api'><span>Video module API</span></h3><p><img src="imgreadme/video-api.png" referrerpolicy="no-referrer"></p><h2 id='data-bases'><span>Data Bases</span></h2><h3 id='authentication-module-db'><span>Authentication module DB</span></h3><p><img src="imgreadme/DbAuthDiagram.svg" referrerpolicy="no-referrer"></p><h3 id='video-module-db'><span>Video module DB</span></h3><p><img src="imgreadme/DbVideoDiagram.svg" referrerpolicy="no-referrer" alt="DbVideoDiagram"></p><h2 id='request-a-demo'><span>Request a demo</span></h2><p><span>The platform is deployed for tests in Azure cloud. If you interested in it, please </span><a href='https://forms.office.com/r/tHPsQ4yHH1'><span>contact me</span></a><span>, and you may receive a link to enter the playgroud.</span></p><p>&nbsp;</p></div></div>
+</body>
+</html>

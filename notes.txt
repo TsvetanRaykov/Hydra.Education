@@ -22,3 +22,14 @@ openssl dhparam -out dhparam.pem 4096
 			|
 			| -- "Url": "https://<IP_ADDR>/api/video/Token",
 			| -- "ApiBaseUrl": "https://<IP_ADDR>",			
+
+scp -r ** .* raykov@192.168.56.10:~/hydra
+ssh raykov@192.168.56.10 mkdir -p ~/hydra
+
+netstat -ano | find ":500" | more
+cat /etc/*release
+
+ssh -t raykov@192.168.56.10 vi ~/hydra/nginx/nginx.conf
+ssh -t raykov@192.168.56.10 vi ~/hydra/config/endpoints.json
+
+ssh -t raykov@192.168.56.10 sudo docker-compose -f ~/hydra/docker-compose.yml up
