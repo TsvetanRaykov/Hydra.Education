@@ -36,7 +36,7 @@ The last and basic unit is the *Class*. Its aim is to wrap a number of *Study Gr
 
 
 
-![ModuleVideoDiagram](imgreadme/ModuleVideoDiagram.svg)
+![ModuleVideoDiagram](docs/imgreadme/ModuleVideoDiagram.svg)
 
 
 
@@ -71,7 +71,7 @@ The platform is built over the Microsoft [.NET 6](https://dotnet.microsoft.com/e
 
 The architecture is inspired by the concept of [Micfrontends](https://microfrontends.com/, "https://microfrontends.com"), and its [application in the world of .NET](https://www.codeproject.com/Articles/5287009/Blazor-Hydra-Hosting-Multiple-Blazor-SPAs-on-a-sin). 
 
-<img src="imgreadme/microfrontends-arch1.png" style="zoom:150%;" title="Source: Florian Rappl — DotNet Conf 2020" />
+<img src="docs/imgreadme/microfrontends-arch1.png" style="zoom:150%;" title="Source: Florian Rappl — DotNet Conf 2020" />
 
 This basically means that each module in the platform is a fully functional standalone web application. This gives the project flexibility and scalability, as each module has its own life and can be developed separately by a different team using different technologies.
 
@@ -79,7 +79,7 @@ Here is the overall structure of the application.
 
 
 
-<img src="imgreadme/HEP.drawio.svg" style="zoom:120%;" />
+<img src="docs/imgreadme/HEP.drawio.svg" style="zoom:120%;" />
 
 
 
@@ -88,21 +88,21 @@ Videos sharing module is a fully functional stand-alone Single Page Application,
 
 ### Authentication module API
 
-![](imgreadme/auth-api.png)
+![](docs/imgreadme/auth-api.png)
 
 ### Video module API
 
-![](imgreadme/video-api.png)
+![](docs/imgreadme/video-api.png)
 
 ## Data Bases
 
 ### Authentication module DB
 
-![](imgreadme/DbAuthDiagram.svg)
+![](docs/imgreadme/DbAuthDiagram.svg)
 
 ### Video module DB
 
-![DbVideoDiagram](imgreadme/DbVideoDiagram.svg)
+![DbVideoDiagram](docs/imgreadme/DbVideoDiagram.svg)
 
 ## Request a demo
 
